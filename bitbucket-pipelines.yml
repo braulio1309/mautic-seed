@@ -1,0 +1,27 @@
+pipelines:
+  branches:
+    master:
+      - step:
+          deployment: Production
+          name: Deploy on ECR
+          image: python:3.7.4-alpine3.10
+          services:
+            - docker
+          caches:
+            - pip
+            - docker
+          size: 2x
+          script:
+            - pip3 install awscli
+            - TAG=${BITBUCKET_COMMIT}
+            - eval $(aws ecr get-login --no-include-email | sed 's;https://;;g')
+            - docker build -t $IMAGE:latest .
+            - docker tag $IMAGE:latest $IMAGE:$TAG
+            - docker push $IMAGE:latest
+            - docker push $IMAGE:$TAG
+            - aws ecs update-service --cluster $AWS_ECS_CLUSTER --service $AWS_ECS_SERVICE --force-new-deployment
+
+definitions:
+  services:
+    docker:
+      memory: 4096
