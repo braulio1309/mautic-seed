@@ -1,0 +1,10 @@
+{
+  "projectName": null,
+  "brandName": null,
+  "clientName": null,
+  "createBackend": false,
+  "domainName": null,
+  "certificateArn": null,
+  "loadBalancerCertificateArn": null,
+  "vpcId": null
+}

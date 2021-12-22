@@ -1,0 +1,9 @@
+{
+  "projectName": "Destiny CRM",
+  "brandName": "Destiny",
+  "clientName": "Destiny",
+  "createBackend": true,
+  "mauticSecret": "1ca6ed1e7b7f0edf3b90898bfc05cc5f6c95e30527a8cc35d3983633588fb8a0",
+  "subDomain": "marketing",
+  "domain": "destiny.systems"
+}

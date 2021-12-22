@@ -1,0 +1,14 @@
+{
+  "hosted-zone:account=657279016981:domainName=destiny.systems:region=us-east-1": {
+    "Id": "/hostedzone/Z0424257200NXMGFTUA6I",
+    "Name": "destiny.systems."
+  },
+  "availability-zones:account=657279016981:region=us-east-1": [
+    "us-east-1a",
+    "us-east-1b",
+    "us-east-1c",
+    "us-east-1d",
+    "us-east-1e",
+    "us-east-1f"
+  ]
+}
