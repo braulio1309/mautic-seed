@@ -1,8 +1,8 @@
 <?php
-defined('MAUTIC_OFFLINE') or die('access denied');
+defined('MAUTIC_OFFLINE') or exit('access denied');
 
 // Get the URLs base path
-$inDev = strpos($_SERVER['SCRIPT_NAME'], 'index_dev.php') !== false;
+$inDev = false !== strpos($_SERVER['SCRIPT_NAME'], 'index_dev.php');
 $base  = str_replace(['index.php', 'index_dev.php'], '', $_SERVER['SCRIPT_NAME']);
 
 // Determine if there is an asset prefix
@@ -10,7 +10,7 @@ $root = __DIR__;
 include $root.'/app/config/paths.php';
 $assetPrefix = $paths['asset_prefix'];
 if (!empty($assetPrefix)) {
-    if (substr($assetPrefix, -1) == '/') {
+    if ('/' == substr($assetPrefix, -1)) {
         $assetPrefix = substr($assetPrefix, 0, -1);
     }
 }
@@ -35,7 +35,7 @@ if (empty($inline)): ?>
     <title>Site is offline</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link rel="icon" type="image/x-icon" href="<?php echo $assetBase.'/images/favicon.ico'; ?>"/>
+    <link rel="icon" type="image/x-icon" href="<?php echo $assetBase.'/images/Logo-destiny.png'; ?>"/>
     <link rel="stylesheet" href="<?php echo $assetBase.'/css/libraries.css'; ?>"/>
     <link rel="stylesheet" href="<?php echo $assetBase.'/css/app.css'; ?>"/>
 </head>

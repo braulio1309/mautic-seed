@@ -438,7 +438,7 @@ class AssetsHelper
 
         if (isset($assets['css'])) {
             foreach ($assets['css'] as $url) {
-                echo '<link rel="stylesheet" href="'.$this->getUrl($url).'" data-source="mautic" />'."\n";
+                echo '<link rel="stylesheet" href="'.$this->getUrl($url).'" />'."\n";
             }
         }
     }
