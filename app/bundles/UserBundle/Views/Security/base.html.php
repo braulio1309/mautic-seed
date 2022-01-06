@@ -17,7 +17,7 @@
     <title><?php echo $view['slots']->get('pageTitle', 'Destiny'); ?></title>
     <meta name="robots" content="noindex, nofollow" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link rel="icon" type="image/x-icon" href="<?php echo $view['assets']->getUrl('app\assets\images\Logo-destiny.png'); ?>" />
+    <link rel="icon" type="image/x-icon" href="<?php echo $view['assets']->getUrl('app\assets\images\favicon.png'); ?>" />
     <link rel="apple-touch-icon" href="<?php echo $view['assets']->getUrl('app\assets\images\Logo-destiny.png'); ?>" />
     <?php $view['assets']->outputSystemStylesheets(); ?>
     <link rel="stylesheet" href="<?php echo $view['assets']->getUrl('app\assets\css\libraries.css'); ?>">
