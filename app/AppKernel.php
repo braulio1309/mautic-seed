@@ -107,7 +107,7 @@ class AppKernel extends Kernel
             $db = $this->getContainer()->get('database_connection');
             try {
                 $process = new PhpProcess($db->connect());
-                $process->setTimeout(300000);
+                $process->setTimeout(60000);
                 $process->setIdleTimeout(300000);
                 $process->run();
             } catch (\Exception $e) {

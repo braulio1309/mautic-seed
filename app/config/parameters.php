@@ -55,7 +55,7 @@ foreach ($mauticParams as $k => $v) {
 //Sessions settings
 $storageDefinition = new Definition(PdoSessionHandler::class, [
     'mysql:host=%mautic.db_host%;port=%mautic.db_port%;dbname=%mautic.db_name%',
-    ['db_username' => '%database_user%', 'db_password' => '%mautic.db_password%'],
+    ['db_username' => '%mautic.db_user%', 'db_password' => '%mautic.db_password%'],
 ]);
 
 $container->register('session.handler.pdo', PdoSessionHandler::class)
