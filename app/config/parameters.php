@@ -9,6 +9,8 @@
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
+use Symfony\Component\DependencyInjection\Definition;
+
 $root = $container->getParameter('kernel.root_dir');
 include __DIR__.'/paths_helper.php';
 
@@ -49,6 +51,18 @@ foreach ($mauticParams as $k => $v) {
     // Add to the container with the applicable processor
     $container->setParameter("mautic.{$k}", sprintf('%%env(%sresolve:MAUTIC_%s)%%', $type, mb_strtoupper($k)));
 }
+
+//Sessions settings
+$storageDefinition = new Definition(PdoSessionHandler::class, [
+    'mysql:host=%mautic.db_host%;port=%mautic.db_port%;dbname=%mautic.db_name%',
+    ['db_username' => '%database_user%', 'db_password' => '%mautic.db_password%'],
+]);
+
+$container->register('session.handler.pdo', PdoSessionHandler::class)
+    ->setArguments([
+        'mysql:dbname=%mautic.db_name%',
+        ['db_table' => 'sessions', 'db_username' => '%mautic.db_user%', 'db_password' => '%mautic.db_password%'],
+    ]);
 
 // Set the router URI for CLI
 $container->setParameter('router.request_context.host', '%env(MAUTIC_REQUEST_CONTEXT_HOST)%');
