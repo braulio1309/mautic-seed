@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Process\PhpProcess;
 
 /**
  * Mautic Application Kernel.
@@ -105,7 +106,10 @@ class AppKernel extends Kernel
         if (!defined('MAUTIC_INSTALLER')) {
             $db = $this->getContainer()->get('database_connection');
             try {
-                $db->connect();
+                $process = new PhpProcess($db->connect());
+                $process->setTimeout(300000);
+                $process->setIdleTimeout(300000);
+                $process->run();
             } catch (\Exception $e) {
                 error_log($e);
                 throw new \Mautic\CoreBundle\Exception\DatabaseConnectionException($this->getContainer()->get('translator')->trans('mautic.core.db.connection.error', ['%code%' => $e->getCode()]), 0, $e);
