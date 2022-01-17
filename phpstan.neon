@@ -7,7 +7,7 @@ parameters:
 	reportUnmatchedIgnoredErrors: false
 	parallel:
 		maximumNumberOfProcesses: 1
-		processTimeout: 1000.0
+		processTimeout: 5000.0
 	paths:
 		- app/bundles
 		- app/migrations
