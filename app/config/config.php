@@ -92,9 +92,15 @@ $container->loadFromExtension('framework', [
 
 $container->register('session.handler.pdo', PdoSessionHandler::class)
     ->setArguments([
-        'mysql:dbname=%mautic.db_name%',
+        'pdo_mysql:dbname=%mautic.db_name%',
         ['db_table' => 'sessions', 'db_username' => '%mautic.db_user%', 'db_password' => '%mautic.db_password%'],
     ]);
+
+error_log(print_r('%mautic.db_name%'));
+error_log(print_r('%mautic.db_user%'));
+error_log(print_r('%mautic.db_password%'));
+error_log(print_r('%mautic.db_host%'));
+error_log(print_r('%mautic.db_driver%'));
 
 $container->setParameter('mautic.famework.csrf_protection', true);
 
