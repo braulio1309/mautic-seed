@@ -92,8 +92,8 @@ $container->loadFromExtension('framework', [
 
 $container->register('session.handler.pdo', PdoSessionHandler::class)
     ->setArguments([
-        'pdo_mysql:dbname=%mautic.db_name%',
-        ['db_table' => 'sessions', 'db_username' => '%mautic.db_user%', 'db_password' => '%mautic.db_password%'],
+        'mysql:dbname=mtcdestinycrmproductiondb',
+        ['db_table' => 'sessions', 'db_username' => 'admin', 'db_password' => 'k_ds^L1Rgf6yvHT1tp6h^ltiTHmkEj'],
     ]);
 
 error_log(print_r('%mautic.db_name%'));
