@@ -123,8 +123,9 @@ if ! [ -e app/config/local.php ]; then
         mkdir -p /var/www/html/app/logs
         chown www-data:www-data /var/www/html/app/logs
 fi
+
 #Create datatable of sessions
-php /var/www/html/bin/console doctrine:migrations:migrate
+sudo -u www-data php /var/www/html/bin/console --no-interaction doctrine:migrations:migrate
 
 if [[ "$MAUTIC_RUN_CRON_JOBS" == "true" ]]; then
     if [ ! -e /var/log/cron.pipe ]; then
