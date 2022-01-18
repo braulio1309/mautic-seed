@@ -54,14 +54,14 @@ foreach ($mauticParams as $k => $v) {
 
 //Sessions settings
 $storageDefinition = new Definition(PdoSessionHandler::class, [
-    'pdo_mysql:host=%mautic.db_host%;port=%mautic.db_port%;dbname=%mautic.db_name%',
-    ['db_username' => '%mautic.db_user%', 'db_password' => '%mautic.db_password%'],
+    'mysql:host=mtc-destinycrm-production-rds-serverless.cluster-cgxhg4dfxsbq.us-east-1.rds.amazonaws.com;port=3306;dbname=mtcdestinycrmproductiondb',
+    ['db_username' => 'admin', 'db_password' => 'k_ds^L1Rgf6yvHT1tp6h^ltiTHmkEj'],
 ]);
 
 $container->register('session.handler.pdo', PdoSessionHandler::class)
     ->setArguments([
-        'pdo_mysql:dbname=%mautic.db_name%',
-        ['db_table' => 'sessions', 'db_username' => '%mautic.db_user%', 'db_password' => '%mautic.db_password%'],
+        'mysql:dbname=mtcdestinycrmproductiondb',
+        ['db_table' => 'sessions', 'db_username' => 'admin', 'db_password' => 'k_ds^L1Rgf6yvHT1tp6h^ltiTHmkEj'],
     ]);
 
 // Set the router URI for CLI
