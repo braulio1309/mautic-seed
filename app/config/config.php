@@ -78,7 +78,8 @@ $container->loadFromExtension('framework', [
         'fallback' => 'en_US',
     ],
     'session'         => [ //handler_id set to null will use default session handler from php.ini
-        'handler_id'    => 'session.handler.pdo',
+        //'handler_id'    => 'session.handler.pdo',
+        'handler_id'    => null,
         'name'          => '%env(MAUTIC_SESSION_NAME)%',
         'cookie_secure' => $secureCookie,
     ],
