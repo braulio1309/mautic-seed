@@ -1,0 +1,45 @@
+<?php
+
+declare(strict_types=1);
+
+/*
+ * @copyright   2021 Mautic Contributors. All rights reserved.
+ * @author      Mautic
+ * @link        https://mautic.org
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ */
+
+namespace Mautic\Migrations;
+
+use Doctrine\DBAL\Schema\Schema;
+use Doctrine\Migrations\Exception\SkipMigration;
+use Mautic\CoreBundle\Doctrine\AbstractMauticMigration;
+
+final class Version20220123023156 extends AbstractMauticMigration
+{
+    /**
+     * @throws SkipMigration
+     */
+    public function preUp(Schema $schema): void
+    {
+        $shouldRunMigration = true; // Please modify to your needs
+
+        if (!$shouldRunMigration) {
+            throw new SkipMigration('Schema includes this migration');
+        }
+    }
+
+    public function up(Schema $schema): void
+    {
+        $this->addSql(
+            'CREATE TABLE IF NOT EXISTS `products_categories` (
+                `idcategory` int(11) NOT NULL AUTO_INCREMENT,
+                `category_name` varchar(255) COLLATE utf16_spanish_ci NOT NULL,
+                `category_desc` varchar(255) COLLATE utf16_spanish_ci DEFAULT NULL,
+                `subcategories_ids` json DEFAULT NULL,
+                PRIMARY KEY (`idcategory`)
+              ) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_spanish_ci;
+              COMMIT;'
+        );
+    }
+}
