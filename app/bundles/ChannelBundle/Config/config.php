@@ -77,6 +77,21 @@ return [
                 'parent'   => 'Products',
                 'route'    => 'products_list',
             ],
+            //Orders
+            'Orders' => [
+                'priority'  => 90,
+                'iconClass' => 'fa-th-large',
+            ],
+            'Customers' => [
+                'priority' => 90,
+                'parent'   => 'Orders',
+                'route'    => 'products_list',
+            ],
+            'Order list' => [
+                'priority' => 90,
+                'parent'   => 'Orders',
+                'route'    => 'products_list',
+            ],
         ],
         'admin' => [
         ],
