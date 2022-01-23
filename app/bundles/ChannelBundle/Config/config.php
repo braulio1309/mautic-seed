@@ -32,6 +32,10 @@ return [
                 'path'       => '/channels/batch/contact/view',
                 'controller' => 'MauticChannelBundle:BatchContact:index',
             ],
+            'products_list' => [
+                'path'       => '/productos',
+                'controller' => 'DestinyProductBundle:Product:index',
+            ],
         ],
         'api' => [
             'mautic_api_messagetandard' => [
@@ -52,6 +56,26 @@ return [
                 'access'   => ['channel:messages:viewown', 'channel:messages:viewother'],
                 'parent'   => 'mautic.core.channels',
                 'priority' => 110,
+            ],
+            //Products
+            'Products' => [
+                'priority'  => 90,
+                'iconClass' => 'fa-th-large',
+            ],
+            'Product list' => [
+                'priority' => 90,
+                'parent'   => 'Products',
+                'route'    => 'products_list',
+            ],
+            'Categories' => [
+                'priority' => 90,
+                'parent'   => 'Products',
+                'route'    => 'products_list',
+            ],
+            'Variants' => [
+                'priority' => 90,
+                'parent'   => 'Products',
+                'route'    => 'products_list',
             ],
         ],
         'admin' => [
