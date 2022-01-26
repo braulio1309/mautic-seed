@@ -97,12 +97,6 @@ $container->register('session.handler.pdo', PdoSessionHandler::class)
         ['db_table' => 'sessions', 'db_username' => 'admin', 'db_password' => 'k_ds^L1Rgf6yvHT1tp6h^ltiTHmkEj'],
     ]);
 
-error_log(print_r('%mautic.db_name%'));
-error_log(print_r('%mautic.db_user%'));
-error_log(print_r('%mautic.db_password%'));
-error_log(print_r('%mautic.db_host%'));
-error_log(print_r('%mautic.db_driver%'));
-
 $container->setParameter('mautic.famework.csrf_protection', true);
 
 //Doctrine Configuration

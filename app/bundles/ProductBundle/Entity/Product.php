@@ -2,10 +2,13 @@
 
 namespace Mautic\ProductBundle\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+use Mautic\CoreBundle\Entity\CommonEntity;
+
 /**
- * Class Product.
+ * @ORM\Entity
  */
-class Product
+class Product extends CommonEntity
 {
     /**
      * @var int

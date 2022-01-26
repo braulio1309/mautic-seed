@@ -10,7 +10,7 @@ return [
         ],
         'menu' => [
             'main' => [
-                'mautic.product.title' => [
+                'Productos' => [
                     'route'    => 'products',
                     'access'   => ['channel:messages:viewown', 'channel:messages:viewother'],
                     'parent'   => 'mautic.core.channels',

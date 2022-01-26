@@ -9,7 +9,7 @@
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
-namespace Mautic\ProductBundle\Controller;
+namespace Mautic\ChannelBundle\Controller;
 
 use Doctrine\DBAL\Cache\CacheException;
 use Mautic\CampaignBundle\Entity\Campaign;
@@ -25,7 +25,6 @@ use Mautic\CampaignBundle\Model\EventModel;
 use Mautic\CoreBundle\Controller\AbstractStandardFormController;
 use Mautic\CoreBundle\Form\Type\DateRangeType;
 use Mautic\LeadBundle\Controller\EntityContactsTrait;
-use Mautic\ProductBundle\Model\ProductModel;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -218,49 +217,43 @@ class ProductController extends AbstractStandardFormController
 
         $session = $this->get('session');
         if (empty($page)) {
-            $page = $session->get('mautic.campaign.page', 1);
+            $page = $session->get('mautic.products.page', 1);
         }
 
         //set limits
-        $limit = $session->get('mautic.campaign.limit', $this->coreParametersHelper->get('default_pagelimit'));
+        $limit = $session->get('mautic.products.limit', $this->coreParametersHelper->get('default_pagelimit'));
         $start = (1 === $page) ? 0 : (($page - 1) * $limit);
         if ($start < 0) {
             $start = 0;
         }
 
-        $search = $this->request->get('search', $session->get('mautic.campaign.filter', ''));
-        $session->set('mautic.campaign.filter', $search);
+        $search = $this->request->get('search', $session->get('mautic.products.filter', ''));
+        $session->set('mautic.products.filter', $search);
 
         $filter = ['string' => $search, 'force' => []];
-
-        //$model = new ProductModel();
 
         if (!$permissions[$this->getPermissionBase().':viewother']) {
             $filter['force'][] = ['column' => 'c.createdBy', 'expr' => 'eq', 'value' => $this->user->getId()];
         }
 
-        $orderBy    = $session->get('mautic.campaign.orderby', 'c.dateModified');
-        $orderByDir = $session->get('mautic.campaign.orderbydir', 'DESC');
+        $orderBy    = $session->get('mautic.products.orderby', 'c.dateModified');
+        $orderByDir = $session->get('mautic.products.orderbydir', 'DESC');
 
         list($count, $items) = $this->getIndexItems($start, $limit, $filter, $orderBy, $orderByDir);
-        /*$em         = $this->getDoctrine()->getManager();
-        $repository = $em->getRepository('DestinyProductBundle:Product');
-        //$items     = $repository->getEntities();    */
-        // $items = $this->getModel('product.Product');
-        $items = $this->getModel('category')->getEntities(
-        [
-            'start'      => $start,
-            'limit'      => $limit,
-            'filter'     => $filter,
-            'orderBy'    => $orderBy,
-            'orderByDir' => $orderByDir,
-        ]
-    );
+
+        $em = $this->getDoctrine()->getManager();
+        $db = $em->getConnection();
+
+        $query = 'SELECT * FROM products; ';
+        $stmt  = $db->prepare($query);
+        $stmt->execute();
+        $product=$stmt->fetchAll();
+
         if ($count && $count < ($start + 1)) {
             //the number of entities are now less then the current page so redirect to the last page
             $lastPage = (1 === $count) ? 1 : (((ceil($count / $limit)) ?: 1) ?: 1);
 
-            $session->set('mautic.campaign.page', $lastPage);
+            $session->set('mautic.products.page', $lastPage);
             $returnUrl = $this->generateUrl('products_list', ['page' => $lastPage]);
 
             return $this->postActionRedirect(
@@ -268,9 +261,9 @@ class ProductController extends AbstractStandardFormController
                     [
                         'returnUrl'       => $returnUrl,
                         'viewParameters'  => ['page' => $lastPage],
-                        'contentTemplate' => $this->getTemplateName('product_list.html.php'),
+                        'contentTemplate' => 'MauticChannelBundle:Product:product_list.html.php',
                         'passthroughVars' => [
-                            'mauticContent' => 'products',
+                            'mauticContent' => 'mautic',
                         ],
                     ],
                     'index'
@@ -282,27 +275,28 @@ class ProductController extends AbstractStandardFormController
         $session->set('mautic.campaign.page', $page);
 
         $viewParameters = [
-            'permissionBase'  => $this->getPermissionBase(),
-            'mauticContent'   => $this->getJsLoadMethodPrefix(),
-            'sessionVar'      => $this->getSessionBase(),
-            'actionRoute'     => $this->getActionRoute(),
-            'indexRoute'      => $this->getIndexRoute(),
-            'modelName'       => $this->getModelName(),
-            'translationBase' => $this->getTranslationBase(),
-            'searchValue'     => $search,
-            'items'           => $items,
-            'totalItems'      => $count,
-            'page'            => $page,
-            'limit'           => $limit,
-            'permissions'     => $permissions,
-            'tmpl'            => $this->request->get('tmpl', 'index'),
+            'permissionBase'      => $this->getPermissionBase(),
+            'mauticContent'       => $this->getJsLoadMethodPrefix(),
+            'sessionVar'          => $this->getSessionBase(),
+            'actionRoute'         => $this->getActionRoute(),
+            'indexRoute'          => $this->getIndexRoute(),
+            'modelName'           => $this->getModelName(),
+            'translationBase'     => $this->getTranslationBase(),
+            'searchValue'         => $search,
+            'items'               => $items,
+            'totalItems'          => count($items),
+            'page'                => $page,
+            'limit'               => $limit,
+            'permissions'         => $permissions,
+            'tmpl'                => $this->request->get('tmpl', 'index'),
+            'product'             => $product,
         ];
 
         return $this->delegateView(
             $this->getViewArguments(
                 [
                     'viewParameters'  => $viewParameters,
-                    'contentTemplate' => $this->getTemplateName('product_list.html.php'),
+                    'contentTemplate' => 'MauticChannelBundle:Product:product_list.html.php',
                     'passthroughVars' => [
                         'mauticContent' => $this->getJsLoadMethodPrefix(),
                         'route'         => $this->generateUrl('products_list', ['page' => $page]),
@@ -323,16 +317,13 @@ class ProductController extends AbstractStandardFormController
         /** @var CampaignModel $model */
         $model    = $this->getModel('campaign');
         $campaign = $model->getEntity();
-
-        if (!$this->get('mautic.security')->isGranted('campaign:campaigns:create')) {
-            return $this->accessDenied();
-        }
+        $product  = $this->getModel('channel.product')->getEntity();
 
         //set the page we came from
         $page = $this->get('session')->get('mautic.campaign.page', 1);
 
         $options = $this->getEntityFormOptions();
-        $action  = $this->generateUrl('mautic_campaign_action', ['objectAction' => 'new']);
+        $action  = $this->generateUrl('products_create', ['objectAction' => 'new']);
         $form    = $model->createForm($campaign, $this->get('form.factory'), $action, $options);
 
         ///Check for a submitted form and process it
@@ -405,20 +396,21 @@ class ProductController extends AbstractStandardFormController
             'viewParameters' => [
                 'permissionBase'  => $model->getPermissionBase(),
                 'mauticContent'   => 'campaign',
-                'actionRoute'     => 'mautic_campaign_action',
-                'indexRoute'      => 'mautic_campaign_index',
+                'actionRoute'     => 'products_create',
+                'indexRoute'      => 'products_create',
                 'tablePrefix'     => 'c',
                 'modelName'       => 'campaign',
                 'translationBase' => $this->getTranslationBase(),
                 'tmpl'            => $this->request->isXmlHttpRequest() ? $this->request->get('tmpl', 'index') : 'index',
                 'entity'          => $campaign,
                 'form'            => $this->getFormView($form, 'new'),
+                'product'         => $product,
             ],
-            'contentTemplate' => 'MauticCampaignBundle:Campaign:form.html.php',
+            'contentTemplate' => 'MauticChannelBundle:Product:product_create.html.php',
             'passthroughVars' => [
-                'mauticContent' => 'campaign',
+                'mauticContent' => 'product',
                 'route'         => $this->generateUrl(
-                    'mautic_campaign_action',
+                    'products_create',
                     [
                         'objectAction' => (!empty($valid) ? 'edit' : 'new'), //valid means a new form was applied
                         'objectId'     => ($campaign) ? $campaign->getId() : 0,

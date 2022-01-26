@@ -9,140 +9,117 @@
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
-namespace Mautic\LeadBundle\Model;
+namespace Mautic\ProductBundle\Model;
 
-use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
-use Mautic\CoreBundle\Form\RequestTrait;
-use Mautic\CoreBundle\Helper\DateTimeHelper;
-use Mautic\CoreBundle\Helper\InputHelper;
-use Mautic\CoreBundle\Model\AjaxLookupModelInterface;
-use Mautic\CoreBundle\Model\FormModel as CommonFormModel;
-use Mautic\EmailBundle\Helper\EmailValidator;
-use Mautic\LeadBundle\Deduplicate\CompanyDeduper;
-use Mautic\LeadBundle\Entity\Company;
+use Doctrine\ORM\PersistentCollection;
+use Mautic\CampaignBundle\CampaignEvents;
+use Mautic\CampaignBundle\Entity\Campaign;
+use Mautic\CampaignBundle\Entity\Event;
+use Mautic\CampaignBundle\Entity\Lead as CampaignLead;
+use Mautic\CampaignBundle\Event as Events;
+use Mautic\CampaignBundle\EventCollector\EventCollector;
+use Mautic\CampaignBundle\Executioner\ContactFinder\Limiter\ContactLimiter;
+use Mautic\CampaignBundle\Form\Type\CampaignType;
+use Mautic\CampaignBundle\Helper\ChannelExtractor;
+use Mautic\CampaignBundle\Membership\MembershipBuilder;
+use Mautic\CoreBundle\Helper\Chart\ChartQuery;
+use Mautic\CoreBundle\Helper\Chart\LineChart;
+use Mautic\CoreBundle\Model\CommonModel;
+use Mautic\FormBundle\Entity\Form;
+use Mautic\FormBundle\Model\FormModel;
 use Mautic\LeadBundle\Entity\Lead;
-use Mautic\LeadBundle\Event\CompanyEvent;
-use Mautic\LeadBundle\Exception\UniqueFieldNotFoundException;
-use Mautic\LeadBundle\Form\Type\CompanyType;
-use Mautic\LeadBundle\LeadEvents;
-use Symfony\Component\EventDispatcher\Event;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Mautic\LeadBundle\Model\ListModel;
+use Mautic\LeadBundle\Tracker\ContactTracker;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
-/**
- * Class CompanyModel.
- */
-class CompanyModel extends CommonFormModel implements AjaxLookupModelInterface
+class ProductModel extends CommonModel
 {
-    use DefaultValueTrait;
-    use RequestTrait;
+    /**
+     * @var ListModel
+     */
+    protected $leadListModel;
 
     /**
-     * @var Session
+     * @var FormModel
      */
-    protected $session;
+    protected $formModel;
 
     /**
-     * @var FieldModel
+     * @var EventCollector
      */
-    protected $leadFieldModel;
+    private $eventCollector;
 
     /**
-     * @var array
+     * @var MembershipBuilder
      */
-    protected $companyFields;
+    private $membershipBuilder;
 
     /**
-     * @var EmailValidator
+     * @var ContactTracker
      */
-    protected $emailValidator;
+    private $contactTracker;
 
-    /**
-     * @var array
-     */
-    private $fields = [];
-
-    /**
-     * @var bool
-     */
-    private $repoSetup = false;
-
-    /**
-     * @var CompanyDeduper
-     */
-    private $companyDeduper;
-
-    /**
-     * CompanyModel constructor.
-     */
-    public function __construct(FieldModel $leadFieldModel, Session $session, EmailValidator $validator, CompanyDeduper $companyDeduper)
-    {
-        $this->leadFieldModel = $leadFieldModel;
-        $this->session        = $session;
-        $this->emailValidator = $validator;
-        $this->companyDeduper = $companyDeduper;
+    public function __construct(
+        ListModel $leadListModel,
+        FormModel $formModel,
+        EventCollector $eventCollector,
+        MembershipBuilder $membershipBuilder,
+        ContactTracker $contactTracker
+    ) {
+        $this->leadListModel     = $leadListModel;
+        $this->formModel         = $formModel;
+        $this->eventCollector    = $eventCollector;
+        $this->membershipBuilder = $membershipBuilder;
+        $this->contactTracker    = $contactTracker;
     }
 
     /**
-     * @param Company $entity
-     * @param bool    $unlock
+     * Get a list of entities.
+     *
+     * @return Paginator
      */
-    public function saveEntity($entity, $unlock = true)
+    public function getEntities(array $args = [])
     {
-        // Update leads primary company name
-        $this->setEntityDefaultValues($entity, 'company');
+        $q = $this
+            ->createQueryBuilder('c')
+            ->select('c');
 
-        parent::saveEntity($entity, $unlock);
+        $args['qb'] = $q;
+
+        return parent::getEntities($args);
     }
 
-    /**
-     * Save an array of entities.
-     *
-     * @param array $entities
-     * @param bool  $unlock
-     *
-     * @return array
-     */
-    public function saveEntities($entities, $unlock = true)
-    {
-        // Update leads primary company name
-        foreach ($entities as $entity) {
-            $this->setEntityDefaultValues($entity, 'company');
-        }
-        parent::saveEntities($entities, $unlock);
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @return \Mautic\LeadBundle\Entity\CompanyRepository
-     */
     public function getRepository()
     {
-        $repo =  $this->em->getRepository('MauticLeadBundle:Company');
-        if (!$this->repoSetup) {
-            $this->repoSetup = true;
-            $repo->setDispatcher($this->dispatcher);
-            //set the point trigger model in order to get the color code for the lead
-            $fields = $this->leadFieldModel->getFieldList(true, true, ['isPublished' => true, 'object' => 'company']);
-
-            $searchFields = [];
-            foreach ($fields as $groupFields) {
-                $searchFields = array_merge($searchFields, array_keys($groupFields));
-            }
-            $repo->setAvailableSearchFields($searchFields);
-        }
+        $repo = $this->em->getRepository('MauticCampaignBundle:Campaign');
+        $repo->setCurrentUser($this->userHelper->getUser());
 
         return $repo;
     }
 
     /**
-     * {@inheritdoc}
+     * @return \Mautic\CampaignBundle\Entity\EventRepository
      */
-    public function getPermissionBase()
+    public function getEventRepository()
     {
-        // We are using lead:leads in the CompanyController so this should match to prevent a BC break
-        return 'lead:leads';
+        return $this->em->getRepository('MauticCampaignBundle:Event');
+    }
+
+    /**
+     * @return \Mautic\CampaignBundle\Entity\LeadRepository
+     */
+    public function getCampaignLeadRepository()
+    {
+        return $this->em->getRepository('MauticCampaignBundle:Lead');
+    }
+
+    /**
+     * @return \Mautic\CampaignBundle\Entity\LeadEventLogRepository
+     */
+    public function getCampaignLeadEventLogRepository()
+    {
+        return $this->em->getRepository('MauticCampaignBundle:LeadEventLog');
     }
 
     /**
@@ -150,144 +127,61 @@ class CompanyModel extends CommonFormModel implements AjaxLookupModelInterface
      *
      * @return string
      */
-    public function getNameGetter()
+    public function getPermissionBase()
     {
-        return 'getPrimaryIdentifier';
+        return 'campaign:campaigns';
     }
 
     /**
      * {@inheritdoc}
      *
-     * @throws MethodNotAllowedHttpException
+     * @param object      $entity
+     * @param object      $formFactory
+     * @param string|null $action
+     * @param array       $options
+     *
+     * @return mixed
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     public function createForm($entity, $formFactory, $action = null, $options = [])
     {
-        if (!$entity instanceof Company) {
-            throw new MethodNotAllowedHttpException(['Company']);
+        if (!$entity instanceof Campaign) {
+            throw new MethodNotAllowedHttpException(['Campaign']);
         }
+
         if (!empty($action)) {
             $options['action'] = $action;
         }
 
-        return $formFactory->create(CompanyType::class, $entity, $options);
+        return $formFactory->create(CampaignType::class, $entity, $options);
     }
 
     /**
-     * {@inheritdoc}
+     * Get a specific entity or generate a new one if id is empty.
      *
-     * @return Company|null
+     * @param $id
+     *
+     * @return Campaign|null
      */
     public function getEntity($id = null)
     {
         if (null === $id) {
-            return new Company();
+            return new Campaign();
         }
 
         return parent::getEntity($id);
     }
 
     /**
-     * Populates custom field values for updating the company.
-     *
-     * @param bool|false $overwriteWithBlank
+     * @param object $entity
      */
-    public function setFieldValues(Company $company, array $data, $overwriteWithBlank = false)
+    public function deleteEntity($entity)
     {
-        //save the field values
-        $fieldValues = $company->getFields();
+        // Null all the event parents for this campaign to avoid database constraints
+        $this->getEventRepository()->nullEventParents($entity->getId());
 
-        if (empty($fieldValues)) {
-            // Lead is new or they haven't been populated so let's build the fields now
-            if (empty($this->fields)) {
-                $this->fields = $this->leadFieldModel->getEntities(
-                    [
-                        'filter'         => ['object' => 'company'],
-                        'hydration_mode' => 'HYDRATE_ARRAY',
-                    ]
-                );
-                $this->fields = $this->organizeFieldsByGroup($this->fields);
-            }
-            $fieldValues = $this->fields;
-        }
-
-        //update existing values
-        foreach ($fieldValues as &$groupFields) {
-            foreach ($groupFields as $alias => &$field) {
-                if (!isset($field['value'])) {
-                    $field['value'] = null;
-                }
-                // Only update fields that are part of the passed $data array
-                if (array_key_exists($alias, $data)) {
-                    $curValue = $field['value'];
-                    $newValue = $data[$alias];
-
-                    if (is_array($newValue)) {
-                        $newValue = implode('|', $newValue);
-                    }
-
-                    if ($curValue !== $newValue && (strlen($newValue) > 0 || (0 === strlen($newValue) && $overwriteWithBlank))) {
-                        $field['value'] = $newValue;
-                        $company->addUpdatedField($alias, $newValue, $curValue);
-                    }
-                }
-            }
-        }
-        $company->setFields($fieldValues);
-    }
-
-    /**
-     * Get list of entities for autopopulate fields.
-     *
-     * @param $type
-     * @param $filter
-     * @param $limit
-     * @param $start
-     *
-     * @return array
-     */
-    public function getLookupResults($type, $filter = '', $limit = 10, $start = 0)
-    {
-        $results = [];
-        switch ($type) {
-            case 'companyfield':
-            case 'lead.company':
-                if ('lead.company' === $type) {
-                    $column    = 'companyname';
-                    $filterVal = $filter;
-                } else {
-                    if (is_array($filter)) {
-                        $column    = $filter[0];
-                        $filterVal = $filter[1];
-                    } else {
-                        $column = $filter;
-                    }
-                }
-
-                $expr      = new ExpressionBuilder($this->em->getConnection());
-                $composite = $expr->andX();
-                $composite->add(
-                    $expr->like("comp.$column", ':filterVar')
-                );
-
-                // Validate owner permissions
-                if (!$this->security->isGranted('lead:leads:viewother')) {
-                    $composite->add(
-                        $expr->orX(
-                            $expr->andX(
-                                $expr->isNull('comp.owner_id'),
-                                $expr->eq('comp.created_by', (int) $this->userHelper->getUser()->getId())
-                            ),
-                            $expr->eq('comp.owner_id', (int) $this->userHelper->getUser()->getId())
-                        )
-                    );
-                }
-
-                $results = $this->getRepository()->getAjaxSimpleList($composite, ['filterVar' => $filterVal.'%'], $column);
-
-                break;
-        }
-
-        return $results;
+        parent::deleteEntity($entity);
     }
 
     /**
@@ -300,24 +194,28 @@ class CompanyModel extends CommonFormModel implements AjaxLookupModelInterface
      *
      * @throws \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException
      */
-    protected function dispatchEvent($action, &$entity, $isNew = false, Event $event = null)
+    protected function dispatchEvent($action, &$entity, $isNew = false, \Symfony\Component\EventDispatcher\Event $event = null)
     {
-        if (!$entity instanceof Company) {
-            throw new MethodNotAllowedHttpException(['Email']);
+        if ($entity instanceof \Mautic\CampaignBundle\Entity\Lead) {
+            return;
+        }
+
+        if (!$entity instanceof Campaign) {
+            throw new MethodNotAllowedHttpException(['Campaign']);
         }
 
         switch ($action) {
             case 'pre_save':
-                $name = LeadEvents::COMPANY_PRE_SAVE;
+                $name = CampaignEvents::CAMPAIGN_PRE_SAVE;
                 break;
             case 'post_save':
-                $name = LeadEvents::COMPANY_POST_SAVE;
+                $name = CampaignEvents::CAMPAIGN_POST_SAVE;
                 break;
             case 'pre_delete':
-                $name = LeadEvents::COMPANY_PRE_DELETE;
+                $name = CampaignEvents::CAMPAIGN_PRE_DELETE;
                 break;
             case 'post_delete':
-                $name = LeadEvents::COMPANY_POST_DELETE;
+                $name = CampaignEvents::CAMPAIGN_POST_DELETE;
                 break;
             default:
                 return null;
@@ -325,8 +223,7 @@ class CompanyModel extends CommonFormModel implements AjaxLookupModelInterface
 
         if ($this->dispatcher->hasListeners($name)) {
             if (empty($event)) {
-                $event = new CompanyEvent($entity, $isNew);
-                $event->setEntityManager($this->em);
+                $event = new Events\CampaignEvent($entity, $isNew);
             }
 
             $this->dispatcher->dispatch($name, $event);
@@ -338,218 +235,621 @@ class CompanyModel extends CommonFormModel implements AjaxLookupModelInterface
     }
 
     /**
-     * @return array
-     */
-    public function fetchCompanyFields()
-    {
-        if (empty($this->companyFields)) {
-            $this->companyFields = $this->leadFieldModel->getEntities(
-                [
-                    'filter' => [
-                        'force' => [
-                            [
-                                'column' => 'f.isPublished',
-                                'expr'   => 'eq',
-                                'value'  => true,
-                            ],
-                            [
-                                'column' => 'f.object',
-                                'expr'   => 'eq',
-                                'value'  => 'company',
-                            ],
-                        ],
-                    ],
-                    'hydration_mode' => 'HYDRATE_ARRAY',
-                ]
-            );
-        }
-
-        return $this->companyFields;
-    }
-
-    /**
-     * @param $mappedFields
-     * @param $data
+     * @param $sessionEvents
+     * @param $sessionConnections
+     * @param $deletedEvents
      *
      * @return array
      */
-    public function extractCompanyDataFromImport(array &$mappedFields, array &$data)
+    public function setEvents(Campaign $entity, $sessionEvents, $sessionConnections, $deletedEvents)
     {
-        $companyData    = [];
-        $companyFields  = [];
-        $internalFields = $this->fetchCompanyFields();
+        $existingEvents = $entity->getEvents()->toArray();
+        $events         = [];
+        $hierarchy      = [];
 
-        if (!isset($mappedFields['companyname']) && isset($mappedFields['company'])) {
-            $mappedFields['companyname'] = $mappedFields['company'];
+        foreach ($sessionEvents as $properties) {
+            $isNew = (!empty($properties['id']) && isset($existingEvents[$properties['id']])) ? false : true;
+            $event = !$isNew ? $existingEvents[$properties['id']] : new Event();
 
-            unset($mappedFields['company']);
-        }
-
-        foreach ($mappedFields as $mauticField => $importField) {
-            foreach ($internalFields as $entityField) {
-                if ($entityField['alias'] === $mauticField) {
-                    $companyData[$importField]   = $data[$importField];
-                    $companyFields[$mauticField] = $importField;
-                    unset($data[$importField]);
-                    unset($mappedFields[$mauticField]);
-                    break;
+            foreach ($properties as $f => $v) {
+                if ('id' == $f && 0 === strpos($v, 'new')) {
+                    //set the temp ID used to be able to match up connections
+                    $event->setTempId($v);
                 }
-            }
-        }
 
-        return [$companyFields, $companyData];
-    }
-
-    /**
-     * @param array $fields
-     * @param array $data
-     * @param null  $owner
-     * @param bool  $skipIfExists
-     *
-     * @return bool|null
-     *
-     * @throws \Exception
-     */
-    public function import($fields, $data, $owner = null, $skipIfExists = false)
-    {
-        $company = $this->importCompany($fields, $data, $owner, false, $skipIfExists);
-
-        if (null === $company) {
-            throw new \Exception($this->translator->trans('mautic.company.error.notfound', [], 'flashes'));
-        }
-
-        $merged = !$company->isNew();
-
-        $this->saveEntity($company);
-
-        return $merged;
-    }
-
-    /**
-     * @param array $fields
-     * @param array $data
-     * @param null  $owner
-     *
-     * @return bool|null
-     *
-     * @throws \Exception
-     */
-    public function importCompany($fields, $data, $owner = null, $persist = true, $skipIfExists = false)
-    {
-        try {
-            $duplicateCompanies = $this->companyDeduper->checkForDuplicateCompanies($this->getFieldData($fields, $data));
-        } catch (UniqueFieldNotFoundException $uniqueFieldNotFoundException) {
-            return null;
-        }
-
-        $company = !empty($duplicateCompanies) ? $duplicateCompanies[0] : new Company();
-
-        if (!empty($fields['dateAdded']) && !empty($data[$fields['dateAdded']])) {
-            $dateAdded = new DateTimeHelper($data[$fields['dateAdded']]);
-            $company->setDateAdded($dateAdded->getUtcDateTime());
-        }
-        unset($fields['dateAdded']);
-
-        if (!empty($fields['dateModified']) && !empty($data[$fields['dateModified']])) {
-            $dateModified = new DateTimeHelper($data[$fields['dateModified']]);
-            $company->setDateModified($dateModified->getUtcDateTime());
-        }
-        unset($fields['dateModified']);
-
-        if (!empty($fields['createdByUser']) && !empty($data[$fields['createdByUser']])) {
-            $userRepo      = $this->em->getRepository('MauticUserBundle:User');
-            $createdByUser = $userRepo->findByIdentifier($data[$fields['createdByUser']]);
-            if (null !== $createdByUser) {
-                $company->setCreatedBy($createdByUser);
-            }
-        }
-        unset($fields['createdByUser']);
-
-        if (!empty($fields['modifiedByUser']) && !empty($data[$fields['modifiedByUser']])) {
-            $userRepo       = $this->em->getRepository('MauticUserBundle:User');
-            $modifiedByUser = $userRepo->findByIdentifier($data[$fields['modifiedByUser']]);
-            if (null !== $modifiedByUser) {
-                $company->setModifiedBy($modifiedByUser);
-            }
-        }
-        unset($fields['modifiedByUser']);
-
-        if (null !== $owner) {
-            $company->setOwner($this->em->getReference('MauticUserBundle:User', $owner));
-        }
-
-        $fieldData = $this->getFieldData($fields, $data);
-
-        $fieldErrors = [];
-
-        foreach ($this->fetchCompanyFields() as $entityField) {
-            // Skip If value already exists
-            if ($skipIfExists && !$company->isNew() && !empty($company->getProfileFields()[$entityField['alias']])) {
-                unset($fieldData[$entityField['alias']]);
-                continue;
-            }
-
-            if (isset($fieldData[$entityField['alias']])) {
-                $fieldData[$entityField['alias']] = InputHelper::_($fieldData[$entityField['alias']], 'string');
-
-                if ('NULL' === $fieldData[$entityField['alias']]) {
-                    $fieldData[$entityField['alias']] = null;
-
+                if (in_array($f, ['id', 'parent'])) {
                     continue;
                 }
 
-                try {
-                    $this->cleanFields($fieldData, $entityField);
-                } catch (\Exception $exception) {
-                    $fieldErrors[] = $entityField['alias'].': '.$exception->getMessage();
+                $func = 'set'.ucfirst($f);
+                if (method_exists($event, $func)) {
+                    $event->$func($v);
+                }
+            }
+
+            ChannelExtractor::setChannel($event, $event, $this->eventCollector->getEventConfig($event));
+
+            $event->setCampaign($entity);
+            $events[$properties['id']] = $event;
+        }
+
+        foreach ($deletedEvents as $deleteMe) {
+            if (isset($existingEvents[$deleteMe])) {
+                // Remove child from parent
+                $parent = $existingEvents[$deleteMe]->getParent();
+                if ($parent) {
+                    $parent->removeChild($existingEvents[$deleteMe]);
+                    $existingEvents[$deleteMe]->removeParent();
                 }
 
-                // Skip if the value is in the CSV row
-                continue;
-            } elseif ($company->isNew() && $entityField['defaultValue']) {
-                // Fill in the default value if any
-                $fieldData[$entityField['alias']] = ('multiselect' === $entityField['type']) ? [$entityField['defaultValue']] : $entityField['defaultValue'];
+                $entity->removeEvent($existingEvents[$deleteMe]);
+
+                unset($events[$deleteMe]);
             }
         }
 
-        if ($fieldErrors) {
-            $fieldErrors = implode("\n", $fieldErrors);
+        $relationships = [];
 
-            throw new \Exception($fieldErrors);
+        if (isset($sessionConnections['connections'])) {
+            foreach ($sessionConnections['connections'] as $connection) {
+                $source = $connection['sourceId'];
+                $target = $connection['targetId'];
+
+                if (in_array($source, ['lists', 'forms'])) {
+                    // Only concerned with events and not sources
+                    continue;
+                }
+
+                if (isset($connection['anchors']['source'])) {
+                    $sourceDecision = $connection['anchors']['source'];
+                } else {
+                    $sourceDecision = (!empty($connection['anchors'][0])) ? $connection['anchors'][0]['endpoint'] : null;
+                }
+
+                if ('leadsource' == $sourceDecision) {
+                    // Lead source connection that does not matter
+                    continue;
+                }
+
+                $relationships[$target] = [
+                    'parent'   => $source,
+                    'decision' => $sourceDecision,
+                ];
+            }
         }
 
-        // All clear
-        foreach ($fieldData as $field => $value) {
-            $company->addUpdatedField($field, $value);
+        // Assign parent/child relationships
+        foreach ($events as $id => $e) {
+            if (isset($relationships[$id])) {
+                // Has a parent
+                $anchor = in_array($relationships[$id]['decision'], ['yes', 'no']) ? $relationships[$id]['decision'] : null;
+                $events[$id]->setDecisionPath($anchor);
+
+                $parentId = $relationships[$id]['parent'];
+                $events[$id]->setParent($events[$parentId]);
+
+                $hierarchy[$id] = $parentId;
+            } elseif ($events[$id]->getParent()) {
+                // No longer has a parent so null it out
+
+                // Remove decision so that it doesn't affect execution
+                $events[$id]->setDecisionPath(null);
+
+                // Remove child from parent
+                $parent = $events[$id]->getParent();
+                $parent->removeChild($events[$id]);
+
+                // Remove parent from child
+                $events[$id]->removeParent();
+                $hierarchy[$id] = 'null';
+            } else {
+                // Is a parent
+                $hierarchy[$id] = 'null';
+
+                // Remove decision so that it doesn't affect execution
+                $events[$id]->setDecisionPath(null);
+            }
         }
 
-        if ($persist) {
-            $this->saveEntity($company);
+        $entity->addEvents($events);
+
+        //set event order used when querying the events
+        $this->buildOrder($hierarchy, $events, $entity);
+
+        uasort(
+            $events,
+            function ($a, $b) {
+                $aOrder = $a->getOrder();
+                $bOrder = $b->getOrder();
+                if ($aOrder == $bOrder) {
+                    return 0;
+                }
+
+                return ($aOrder < $bOrder) ? -1 : 1;
+            }
+        );
+
+        // Persist events if campaign is being edited
+        if ($entity->getId()) {
+            $this->getEventRepository()->saveEntities($events);
         }
 
-        return $company;
-    }
-
-    public function checkForDuplicateCompanies(array $queryFields)
-    {
-        return $this->companyDeduper->checkForDuplicateCompanies($queryFields);
+        return $events;
     }
 
     /**
-     * @param array $fields
-     * @param array $data
+     * @param      $entity
+     * @param      $settings
+     * @param bool $persist
+     * @param null $events
+     *
+     * @return array
      */
-    protected function getFieldData($fields, $data): array
+    public function setCanvasSettings($entity, $settings, $persist = true, $events = null)
     {
-        // Set profile data using the form so that values are validated
-        $fieldData = [];
-        foreach ($fields as $importField => $entityField) {
-            // Prevent overwriting existing data with empty data
-            if (array_key_exists($importField, $data) && !is_null($data[$importField]) && '' != $data[$importField]) {
-                $fieldData[$entityField] = $data[$importField];
+        if (null === $events) {
+            $events = $entity->getEvents();
+        }
+
+        $tempIds = [];
+
+        foreach ($events as $e) {
+            if ($e instanceof Event) {
+                $tempIds[$e->getTempId()] = $e->getId();
+            } else {
+                $tempIds[$e['tempId']] = $e['id'];
             }
         }
 
-        return $fieldData;
+        if (!isset($settings['nodes'])) {
+            $settings['nodes'] = [];
+        }
+
+        foreach ($settings['nodes'] as &$node) {
+            if (false !== strpos($node['id'], 'new')) {
+                // Find the real one and update the node
+                $node['id'] = str_replace($node['id'], $tempIds[$node['id']], $node['id']);
+            }
+        }
+
+        if (!isset($settings['connections'])) {
+            $settings['connections'] = [];
+        }
+
+        foreach ($settings['connections'] as &$connection) {
+            // Check source
+            if (false !== strpos($connection['sourceId'], 'new')) {
+                // Find the real one and update the node
+                $connection['sourceId'] = str_replace($connection['sourceId'], $tempIds[$connection['sourceId']], $connection['sourceId']);
+            }
+
+            // Check target
+            if (false !== strpos($connection['targetId'], 'new')) {
+                // Find the real one and update the node
+                $connection['targetId'] = str_replace($connection['targetId'], $tempIds[$connection['targetId']], $connection['targetId']);
+            }
+
+            // Rebuild anchors
+            if (!isset($connection['anchors']['source'])) {
+                $anchors = [];
+                foreach ($connection['anchors'] as $k => $anchor) {
+                    $type           = (0 === $k) ? 'source' : 'target';
+                    $anchors[$type] = $anchor['endpoint'];
+                }
+
+                $connection['anchors'] = $anchors;
+            }
+        }
+
+        $entity->setCanvasSettings($settings);
+
+        if ($persist) {
+            $this->getRepository()->saveEntity($entity);
+        }
+
+        return $settings;
+    }
+
+    /**
+     * Get list of sources for a campaign.
+     *
+     * @param $campaign
+     *
+     * @return array
+     */
+    public function getLeadSources($campaign)
+    {
+        $campaignId = ($campaign instanceof Campaign) ? $campaign->getId() : $campaign;
+
+        $sources = [];
+
+        // Lead lists
+        $sources['lists'] = $this->getRepository()->getCampaignListSources($campaignId);
+
+        // Forms
+        $sources['forms'] = $this->getRepository()->getCampaignFormSources($campaignId);
+
+        return $sources;
+    }
+
+    /**
+     * Add and/or delete lead sources from a campaign.
+     *
+     * @param $entity
+     * @param $addedSources
+     * @param $deletedSources
+     */
+    public function setLeadSources(Campaign $entity, $addedSources, $deletedSources)
+    {
+        foreach ($addedSources as $type => $sources) {
+            foreach ($sources as $id => $label) {
+                switch ($type) {
+                    case 'lists':
+                        $entity->addList($this->em->getReference('MauticLeadBundle:LeadList', $id));
+                        break;
+                    case 'forms':
+                        $entity->addForm($this->em->getReference('MauticFormBundle:Form', $id));
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        foreach ($deletedSources as $type => $sources) {
+            foreach ($sources as $id => $label) {
+                switch ($type) {
+                    case 'lists':
+                        $entity->removeList($this->em->getReference('MauticLeadBundle:LeadList', $id));
+                        break;
+                    case 'forms':
+                        $entity->removeForm($this->em->getReference('MauticFormBundle:Form', $id));
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Get a list of source choices.
+     *
+     * @param string $sourceType
+     * @param bool   $globalOnly
+     *
+     * @return array
+     */
+    public function getSourceLists($sourceType = null, $globalOnly = false)
+    {
+        $choices = [];
+        switch ($sourceType) {
+            case 'lists':
+            case null:
+                $choices['lists'] = [];
+                $lists            = $globalOnly ? $this->leadListModel->getGlobalLists() : $this->leadListModel->getUserLists();
+
+                if ($lists) {
+                    foreach ($lists as $list) {
+                        $choices['lists'][$list['id']] = $list['name'];
+                    }
+                }
+
+            // no break
+            case 'forms':
+            case null:
+                $choices['forms'] = [];
+                $viewOther        = $this->security->isGranted('form:forms:viewother');
+                $repo             = $this->formModel->getRepository();
+                $repo->setCurrentUser($this->userHelper->getUser());
+
+                $forms = $repo->getFormList('', 0, 0, $viewOther, 'campaign');
+
+                if ($forms) {
+                    foreach ($forms as $form) {
+                        $choices['forms'][$form['id']] = $form['name'];
+                    }
+                }
+        }
+
+        foreach ($choices as &$typeChoices) {
+            asort($typeChoices);
+        }
+
+        return (null == $sourceType) ? $choices : $choices[$sourceType];
+    }
+
+    /**
+     * @param mixed $form
+     *
+     * @return array
+     */
+    public function getCampaignsByForm($form)
+    {
+        $formId = ($form instanceof Form) ? $form->getId() : $form;
+
+        return $this->getRepository()->findByFormId($formId);
+    }
+
+    /**
+     * Gets the campaigns a specific lead is part of.
+     *
+     * @param Lead $lead
+     * @param bool $forList
+     *
+     * @return mixed
+     */
+    public function getLeadCampaigns(Lead $lead = null, $forList = false)
+    {
+        static $campaigns = [];
+
+        if (null === $lead) {
+            $lead = $this->contactTracker->getContact();
+        }
+
+        if (!isset($campaigns[$lead->getId()])) {
+            $repo   = $this->getRepository();
+            $leadId = $lead->getId();
+            //get the campaigns the lead is currently part of
+            $campaigns[$leadId] = $repo->getPublishedCampaigns(
+                null,
+                $lead->getId(),
+                $forList,
+                $this->security->isGranted($this->getPermissionBase().':viewother')
+            );
+        }
+
+        return $campaigns[$lead->getId()];
+    }
+
+    /**
+     * Gets a list of published campaigns.
+     *
+     * @param bool $forList
+     *
+     * @return array
+     */
+    public function getPublishedCampaigns($forList = false)
+    {
+        static $campaigns = [];
+
+        if (empty($campaigns)) {
+            $campaigns = $this->getRepository()->getPublishedCampaigns(
+                null,
+                null,
+                $forList,
+                $this->security->isGranted($this->getPermissionBase().':viewother')
+            );
+        }
+
+        return $campaigns;
+    }
+
+    /**
+     * Saves a campaign lead, logs the error if saving fails.
+     *
+     * @return bool
+     */
+    public function saveCampaignLead(CampaignLead $campaignLead)
+    {
+        try {
+            $this->getCampaignLeadRepository()->saveEntity($campaignLead);
+
+            return true;
+        } catch (\Exception $exception) {
+            $this->logger->log('error', $exception->getMessage(), ['exception' => $exception]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Get details of leads in a campaign.
+     *
+     * @param      $campaign
+     * @param null $leads
+     *
+     * @return mixed
+     */
+    public function getLeadDetails($campaign, $leads = null)
+    {
+        $campaignId = ($campaign instanceof Campaign) ? $campaign->getId() : $campaign;
+
+        if ($leads instanceof PersistentCollection) {
+            $leads = array_keys($leads->toArray());
+        }
+
+        return $this->em->getRepository('MauticCampaignBundle:Lead')->getLeadDetails($campaignId, $leads);
+    }
+
+    /**
+     * Get leads for a campaign.  If $event is passed in, only leads who have not triggered the event are returned.
+     *
+     * @param Campaign $campaign
+     * @param array    $event
+     *
+     * @return mixed
+     */
+    public function getCampaignLeads($campaign, $event = null)
+    {
+        $campaignId = ($campaign instanceof Campaign) ? $campaign->getId() : $campaign;
+        $eventId    = (is_array($event) && isset($event['id'])) ? $event['id'] : $event;
+
+        return $this->em->getRepository('MauticCampaignBundle:Lead')->getLeads($campaignId, $eventId);
+    }
+
+    /**
+     * @param $id
+     *
+     * @return array
+     */
+    public function getCampaignListIds($id)
+    {
+        return $this->getRepository()->getCampaignListIds((int) $id);
+    }
+
+    /**
+     * Get line chart data of leads added to campaigns.
+     *
+     * @param string $unit          {@link php.net/manual/en/function.date.php#refsect1-function.date-parameters}
+     * @param string $dateFormat
+     * @param array  $filter
+     * @param bool   $canViewOthers
+     *
+     * @return array
+     */
+    public function getLeadsAddedLineChartData($unit, \DateTime $dateFrom, \DateTime $dateTo, $dateFormat = null, $filter = [], $canViewOthers = true)
+    {
+        $chart = new LineChart($unit, $dateFrom, $dateTo, $dateFormat);
+        $query = new ChartQuery($this->em->getConnection(), $dateFrom, $dateTo);
+        $q     = $query->prepareTimeDataQuery('campaign_leads', 'date_added', $filter);
+
+        if (!$canViewOthers) {
+            $q->join('t', MAUTIC_TABLE_PREFIX.'campaigns', 'c', 'c.id = c.campaign_id')
+                ->andWhere('c.created_by = :userId')
+                ->setParameter('userId', $this->userHelper->getUser()->getId());
+        }
+
+        $data = $query->loadAndBuildTimeData($q);
+        $chart->setDataset($this->translator->trans('mautic.campaign.campaign.leads'), $data);
+
+        return $chart->render();
+    }
+
+    /**
+     * Get line chart data of hits.
+     *
+     * @param string|null $unit       {@link php.net/manual/en/function.date.php#refsect1-function.date-parameters}
+     * @param string      $dateFormat
+     * @param array       $filter
+     *
+     * @return array
+     */
+    public function getCampaignMetricsLineChartData($unit, \DateTime $dateFrom, \DateTime $dateTo, $dateFormat = null, $filter = [])
+    {
+        $events = [];
+        $chart  = new LineChart($unit, $dateFrom, $dateTo, $dateFormat);
+        $query  = new ChartQuery($this->em->getConnection(), $dateFrom, $dateTo);
+
+        $contacts = $query->fetchTimeData('campaign_leads', 'date_added', $filter);
+        $chart->setDataset($this->translator->trans('mautic.campaign.campaign.leads'), $contacts);
+
+        if (isset($filter['campaign_id'])) {
+            $rawEvents = $this->getEventRepository()->getCampaignEvents($filter['campaign_id']);
+
+            // Group events by type
+            if ($rawEvents) {
+                foreach ($rawEvents as $event) {
+                    if (isset($events[$event['type']])) {
+                        $events[$event['type']][] = $event['id'];
+                    } else {
+                        $events[$event['type']] = [$event['id']];
+                    }
+                }
+            }
+
+            if ($events) {
+                foreach ($events as $type => $eventIds) {
+                    $filter['event_id'] = $eventIds;
+
+                    if ($this->coreParametersHelper->get('campaign_use_summary')) {
+                        $q       = $query->prepareTimeDataQuery('campaign_summary', 'date_triggered', $filter, 'triggered_count + non_action_path_taken_count', 'sum');
+                        $rawData = $q->execute()->fetchAll();
+                    } else {
+                        // Exclude failed events
+                        $failedSq = $this->em->getConnection()->createQueryBuilder();
+                        $failedSq->select('null')
+                            ->from(MAUTIC_TABLE_PREFIX.'campaign_lead_event_failed_log', 'fe')
+                            ->where(
+                                $failedSq->expr()->eq('fe.log_id', 't.id')
+                            );
+                        $filter['failed_events'] = [
+                            'subquery' => sprintf('NOT EXISTS (%s)', $failedSq->getSQL()),
+                        ];
+
+                        $q       = $query->prepareTimeDataQuery('campaign_lead_event_log', 'date_triggered', $filter);
+                        $rawData = $q->execute()->fetchAll();
+                    }
+
+                    if (!empty($rawData)) {
+                        $triggers = $query->completeTimeData($rawData);
+                        $chart->setDataset($this->translator->trans('mautic.campaign.'.$type), $triggers);
+                    }
+                }
+                unset($filter['event_id']);
+            }
+        }
+
+        return $chart->render();
+    }
+
+    /**
+     * @param          $hierarchy
+     * @param Campaign $entity
+     * @param string   $root
+     * @param int      $order
+     */
+    protected function buildOrder($hierarchy, &$events, $entity, $root = 'null', $order = 1)
+    {
+        $count = count($hierarchy);
+        if (1 === $count && 'null' === array_unique(array_values($hierarchy))[0]) {
+            // no parents so leave order as is
+
+            return;
+        } else {
+            foreach ($hierarchy as $eventId => $parent) {
+                if ($parent == $root || 1 === $count) {
+                    $events[$eventId]->setOrder($order);
+                    unset($hierarchy[$eventId]);
+                    if (count($hierarchy)) {
+                        $this->buildOrder($hierarchy, $events, $entity, $eventId, $order + 1);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param int             $limit
+     * @param bool            $maxLeads
+     * @param OutputInterface $output
+     *
+     * @return int
+     */
+    public function rebuildCampaignLeads(Campaign $campaign, $limit = 1000, $maxLeads = false, OutputInterface $output = null)
+    {
+        $contactLimiter = new ContactLimiter($limit);
+
+        return $this->membershipBuilder->build($campaign, $contactLimiter, $maxLeads, $output);
+    }
+
+    /**
+     * @param $segmentId
+     *
+     * @return array
+     */
+    public function getCampaignIdsWithDependenciesOnSegment($segmentId)
+    {
+        $entities = $this->getRepository()->getEntities(
+            [
+                'filter'    => [
+                    'force' => [
+                        [
+                            'column' => 'l.id',
+                            'expr'   => 'eq',
+                            'value'  => $segmentId,
+                        ],
+                    ],
+                ],
+                'joinLists' => true,
+            ]
+        );
+
+        $ids = [];
+        foreach ($entities as $entity) {
+            $ids[] = $entity->getId();
+        }
+
+        return $ids;
     }
 }

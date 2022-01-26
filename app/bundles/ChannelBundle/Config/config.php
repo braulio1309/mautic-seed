@@ -32,9 +32,30 @@ return [
                 'path'       => '/channels/batch/contact/view',
                 'controller' => 'MauticChannelBundle:BatchContact:index',
             ],
+            //Products
             'products_list' => [
-                'path'       => '/productos',
-                'controller' => 'DestinyProductBundle:Product:index',
+                'path'       => '/products/{page}',
+                'controller' => 'MauticChannelBundle:Product:index',
+            ],
+            'products_create' => [
+                'path'       => '/products/{objectAction}/{objectId}',
+                'controller' => 'MauticChannelBundle:Product:new',
+            ],
+            'category_list' => [
+                'path'       => '/category/{page}',
+                'controller' => 'MauticChannelBundle:Category:index',
+            ],
+            'variant_list' => [
+                'path'       => '/variant/{page}',
+                'controller' => 'MauticChannelBundle:Variant:index',
+            ],
+            'order_list' => [
+                'path'       => '/order/{page}',
+                'controller' => 'MauticChannelBundle:Order:index',
+            ],
+            'customer_list' => [
+                'path'       => '/customer/{page}',
+                'controller' => 'MauticChannelBundle:Customer:index',
             ],
         ],
         'api' => [
@@ -65,17 +86,19 @@ return [
             'Product list' => [
                 'priority' => 90,
                 'parent'   => 'Products',
+                'access'   => ['channel:product:index', 'channel:messages:viewother'],
                 'route'    => 'products_list',
             ],
             'Categories' => [
                 'priority' => 90,
                 'parent'   => 'Products',
-                'route'    => 'products_list',
+                'access'   => ['channel:product:index', 'channel:messages:viewother'],
+                'route'    => 'category_list',
             ],
             'Variants' => [
                 'priority' => 90,
                 'parent'   => 'Products',
-                'route'    => 'products_list',
+                'route'    => 'variant_list',
             ],
             //Orders
             'Orders' => [
@@ -85,12 +108,12 @@ return [
             'Customers' => [
                 'priority' => 90,
                 'parent'   => 'Orders',
-                'route'    => 'products_list',
+                'route'    => 'customer_list',
             ],
             'Order list' => [
                 'priority' => 90,
                 'parent'   => 'Orders',
-                'route'    => 'products_list',
+                'route'    => 'order_list',
             ],
         ],
         'admin' => [
@@ -175,6 +198,16 @@ return [
             ],
         ],
         'models' => [
+            'mautic.channel.model.product' => [
+                'class'     => \Mautic\ChannelBundle\Model\ProductModel::class,
+                'arguments' => [
+                    'mautic.lead.model.list',
+                    'mautic.form.model.form',
+                    'mautic.campaign.event_collector',
+                    'mautic.campaign.membership.builder',
+                    'mautic.tracker.contact',
+                ],
+            ],
             'mautic.channel.model.message' => [
                 'class'     => \Mautic\ChannelBundle\Model\MessageModel::class,
                 'arguments' => [
@@ -212,6 +245,16 @@ return [
                 'factory'   => ['@doctrine.orm.entity_manager', 'getRepository'],
                 'arguments' => \Mautic\ChannelBundle\Entity\MessageQueue::class,
             ],
+            'mautic.channel.repository.message_queue' => [
+                'class'     => Doctrine\ORM\EntityRepository::class,
+                'factory'   => ['@doctrine.orm.entity_manager', 'getRepository'],
+                'arguments' => \Mautic\ChannelBundle\Entity\MessageQueue::class,
+            ],
+           /* 'mautic.channel.repository.product' => [
+                'class'     => Doctrine\ORM\EntityRepository::class,
+                'factory'   => ['@doctrine.orm.entity_manager', 'getRepository'],
+                'arguments' => \Mautic\ChannelBundle\Entity\Product::class,
+            ],*/
         ],
     ],
 

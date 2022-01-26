@@ -9,11 +9,11 @@
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
-$view['slots']->set('headerTitle', $view['translator']->trans('mautic.campaign.campaigns'));
+$view['slots']->set('headerTitle', 'Customers');
 if ('index' == $tmpl) {
     $view->extend('MauticCoreBundle:Standard:index.html.php');
 }
-
+//dd($product[0]['id']);
 ?>
 <?php if (count($items)): ?>
     <div class="table-responsive">
@@ -39,7 +39,7 @@ if ('index' == $tmpl) {
                     [
                         'sessionVar' => 'campaign',
                         'orderBy'    => 'c.name',
-                        'text'       => 'mautic.core.name',
+                        'text'       => 'Name',
                         'class'      => 'col-campaign-name',
                     ]
                 );
@@ -49,7 +49,7 @@ if ('index' == $tmpl) {
                     [
                         'sessionVar' => 'campaign',
                         'orderBy'    => 'cat.title',
-                        'text'       => 'mautic.core.category',
+                        'text'       => 'Lastname',
                         'class'      => 'visible-md visible-lg col-campaign-category',
                     ]
                 );
@@ -59,7 +59,7 @@ if ('index' == $tmpl) {
                     [
                         'sessionVar' => 'campaign',
                         'orderBy'    => 'c.dateAdded',
-                        'text'       => 'mautic.lead.import.label.dateAdded',
+                        'text'       => 'Email',
                         'class'      => 'visible-md visible-lg col-campaign-dateAdded',
                     ]
                 );
@@ -69,7 +69,7 @@ if ('index' == $tmpl) {
                     [
                         'sessionVar' => 'campaign',
                         'orderBy'    => 'c.dateModified',
-                        'text'       => 'mautic.lead.import.label.dateModified',
+                        'text'       => 'Phone',
                         'class'      => 'visible-md visible-lg col-campaign-dateModified',
                         'default'    => true,
                     ]
@@ -80,7 +80,7 @@ if ('index' == $tmpl) {
                     [
                         'sessionVar' => 'campaign',
                         'orderBy'    => 'c.createdByUser',
-                        'text'       => 'mautic.core.createdby',
+                        'text'       => 'Created_at',
                         'class'      => 'visible-md visible-lg col-campaign-createdByUser',
                     ]
                 );
@@ -98,8 +98,10 @@ if ('index' == $tmpl) {
             </tr>
             </thead>
             <tbody>
+                <?php $i =0; ?>
             <?php foreach ($items as $item): ?>
-            <?php $mauticTemplateVars['item'] = $item; ?>
+            <?php $mauticTemplateVars['item'] = $item; $pro = $product[$i]; ?>
+            
                 <tr>
                     <td>
                         <?php
@@ -113,7 +115,6 @@ if ('index' == $tmpl) {
                                         $permissions['campaign:campaigns:editother'],
                                         $item->getCreatedBy()
                                     ),
-                                    'clone'  => $permissions['campaign:campaigns:create'],
 
                                     'delete'   => $view['security']->hasEntityAccess(
                                         $permissions['campaign:campaigns:deleteown'],
@@ -128,37 +129,23 @@ if ('index' == $tmpl) {
                     </td>
                     <td>
                         <div>
-                            <?php echo $view->render(
-                                'MauticCoreBundle:Helper:publishstatus_icon.html.php',
-                                [
-                                    'item'  => $item,
-                                    'model' => 'campaign',
-                                ]
-                            ); ?>
                             <a href="<?php echo $view['router']->path(
                                 'mautic_campaign_action',
-                                ['objectAction' => 'view', 'objectId' => $item->getId()]
+                                ['objectAction' => 'view', 'objectId' => $pro['id']]
                             ); ?>" data-toggle="ajax">
-                                <?php echo $item->getName(); ?>
+                                <?php echo $pro['name']; ?>
                             <?php echo $view['content']->getCustomContent('campaign.name', $mauticTemplateVars); ?>
                             </a>
                         </div>
-                        <?php if ($description = $item->getDescription()): ?>
-                            <div class="text-muted mt-4">
-                                <small><?php echo $description; ?></small>
-                            </div>
-                        <?php endif; ?>
                     </td>
                     <td class="visible-md visible-lg">
-                        <?php $category = $item->getCategory(); ?>
-                        <?php $catName  = ($category) ? $category->getTitle() : $view['translator']->trans('mautic.core.form.uncategorized'); ?>
-                        <?php $color    = ($category) ? '#'.$category->getColor() : 'inherit'; ?>
-                        <span style="white-space: nowrap;"><span class="label label-default pa-4" style="border: 1px solid #d5d5d5; background: <?php echo $color; ?>;"> </span> <span><?php echo $catName; ?></span></span>
+                        
+                        <span style="white-space: nowrap;"> <span><?php echo $pro['lastname']; ?></span></span>
                     </td>
-                    <td class="visible-md visible-lg"><?php echo $item->getDateAdded() ? $view['date']->toFull($item->getDateAdded()) : ''; ?></td>
-                    <td class="visible-md visible-lg"><?php echo $item->getDateModified() ? $view['date']->toFull($item->getDateModified()) : ''; ?></td>
-                    <td class="visible-md visible-lg"><?php echo $item->getCreatedByUser(); ?></td>
-                    <td class="visible-md visible-lg"><?php echo $item->getId(); ?></td>
+                    <td class="visible-md visible-lg"><?php echo $pro['email']; ?></td>
+                    <td class="visible-md visible-lg"><?php echo $pro['phone']; ?></td>
+                    <td class="visible-md visible-lg"><?php echo $pro['created_at']; ?></td>
+                    <td class="visible-md visible-lg"><?php echo $pro['id']; ?></td>
                 </tr>
             <?php endforeach; ?>
             </tbody>
@@ -171,12 +158,12 @@ if ('index' == $tmpl) {
                 'totalItems' => count($items),
                 'page'       => $page,
                 'limit'      => $limit,
-                'menuLinkId' => 'mautic_campaign_index',
-                'baseUrl'    => $view['router']->path('mautic_campaign_index'),
+                'menuLinkId' => 'customer_list',
+                'baseUrl'    => $view['router']->path('customer_list'),
                 'sessionVar' => 'campaign',
             ]
         ); ?>
     </div>
 <?php else: ?>
-    <?php echo $view->render('MauticCoreBundle:Helper:noresults.html.php', ['tip' => 'mautic.campaign.noresults.tip']); ?>
+    <?php echo $view->render('MauticCoreBundle:Helper:noresults.html.php', ['tip' => 'Create a new product']); ?>
 <?php endif; ?>
