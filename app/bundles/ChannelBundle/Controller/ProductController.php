@@ -239,16 +239,12 @@ class ProductController extends AbstractStandardFormController
         $orderBy    = $session->get('mautic.products.orderby', 'c.dateModified');
         $orderByDir = $session->get('mautic.products.orderbydir', 'DESC');
 
-        list($count, $items) = $this->getIndexItems($start, $limit, $filter, $orderBy, $orderByDir);
-
-        $em = $this->getDoctrine()->getManager();
-        $db = $em->getConnection();
-
-        $query = 'SELECT * FROM products; ';
-        $stmt  = $db->prepare($query);
-        $stmt->execute();
-        $product=$stmt->fetchAll();
-
+        $items= $this->getModel('channel.product')->getEntities(
+            [
+                'start'      => $start,
+                'limit'      => $limit,
+            ]
+        );
         if ($count && $count < ($start + 1)) {
             //the number of entities are now less then the current page so redirect to the last page
             $lastPage = (1 === $count) ? 1 : (((ceil($count / $limit)) ?: 1) ?: 1);
@@ -315,66 +311,35 @@ class ProductController extends AbstractStandardFormController
     public function newAction()
     {
         /** @var CampaignModel $model */
-        $model    = $this->getModel('campaign');
-        $campaign = $model->getEntity();
-        $product  = $this->getModel('channel.product')->getEntity();
+        $model        = $this->getModel('campaign');
+        $campaign     = $model->getEntity();
+        $productModel = $this->getModel('channel.product');
+        $product      =  $productModel->getEntity();
 
         //set the page we came from
         $page = $this->get('session')->get('mautic.campaign.page', 1);
 
         $options = $this->getEntityFormOptions();
         $action  = $this->generateUrl('products_create', ['objectAction' => 'new']);
-        $form    = $model->createForm($campaign, $this->get('form.factory'), $action, $options);
+        $form    = $productModel->createForm($product, $this->get('form.factory'), $action, $options);
 
         ///Check for a submitted form and process it
         $isPost = 'POST' === $this->request->getMethod();
-        $this->beforeFormProcessed($campaign, $form, 'new', $isPost);
 
         if ($isPost) {
             $valid = false;
-            if (!$cancelled = $this->isFormCancelled($form)) {
-                if ($valid = $this->isFormValid($form)) {
-                    if ($valid = $this->beforeEntitySave($campaign, $form, 'new')) {
-                        $campaign->setDateModified(new \DateTime());
-                        $model->saveEntity($campaign);
-                        $this->afterEntitySave($campaign, $form, 'new', $valid);
 
-                        if (method_exists($this, 'viewAction')) {
-                            $viewParameters = ['objectId' => $campaign->getId(), 'objectAction' => 'view'];
-                            $returnUrl      = $this->generateUrl('mautic_campaign_action', $viewParameters);
-                            $template       = 'MauticCampaignBundle:Campaign:view';
-                        } else {
-                            $viewParameters = ['page' => $page];
-                            $returnUrl      = $this->generateUrl('mautic_campaign_index', $viewParameters);
-                            $template       = 'MauticCampaignBundle:Campaign:index';
-                        }
-                    }
-                }
-
-                $this->afterFormProcessed($valid, $campaign, $form, 'new');
-            } else {
-                $viewParameters = ['page' => $page];
-                $returnUrl      = $this->generateUrl('c', $viewParameters);
-                $template       = 'MauticCampaignBundle:Campaign:index';
-            }
+            //$product->setDateModified(new \DateTime());
+            //$productModel->saveEntity($product);
+            $viewParameters = ['page' => $page];
+            $returnUrl      = $this->generateUrl('products_list', $viewParameters);
+            $template       = 'MauticChannelBundle:Product:index';
 
             $passthrough = [
                 'mauticContent' => 'cammpaign',
             ];
 
-            if ($isInPopup = isset($form['updateSelect'])) {
-                $template    = false;
-                $passthrough = array_merge(
-                    $passthrough,
-                    $this->getUpdateSelectParams($form['updateSelect']->getData(), $campaign)
-                );
-            }
-
-            if ($cancelled || ($valid && !$this->isFormApplied($form))) {
-                if ($isInPopup) {
-                    $passthrough['closeModal'] = true;
-                }
-
+            if (($valid && !$this->isFormApplied($form))) {
                 return $this->postActionRedirect(
                     $this->getPostActionRedirectArguments(
                         [
@@ -382,13 +347,13 @@ class ProductController extends AbstractStandardFormController
                             'viewParameters'  => $viewParameters,
                             'contentTemplate' => $template,
                             'passthroughVars' => $passthrough,
-                            'entity'          => $campaign,
+                            'entity'          => $product,
                         ],
                         'new'
                     )
                 );
             } elseif ($valid && $this->isFormApplied($form)) {
-                return $this->editAction($campaign->getId(), true);
+                return $this->editAction($product->getId(), true);
             }
         }
 
@@ -402,7 +367,7 @@ class ProductController extends AbstractStandardFormController
                 'modelName'       => 'campaign',
                 'translationBase' => $this->getTranslationBase(),
                 'tmpl'            => $this->request->isXmlHttpRequest() ? $this->request->get('tmpl', 'index') : 'index',
-                'entity'          => $campaign,
+                'entity'          => $product,
                 'form'            => $this->getFormView($form, 'new'),
                 'product'         => $product,
             ],
@@ -413,7 +378,7 @@ class ProductController extends AbstractStandardFormController
                     'products_create',
                     [
                         'objectAction' => (!empty($valid) ? 'edit' : 'new'), //valid means a new form was applied
-                        'objectId'     => ($campaign) ? $campaign->getId() : 0,
+                        'objectId'     => ($product) ? $product->getId() : 0,
                     ]
                 ),
                 'validationError' => $this->getFormErrorForBuilder($form),
@@ -594,6 +559,57 @@ class ProductController extends AbstractStandardFormController
      *
      * @return bool
      */
+    public function deleteProductAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $db = $em->getConnection();
+
+        $query = "DELETE FROM products WHERE id = $id; ";
+        $stmt  = $db->prepare($query);
+        $stmt->execute();
+        list($count, $items) = $this->getIndexItems($start, $limit, $filter, $orderBy, $orderByDir);
+
+        $em = $this->getDoctrine()->getManager();
+        $db = $em->getConnection();
+
+        $query = 'SELECT * FROM products; ';
+        $stmt  = $db->prepare($query);
+        $stmt->execute();
+        $product=$stmt->fetchAll();
+
+        $viewParameters = [
+            'permissionBase'      => $this->getPermissionBase(),
+            'mauticContent'       => $this->getJsLoadMethodPrefix(),
+            'sessionVar'          => $this->getSessionBase(),
+            'actionRoute'         => $this->getActionRoute(),
+            'indexRoute'          => $this->getIndexRoute(),
+            'modelName'           => $this->getModelName(),
+            'translationBase'     => $this->getTranslationBase(),
+            'searchValue'         => $search,
+            'items'               => $items,
+            'totalItems'          => count($items),
+            'page'                => 1,
+            'limit'               => 30,
+            'permissions'         => $permissions,
+            'tmpl'                => $this->request->get('tmpl', 'index'),
+            'product'             => $product,
+        ];
+
+        return $this->delegateView(
+            $this->getViewArguments(
+                [
+                    'viewParameters'  => $viewParameters,
+                    'contentTemplate' => 'MauticChannelBundle:Product:product_list.html.php',
+                    'passthroughVars' => [
+                        'mauticContent' => $this->getJsLoadMethodPrefix(),
+                        'route'         => $this->generateUrl('products_list', ['page' => 1]),
+                    ],
+                ],
+                'index'
+            )
+        );
+    }
+
     protected function beforeEntitySave($entity, Form $form, $action, $objectId = null, $isClone = false)
     {
         if (empty($this->campaignEvents)) {

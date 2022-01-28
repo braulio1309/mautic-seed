@@ -11,7 +11,7 @@
 
 $view['slots']->set('headerTitle', 'Variants');
 if ('index' == $tmpl) {
-    $view->extend('MauticCoreBundle:Standard:index.html.php');
+    $view->extend('MauticChannelBundle:Variant:index.html.php');
 }
 ?>
 <?php if (count($items)): ?>
@@ -109,17 +109,9 @@ if ('index' == $tmpl) {
                             [
                                 'item'            => $item,
                                 'templateButtons' => [
-                                    'edit'   => $view['security']->hasEntityAccess(
-                                        $permissions['campaign:campaigns:editown'],
-                                        $permissions['campaign:campaigns:editother'],
-                                        $item->getCreatedBy()
-                                    ),
+                                    'edit'   => '',
 
-                                    'delete'   => $view['security']->hasEntityAccess(
-                                        $permissions['campaign:campaigns:deleteown'],
-                                        $permissions['campaign:campaigns:deleteother'],
-                                        $item->getCreatedBy()
-                                    ),
+                                    'delete'   => '',
                                 ],
                                 'routeBase' => 'campaign',
                             ]
@@ -132,19 +124,19 @@ if ('index' == $tmpl) {
                                 'mautic_campaign_action',
                                 ['objectAction' => 'view', 'objectId' => $pro['idvariant']]
                             ); ?>" data-toggle="ajax">
-                                <?php echo $pro['name_variant']; ?>
+                                <?php echo $item->getName(); ?>
                             <?php echo $view['content']->getCustomContent('campaign.name', $mauticTemplateVars); ?>
                             </a>
                         </div>
                     </td>
                     <td class="visible-md visible-lg">
                         
-                        <span style="white-space: nowrap;"> <span><?php echo $pro['value_variant']; ?></span></span>
+                        <span style="white-space: nowrap;"> <span><?php echo $item->getValueVariant(); ?></span></span>
                     </td>
-                    <td class="visible-md visible-lg"><?php echo $pro['sku']; ?></td>
-                    <td class="visible-md visible-lg"><?php echo $pro['quantity']; ?></td>
-                    <td class="visible-md visible-lg"><?php echo $pro['price']; ?></td>
-                    <td class="visible-md visible-lg"><?php echo $pro['idvariant']; ?></td>
+                    <td class="visible-md visible-lg"><?php echo $item->getQuantity(); ?></td>
+                    <td class="visible-md visible-lg"><?php echo $item->getQuantity(); ?></td>
+                    <td class="visible-md visible-lg"><?php echo $item->getQuantity(); ?></td>
+                    <td class="visible-md visible-lg"><?php echo $item->getQuantity(); ?></td>
                 </tr>
             <?php endforeach; ?>
             </tbody>

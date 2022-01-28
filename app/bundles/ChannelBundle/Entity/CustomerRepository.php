@@ -13,7 +13,7 @@ namespace Mautic\ChannelBundle\Entity;
 
 use Mautic\CoreBundle\Entity\CommonRepository;
 
-class ProductRepository extends CommonRepository
+class CustomerRepository extends CommonRepository
 {
     public function getEntities(array $args = [])
     {
@@ -34,8 +34,8 @@ class ProductRepository extends CommonRepository
     {
         // Null parents of associated events first
         $q = $this->getEntityManager()->getConnection()->createQueryBuilder();
-        $q->update(MAUTIC_TABLE_PREFIX.'products')
-            ->where('idproduct = '.$entity->getId())
+        $q->update(MAUTIC_TABLE_PREFIX.'customers')
+            ->where('id = '.$entity->getId())
             ->execute();
 
         parent::deleteEntity($entity, $flush);

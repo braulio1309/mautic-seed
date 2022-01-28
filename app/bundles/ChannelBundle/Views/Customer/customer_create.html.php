@@ -12,7 +12,7 @@ $view->extend('MauticCoreBundle:Default:content.html.php');
 
 $header = ($entity->getId()) ?
     'Edit' :
-    'New Product';
+    'New Customer';
 $view['slots']->set('headerTitle', $header);
 //dd($product);
 ?>
@@ -32,26 +32,10 @@ $view['slots']->set('headerTitle', $header);
                
             </div>
 
-            <div class="row">
-                <div class="col-md-6">
-                    <?php echo $view['form']->row($form['initial_quantity']); ?>
-
-                </div>
-                <div class="col-md-6">
-                    <?php echo $view['form']->row($form['initial_price']); ?>
-                </div>
-            </div>
 
             <div class="row">
                 <div class="col-md-12">
-                    <?php echo $view['form']->row($form['vendor']); ?>
-                </div>
-               
-            </div>
-
-            <div class="row">
-                <div class="col-md-12">
-                    <?php echo $view['form']->row($form['product_desc']); ?>
+                    <?php echo $view['form']->row($form['lastname']); ?>
                 </div>
             </div>
         </div>

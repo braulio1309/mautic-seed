@@ -13,14 +13,13 @@ namespace Mautic\ChannelBundle\Entity;
 
 use Mautic\CoreBundle\Entity\CommonRepository;
 
-class ProductRepository extends CommonRepository
+class OrderRepository extends CommonRepository
 {
     public function getEntities(array $args = [])
     {
         $q = $this
-            ->createQueryBuilder('c')
-            ->select('c');
-
+        ->createQueryBuilder('p')
+        ->select('p.product_name');
         $args['qb'] = $q;
 
         return parent::getEntities($args);

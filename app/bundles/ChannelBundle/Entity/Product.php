@@ -2,23 +2,31 @@
 
 namespace Mautic\ChannelBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Mautic\CoreBundle\Doctrine\Mapping\ClassMetadataBuilder;
-use Mautic\CoreBundle\Entity\CommonEntity;
 
-class Product extends CommonEntity
+class Product
 {
     /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @var int
      */
-    protected $id;
+    private $id;
 
     /**
      * @var string
      */
     private $product_name;
+
+    /**
+     * @var string
+     */
+    private $name;
+
+    /**
+     * @var string
+     */
+    private $description;
 
     /**
      * @var string
@@ -66,14 +74,27 @@ class Product extends CommonEntity
     private $variant_ids;
 
     /**
-     * @var date
+     * @var string
+     */
+    private $tags;
+
+    /**
+     * @var \DateTime|null
      */
     private $created_at;
 
     /**
-     * @var date
+     * @var \DateTime|null
      */
     private $updated_at;
+
+    public function __construct()
+    {
+        $this->events = new ArrayCollection();
+        $this->leads  = new ArrayCollection();
+        $this->lists  = new ArrayCollection();
+        $this->forms  = new ArrayCollection();
+    }
 
     public static function loadMetadata(ORM\ClassMetadata $metadata)
     {
@@ -82,8 +103,18 @@ class Product extends CommonEntity
         $builder->setTable('products')
             ->setCustomRepositoryClass('Mautic\ChannelBundle\Entity\ProductRepository');
 
-        // Helper functions
-        //$builder->addIdColumns();
+        $builder->addIdColumns();
+        $builder->addField('product_name', 'string');
+        $builder->addField('product_desc', 'string');
+        $builder->addField('category_id', 'integer');
+        $builder->addField('vendor', 'string');
+        $builder->addField('currency', 'string');
+        $builder->addField('tags', 'string');
+        $builder->addField('initial_price', 'decimal');
+        $builder->addField('initial_quantity', 'integer');
+        $builder->addField('variant_ids', 'json');
+        $builder->addField('created_at', 'datetime');
+        $builder->addField('updated_at', 'datetime');
     }
 
     public function getId(): ?int
@@ -100,46 +131,70 @@ class Product extends CommonEntity
 
     public function getName(): ?string
     {
-        return $this->product_name;
+        return $this->name;
     }
 
-    public function setProduct_name(string $name): self
+    public function setName(string $name): self
     {
-        $this->product_name = $name;
+        $this->name = $name;
 
         return $this;
     }
 
-    public function getProduct_des(): ?string
+    public function getProductName(): ?string
+    {
+        return $this->product_name;
+    }
+
+    public function setProductName(string $product_name): self
+    {
+        $this->product_name = $product_name;
+
+        return $this;
+    }
+
+    public function getTags(): ?string
+    {
+        return $this->tags;
+    }
+
+    public function setTags(string $tags): self
+    {
+        $this->tags = $tags;
+
+        return $this;
+    }
+
+    public function getProductDesc(): ?string
     {
         return $this->product_desc;
     }
 
-    public function setProduct_desc(string $name): self
+    public function setProductDesc(string $product_desc): self
     {
-        $this->product_desc = $name;
+        $this->product_desc = $product_desc;
 
         return $this;
     }
 
-    public function getInitial_price()
+    public function getInitialPrice()
     {
         return $this->initial_price;
     }
 
-    public function setInitial_price($precio): self
+    public function setInitialPrice($initial_price): self
     {
-        $this->initial_price = $precio;
+        $this->initial_price = $initial_price;
 
         return $this;
     }
 
-    public function getInitial_quantity()
+    public function getInitialQuantity()
     {
         return $this->initial_quantity;
     }
 
-    public function setInitial_quantity($precio): self
+    public function setInitialQuantity($precio): self
     {
         $this->initial_quantity = $precio;
 
@@ -166,6 +221,30 @@ class Product extends CommonEntity
     public function setCategory_id($category_id): self
     {
         $this->category_id = $category_id;
+
+        return $this;
+    }
+
+    public function getCreatedAt()
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt($created_at): self
+    {
+        $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getUpdatedAt()
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt($updated_at): self
+    {
+        $this->updated_at = $updated_at;
 
         return $this;
     }

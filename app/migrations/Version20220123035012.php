@@ -44,7 +44,7 @@ final class Version20220123035012 extends AbstractMauticMigration
                 `created_at` datetime NOT NULL,
                 `updated_at` datetime NOT NULL,
                 PRIMARY KEY (`idaddress`)
-              ) ENGINE=Inn'
+              ) ENGINE=InnoDB'
         );
     }
 }

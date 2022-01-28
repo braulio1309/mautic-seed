@@ -13,7 +13,7 @@ namespace Mautic\ChannelBundle\Entity;
 
 use Mautic\CoreBundle\Entity\CommonRepository;
 
-class ProductRepository extends CommonRepository
+class VariantRepository extends CommonRepository
 {
     public function getEntities(array $args = [])
     {

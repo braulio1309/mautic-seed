@@ -11,7 +11,7 @@
 
 $view['slots']->set('headerTitle', 'Products');
 if ('index' == $tmpl) {
-    $view->extend('MauticCoreBundle:Standard:index.html.php');
+    $view->extend('MauticChannelBundle:Category:index.html.php');
 }
 
 ?>

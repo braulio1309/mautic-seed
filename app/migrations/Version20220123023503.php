@@ -34,8 +34,8 @@ final class Version20220123023503 extends AbstractMauticMigration
         $this->addSql(
             "CREATE TABLE IF NOT EXISTS `products` (
                 `idproduct` int(11) NOT NULL AUTO_INCREMENT,
-                `product_name` int(11) NOT NULL,
-                `product_desc` int(11) DEFAULT NULL,
+                `product_name` VARCHAR(255) NOT NULL,
+                `product_desc` TEXT(255) DEFAULT NULL,
                 `category_id` int(11) DEFAULT NULL,
                 `subcategory_id` int(11) DEFAULT NULL,
                 `vendor` varchar(100) COLLATE utf16_spanish_ci DEFAULT NULL,

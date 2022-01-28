@@ -11,7 +11,6 @@
 
 namespace Mautic\ChannelBundle\Form\Type;
 
-use Mautic\CategoryBundle\Form\Type\CategoryListType;
 use Mautic\CoreBundle\Form\EventListener\CleanFormSubscriber;
 use Mautic\CoreBundle\Form\EventListener\FormExitSubscriber;
 use Mautic\CoreBundle\Form\Type\FormButtonsType;
@@ -26,7 +25,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Class CampaignType.
  */
-class ProductForm extends AbstractType
+class CategoryForm extends AbstractType
 {
     /**
      * @var CorePermissions
@@ -49,46 +48,12 @@ class ProductForm extends AbstractType
             'attr'       => ['class' => 'form-control'],
         ]);
 
-        $builder->add('product_desc', TextareaType::class, [
+        $builder->add('description', TextareaType::class, [
             'label'      => 'mautic.core.description',
             'label_attr' => ['class' => 'control-label'],
             'attr'       => ['class' => 'form-control editor'],
             'required'   => false,
         ]);
-
-        $builder->add('initial_quantity', TextType::class, [
-            'label'      => 'Quantity',
-            'label_attr' => ['class' => 'control-label'],
-            'attr'       => ['class' => 'form-control'],
-        ]);
-
-        $builder->add('initial_price', textType::class, [
-            'label'      => 'Price',
-            'label_attr' => ['class' => 'control-label'],
-            'attr'       => ['class' => 'form-control'],
-        ]);
-
-        $builder->add('vendor', TextType::class, [
-            'label'      => 'Vendor',
-            'label_attr' => ['class' => 'control-label'],
-            'attr'       => ['class' => 'form-control'],
-        ]);
-
-        //add category
-        /*$builder->add('category', CategoryListType::class, [
-            'bundle' => 'campaign',
-        ]);
-
-        if (!empty($options['data']) && $options['data']->getId()) {
-            $readonly = !$this->security->isGranted('campaign:campaigns:publish');
-            $data     = $options['data']->isPublished(false);
-        } elseif (!$this->security->isGranted('campaign:campaigns:publish')) {
-            $readonly = true;
-            $data     = false;
-        } else {
-            $readonly = false;
-            $data     = false;
-        }*/
 
         $builder->add('sessionId', HiddenType::class, [
             'mapped' => false,
@@ -104,12 +69,12 @@ class ProductForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'Mautic\ChannelBundle\Entity\Product',
+            'data_class' => 'Mautic\ChannelBundle\Entity\Category',
         ]);
     }
 
     public function getBlockPrefix()
     {
-        return 'product';
+        return 'Category';
     }
 }

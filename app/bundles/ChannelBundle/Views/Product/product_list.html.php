@@ -11,8 +11,6 @@
 
 $view['slots']->set('headerTitle', 'Products');
     $view->extend('MauticChannelBundle:Product:index.html.php');
-
-//dd($product[0]['id']);
 ?>
 <?php if (count($items)): ?>
     <div class="table-responsive">
@@ -109,17 +107,9 @@ $view['slots']->set('headerTitle', 'Products');
                             [
                                 'item'            => $item,
                                 'templateButtons' => [
-                                    'edit'   => $view['security']->hasEntityAccess(
-                                        $permissions['campaign:campaigns:editown'],
-                                        $permissions['campaign:campaigns:editother'],
-                                        $item->getCreatedBy()
-                                    ),
+                                    'edit'   => '',
 
-                                    'delete'   => $view['security']->hasEntityAccess(
-                                        $permissions['campaign:campaigns:deleteown'],
-                                        $permissions['campaign:campaigns:deleteother'],
-                                        $item->getCreatedBy()
-                                    ),
+                                    'delete'   => '',
                                 ],
                                 'routeBase' => 'campaign',
                             ]
@@ -129,22 +119,21 @@ $view['slots']->set('headerTitle', 'Products');
                     <td>
                         <div>
                             <a href="<?php echo $view['router']->path(
-                                'mautic_campaign_action',
-                                ['objectAction' => 'view', 'objectId' => $pro['id']]
+                                'product_delete',
+                                ['objectId' => $pro['id']]
                             ); ?>" data-toggle="ajax">
-                                <?php echo $pro['product_name']; ?>
+                                <?php echo $item->getProductName(); ?>
                             <?php echo $view['content']->getCustomContent('campaign.name', $mauticTemplateVars); ?>
                             </a>
                         </div>
                     </td>
                     <td class="visible-md visible-lg">
-                        
-                        <span style="white-space: nowrap;"> <span><?php echo $pro['product_desc']; ?></span></span>
+                        <span style="white-space: nowrap;"> <span><?php echo $item->getProductDesc(); ?></span></span>
                     </td>
-                    <td class="visible-md visible-lg"><?php echo $pro['created_at'] ? $view['date']->toFull($pro['created_at']) : ''; ?></td>
-                    <td class="visible-md visible-lg"><?php echo $pro['created_at'] ? $view['date']->toFull($pro['created_at']) : ''; ?></td>
-                    <td class="visible-md visible-lg"><?php echo $pro['vendor']; ?></td>
-                    <td class="visible-md visible-lg"><?php echo $pro['id']; ?></td>
+                    <td class="visible-md visible-lg"><?php echo $item->getCreatedAt() ? $view['date']->toFull($item->getCreatedAt()) : ''; ?></td>
+                    <td class="visible-md visible-lg"><?php echo $item->getUpdatedAt() ? $view['date']->toFull($item->getUpdatedAt()) : ''; ?></td>
+                    <td class="visible-md visible-lg"><?php echo $item->getVendor(); ?></td>
+                    <td class="visible-md visible-lg"><?php echo $item->getId(); ?></td>
                 </tr>
             <?php endforeach; ?>
             </tbody>

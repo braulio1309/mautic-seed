@@ -11,7 +11,7 @@
 
 $view['slots']->set('headerTitle', 'Customers');
 if ('index' == $tmpl) {
-    $view->extend('MauticCoreBundle:Standard:index.html.php');
+    $view->extend('MauticChannelBundle:Customer:index.html.php');
 }
 //dd($product[0]['id']);
 ?>
