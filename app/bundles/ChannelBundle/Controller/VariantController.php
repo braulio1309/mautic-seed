@@ -329,17 +329,16 @@ class VariantController extends AbstractStandardFormController
 
         if ($isPost) {
             $valid = false;
+            if ($valid = $this->isFormValid($form)) {
+                $productModel->saveEntity($product);
+                $viewParameters = ['page' => $page];
+                $returnUrl      = $this->generateUrl('variant_list', $viewParameters);
+                $template       = 'MauticChannelBundle:Variant:index';
 
-            //$product->setDateModified(new \DateTime());
-            //$productModel->saveEntity($product);
-            $viewParameters = ['page' => $page];
-            $returnUrl      = $this->generateUrl('variant_list', $viewParameters);
-            $template       = 'MauticChannelBundle:Product:index';
-
-            $passthrough = [
-                'mauticContent' => 'cammpaign',
-            ];
-
+                $passthrough = [
+                    'mauticContent' => 'cammpaign',
+                ];
+            }
             if (($valid && !$this->isFormApplied($form))) {
                 return $this->postActionRedirect(
                     $this->getPostActionRedirectArguments(

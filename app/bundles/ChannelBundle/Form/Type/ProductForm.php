@@ -43,7 +43,7 @@ class ProductForm extends AbstractType
         $builder->addEventSubscriber(new CleanFormSubscriber(['description' => 'html']));
         $builder->addEventSubscriber(new FormExitSubscriber('campaign', $options));
 
-        $builder->add('name', TextType::class, [
+        $builder->add('product_name', TextType::class, [
             'label'      => 'mautic.core.name',
             'label_attr' => ['class' => 'control-label'],
             'attr'       => ['class' => 'form-control'],

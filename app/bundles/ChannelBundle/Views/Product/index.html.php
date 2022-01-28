@@ -23,7 +23,7 @@ $pageButtons[] = [
 
 $pageButtons[] = [
     'attr' => [
-        'href' => $view['router']->path('products_create', ['objectId' => 'product', 'objectAction' => 'new']),
+        'href' => $view['router']->path('products_create', ['objectId' => null, 'objectAction' => 'new']),
     ],
     'iconClass' => 'fa fa-history',
     'btnText'   => 'New',

@@ -310,11 +310,8 @@ class ProductController extends AbstractStandardFormController
      */
     public function newAction()
     {
-        /** @var CampaignModel $model */
-        $model        = $this->getModel('campaign');
-        $campaign     = $model->getEntity();
         $productModel = $this->getModel('channel.product');
-        $product      =  $productModel->getEntity();
+        $product      = $productModel->getEntity(($this->request->attributes->get('objectId') > 0) ? $this->request->attributes->get('objectId') : null);
 
         //set the page we came from
         $page = $this->get('session')->get('mautic.campaign.page', 1);
@@ -328,17 +325,47 @@ class ProductController extends AbstractStandardFormController
 
         if ($isPost) {
             $valid = false;
+            if (!$cancelled = $this->isFormCancelled($form)) {
+                if ($valid = $this->isFormValid($form)) {
+                    if ($this->request->attributes->get('objectId') > 0) {
+                        $product->setUpdatedAt(new \DateTime());
+                    } else {
+                        $product->setCreatedAt(new \DateTime());
+                        $product->setUpdatedAt(new \DateTime());
+                    }
 
-            //$product->setDateModified(new \DateTime());
-            //$productModel->saveEntity($product);
-            $viewParameters = ['page' => $page];
-            $returnUrl      = $this->generateUrl('products_list', $viewParameters);
-            $template       = 'MauticChannelBundle:Product:index';
+                    $productModel->saveEntity($product);
+                    $viewParameters = ['page' => $page];
+                    $returnUrl      = $this->generateUrl('products_list', $viewParameters);
+                    $template       = 'MauticChannelBundle:Product:index';
+
+                    $passthrough = [
+                        'mauticContent' => 'product',
+                    ];
+                }
+            } else {
+                $viewParameters = ['page' => $page];
+                $returnUrl      = $this->generateUrl('products_list', $viewParameters);
+                $template       = 'MauticChannelBundle:Product:index';
+            }
 
             $passthrough = [
-                'mauticContent' => 'cammpaign',
+                'mauticContent' => 'product',
             ];
 
+            if ($isInPopup = isset($form['updateSelect'])) {
+                $template    = false;
+                $passthrough = array_merge(
+                    $passthrough,
+                    $this->getUpdateSelectParams($form['updateSelect']->getData(), $product)
+                );
+            }
+
+            if ($cancelled || ($valid && !$this->isFormApplied($form))) {
+                if ($isInPopup) {
+                    $passthrough['closeModal'] = true;
+                }
+            }
             if (($valid && !$this->isFormApplied($form))) {
                 return $this->postActionRedirect(
                     $this->getPostActionRedirectArguments(
@@ -359,8 +386,7 @@ class ProductController extends AbstractStandardFormController
 
         $delegateArgs = [
             'viewParameters' => [
-                'permissionBase'  => $model->getPermissionBase(),
-                'mauticContent'   => 'campaign',
+                'mauticContent'   => 'product',
                 'actionRoute'     => 'products_create',
                 'indexRoute'      => 'products_create',
                 'tablePrefix'     => 'c',
@@ -370,6 +396,7 @@ class ProductController extends AbstractStandardFormController
                 'entity'          => $product,
                 'form'            => $this->getFormView($form, 'new'),
                 'product'         => $product,
+                're'              => $this->request->attributes->get('objectId'),
             ],
             'contentTemplate' => 'MauticChannelBundle:Product:product_create.html.php',
             'passthroughVars' => [
@@ -383,7 +410,7 @@ class ProductController extends AbstractStandardFormController
                 ),
                 'validationError' => $this->getFormErrorForBuilder($form),
             ],
-            'entity' => $campaign,
+            'entity' => $product,
             'form'   => $form,
         ];
 

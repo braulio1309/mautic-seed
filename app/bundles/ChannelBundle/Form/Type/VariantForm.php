@@ -17,7 +17,6 @@ use Mautic\CoreBundle\Form\Type\FormButtonsType;
 use Mautic\CoreBundle\Security\Permissions\CorePermissions;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -43,16 +42,15 @@ class VariantForm extends AbstractType
         $builder->addEventSubscriber(new FormExitSubscriber('campaign', $options));
 
         $builder->add('name', TextType::class, [
-            'label'      => 'mautic.core.name',
+            'label'      => 'Name variant',
             'label_attr' => ['class' => 'control-label'],
             'attr'       => ['class' => 'form-control'],
         ]);
 
-        $builder->add('description', TextareaType::class, [
-            'label'      => 'mautic.core.description',
+        $builder->add('value_variant', TextType::class, [
+            'label'      => 'Value variant',
             'label_attr' => ['class' => 'control-label'],
-            'attr'       => ['class' => 'form-control editor'],
-            'required'   => false,
+            'attr'       => ['class' => 'form-control'],
         ]);
 
         $builder->add('sessionId', HiddenType::class, [

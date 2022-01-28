@@ -110,17 +110,9 @@ if ('index' == $tmpl) {
                             [
                                 'item'            => $item,
                                 'templateButtons' => [
-                                    'edit'   => $view['security']->hasEntityAccess(
-                                        $permissions['campaign:campaigns:editown'],
-                                        $permissions['campaign:campaigns:editother'],
-                                        $item->getCreatedBy()
-                                    ),
+                                    'edit'   => '',
 
-                                    'delete'   => $view['security']->hasEntityAccess(
-                                        $permissions['campaign:campaigns:deleteown'],
-                                        $permissions['campaign:campaigns:deleteother'],
-                                        $item->getCreatedBy()
-                                    ),
+                                    'delete'   => '',
                                 ],
                                 'routeBase' => 'campaign',
                             ]
@@ -133,19 +125,19 @@ if ('index' == $tmpl) {
                                 'mautic_campaign_action',
                                 ['objectAction' => 'view', 'objectId' => $pro['id']]
                             ); ?>" data-toggle="ajax">
-                                <?php echo $pro['name']; ?>
+                                <?php echo $item->getName(); ?>
                             <?php echo $view['content']->getCustomContent('campaign.name', $mauticTemplateVars); ?>
                             </a>
                         </div>
                     </td>
                     <td class="visible-md visible-lg">
                         
-                        <span style="white-space: nowrap;"> <span><?php echo $pro['lastname']; ?></span></span>
+                        <span style="white-space: nowrap;"> <span><?php echo $item->getLastname(); ?></span></span>
                     </td>
-                    <td class="visible-md visible-lg"><?php echo $pro['email']; ?></td>
-                    <td class="visible-md visible-lg"><?php echo $pro['phone']; ?></td>
-                    <td class="visible-md visible-lg"><?php echo $pro['created_at']; ?></td>
-                    <td class="visible-md visible-lg"><?php echo $pro['id']; ?></td>
+                    <td class="visible-md visible-lg"><?php echo $item->getEmail(); ?></td>
+                    <td class="visible-md visible-lg"><?php echo $item->getPhone(); ?></td>
+                    <td class="visible-md visible-lg"><?php echo $item->getCreatedAt() ? $view['date']->toFull($item->getCreatedAt()) : ''; ?></td>
+                    <td class="visible-md visible-lg"><?php echo $item->getId(); ?></td>
                 </tr>
             <?php endforeach; ?>
             </tbody>

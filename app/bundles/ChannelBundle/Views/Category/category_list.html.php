@@ -102,17 +102,17 @@ if ('index' == $tmpl) {
                                 'mautic_campaign_action',
                                 ['objectAction' => 'view', 'objectId' => $pro['id']]
                             ); ?>" data-toggle="ajax">
-                                <?php echo $pro['category_name']; ?>
+                                <?php echo $item->getCategoryName(); ?>
                             <?php echo $view['content']->getCustomContent('campaign.name', $mauticTemplateVars); ?>
                             </a>
                         </div>
                     </td>
                     <td class="visible-md visible-lg">
                         
-                        <span style="white-space: nowrap;"> <span><?php echo $pro['category_desc']; ?></span></span>
+                        <span style="white-space: nowrap;"> <span><?php echo $item->getCategoryDesc(); ?></span></span>
                     </td>
                    
-                    <td class="visible-md visible-lg"><?php echo $pro['idcategory']; ?></td>
+                    <td class="visible-md visible-lg"><?php echo $item->getId(); ?></td>
                 </tr>
             <?php endforeach; ?>
             </tbody>

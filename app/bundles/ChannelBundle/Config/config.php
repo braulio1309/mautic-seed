@@ -43,7 +43,7 @@ return [
             ],
             'product_delete' => [
                 'path'       => '/products/delete/{objectId}',
-                'controller' => 'MauticChannelBundle:Product:deleteProduct',
+                'controller' => 'MauticChannelBundle:Product:delete',
             ],
             'category_create' => [
                 'path'       => '/category/{objectAction}/{objectId}',

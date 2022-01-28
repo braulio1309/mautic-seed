@@ -111,4 +111,14 @@ class ProductModel extends CommonFormModel
 
         return $formFactory->create(ProductForm::class, $entity, $options);
     }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @return string
+     */
+    public function getPermissionBase()
+    {
+        return 'channel:product';
+    }
 }

@@ -111,7 +111,7 @@ $view['slots']->set('headerTitle', 'Products');
 
                                     'delete'   => '',
                                 ],
-                                'routeBase' => 'campaign',
+                                'routeBase' => 'product',
                             ]
                         );
                         ?>
@@ -119,8 +119,8 @@ $view['slots']->set('headerTitle', 'Products');
                     <td>
                         <div>
                             <a href="<?php echo $view['router']->path(
-                                'product_delete',
-                                ['objectId' => $pro['id']]
+                                'products_create',
+                                ['objectAction' => 'edit', 'objectId' => $item->getId()]
                             ); ?>" data-toggle="ajax">
                                 <?php echo $item->getProductName(); ?>
                             <?php echo $view['content']->getCustomContent('campaign.name', $mauticTemplateVars); ?>

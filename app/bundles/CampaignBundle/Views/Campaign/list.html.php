@@ -13,7 +13,6 @@ $view['slots']->set('headerTitle', $view['translator']->trans('mautic.campaign.c
 if ('index' == $tmpl) {
     $view->extend('MauticCoreBundle:Standard:index.html.php');
 }
-
 ?>
 <?php if (count($items)): ?>
     <div class="table-responsive">
@@ -137,7 +136,7 @@ if ('index' == $tmpl) {
                             ); ?>
                             <a href="<?php echo $view['router']->path(
                                 'mautic_campaign_action',
-                                ['objectAction' => 'view', 'objectId' => $item->getId()]
+                                ['objectAction' => 'edit', 'objectId' => $item->getId()]
                             ); ?>" data-toggle="ajax">
                                 <?php echo $item->getName(); ?>
                             <?php echo $view['content']->getCustomContent('campaign.name', $mauticTemplateVars); ?>

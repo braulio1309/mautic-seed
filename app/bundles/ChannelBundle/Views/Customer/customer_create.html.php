@@ -26,18 +26,25 @@ $view['slots']->set('headerTitle', $header);
            
 
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-6">
                     <?php echo $view['form']->row($form['name']); ?>
                 </div>
-               
-            </div>
-
-
-            <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-6">
                     <?php echo $view['form']->row($form['lastname']); ?>
                 </div>
             </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <?php echo $view['form']->row($form['phone']); ?>
+                </div>
+                <div class="col-md-6">
+                    <?php echo $view['form']->row($form['email']); ?>
+                </div>
+            </div>
+
+
+            
         </div>
     </div>
     <div class="col-md-3 bg-white height-auto">
