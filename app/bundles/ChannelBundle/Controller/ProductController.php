@@ -30,7 +30,6 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
 
 class ProductController extends AbstractStandardFormController
 {
@@ -79,8 +78,10 @@ class ProductController extends AbstractStandardFormController
     protected $sessionId;
 
     /**
-     * @return array
+     * @return int|null
      */
+    private $objectId = null;
+
     protected function getPermissions()
     {
         //set some permissions
@@ -239,7 +240,7 @@ class ProductController extends AbstractStandardFormController
         $orderBy    = $session->get('mautic.products.orderby', 'c.dateModified');
         $orderByDir = $session->get('mautic.products.orderbydir', 'DESC');
 
-        $items= $this->getModel('channel.product')->getEntities(
+        $items = $this->getModel('channel.product')->getEntities(
             [
                 'start'      => $start,
                 'limit'      => $limit,
@@ -308,16 +309,22 @@ class ProductController extends AbstractStandardFormController
      *
      * @return RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function newAction()
+    public function newAction($objectAction = null, $objectId = null)
     {
+        if (null == $this->objectId) {
+            if (null != $objectId) {
+                $this->objectId = intval($objectId);
+            }
+        }
+
         $productModel = $this->getModel('channel.product');
-        $product      = $productModel->getEntity(($this->request->attributes->get('objectId') > 0) ? $this->request->attributes->get('objectId') : null);
+        $product      = $productModel->getEntity($this->objectId);
 
         //set the page we came from
         $page = $this->get('session')->get('mautic.campaign.page', 1);
 
         $options = $this->getEntityFormOptions();
-        $action  = $this->generateUrl('products_create', ['objectAction' => 'new']);
+        $action  = $this->generateUrl('products_create', ['objectAction' => 'edit', 'objectId' => $this->objectId]);
         $form    = $productModel->createForm($product, $this->get('form.factory'), $action, $options);
 
         ///Check for a submitted form and process it
@@ -602,7 +609,7 @@ class ProductController extends AbstractStandardFormController
         $query = 'SELECT * FROM products; ';
         $stmt  = $db->prepare($query);
         $stmt->execute();
-        $product=$stmt->fetchAll();
+        $product = $stmt->fetchAll();
 
         $viewParameters = [
             'permissionBase'      => $this->getPermissionBase(),
@@ -1172,11 +1179,11 @@ class ProductController extends AbstractStandardFormController
         array $campaignLogCountsProcessed
     ): void {
         foreach ($events as &$event) {
-            $event['logCountForPending'] =
-            $event['logCountProcessed']  =
-            $event['percent']            =
-            $event['yesPercent']         =
-            $event['noPercent']          = 0;
+            $event['logCountForPending']     =
+                $event['logCountProcessed']  =
+                $event['percent']            =
+                $event['yesPercent']         =
+                $event['noPercent']          = 0;
 
             if (isset($campaignLogCounts[$event['id']])) {
                 $loggedCount                 = array_sum($campaignLogCounts[$event['id']]);
@@ -1211,10 +1218,12 @@ class ProductController extends AbstractStandardFormController
 
         // rewrite stats data from parent condition if exist
         foreach ($events as &$event) {
-            if (!empty($event['decisionPath']) &&
+            if (
+                !empty($event['decisionPath']) &&
                 !empty($event['parent_id']) &&
                 isset($events[$event['parent_id']]) &&
-                'condition' !== $event['eventType']) {
+                'condition' !== $event['eventType']
+            ) {
                 $parentEvent                 = $events[$event['parent_id']];
                 $event['percent']            = $parentEvent['percent'];
                 $event['yesPercent']         = $parentEvent['yesPercent'];

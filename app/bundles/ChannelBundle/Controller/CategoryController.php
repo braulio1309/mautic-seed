@@ -79,6 +79,11 @@ class CategoryController extends AbstractStandardFormController
     protected $sessionId;
 
     /**
+     * @return int|null
+     */
+    private $objectId = null;
+
+    /**
      * @return array
      */
     protected function getPermissions()
@@ -236,9 +241,6 @@ class CategoryController extends AbstractStandardFormController
             $filter['force'][] = ['column' => 'c.createdBy', 'expr' => 'eq', 'value' => $this->user->getId()];
         }
 
-        $orderBy    = $session->get('mautic.products.orderby', 'c.dateModified');
-        $orderByDir = $session->get('mautic.products.orderbydir', 'DESC');
-
         $items= $this->getModel('channel.category')->getEntities(
             [
                 'start'      => $start,
@@ -248,7 +250,7 @@ class CategoryController extends AbstractStandardFormController
 
         if (count($items) && count($items) < ($start + 1)) {
             //the number of entities are now less then the current page so redirect to the last page
-            $lastPage = (1 === $count) ? 1 : (((ceil($count / $limit)) ?: 1) ?: 1);
+            $lastPage = (1 === count($items)) ? 1 : (((ceil(count($items) / $limit)) ?: 1) ?: 1);
 
             $session->set('mautic.products.page', $lastPage);
             $returnUrl = $this->generateUrl('category_list', ['page' => $lastPage]);
@@ -286,7 +288,6 @@ class CategoryController extends AbstractStandardFormController
             'limit'               => $limit,
             'permissions'         => $permissions,
             'tmpl'                => $this->request->get('tmpl', 'index'),
-            'product'             => $product,
         ];
 
         return $this->delegateView(
@@ -309,19 +310,22 @@ class CategoryController extends AbstractStandardFormController
      *
      * @return RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function newAction()
+    public function newAction($objectAction = null, $objectId = null)
     {
-        /** @var CampaignModel $model */
-        $model        = $this->getModel('campaign');
-        $campaign     = $model->getEntity();
+        if (null == $this->objectId) {
+            if (null != $objectId) {
+                $this->objectId = intval($objectId);
+            }
+        }
+
         $productModel = $this->getModel('channel.category');
-        $product      =  $productModel->getEntity();
+        $product      = $productModel->getEntity($this->objectId);
 
         //set the page we came from
         $page = $this->get('session')->get('mautic.campaign.page', 1);
 
         $options = $this->getEntityFormOptions();
-        $action  = $this->generateUrl('category_create', ['objectAction' => 'new']);
+        $action  = $this->generateUrl('category_create', ['objectAction' => 'edit', 'objectId' => $this->objectId]);
         $form    = $productModel->createForm($product, $this->get('form.factory'), $action, $options);
 
         ///Check for a submitted form and process it
@@ -329,15 +333,39 @@ class CategoryController extends AbstractStandardFormController
 
         if ($isPost) {
             $valid = false;
-            if ($valid = $this->isFormValid($form)) {
-                $productModel->saveEntity($product);
+            if (!$cancelled = $this->isFormCancelled($form)) {
+                if ($valid = $this->isFormValid($form)) {
+                    $productModel->saveEntity($product);
+                    $viewParameters = ['page' => $page];
+                    $returnUrl      = $this->generateUrl('category_list', $viewParameters);
+                    $template       = 'MauticChannelBundle:Category:index';
+
+                    $passthrough = [
+                        'mauticContent' => 'category',
+                    ];
+                }
+            } else {
                 $viewParameters = ['page' => $page];
                 $returnUrl      = $this->generateUrl('category_list', $viewParameters);
                 $template       = 'MauticChannelBundle:Category:index';
+            }
 
-                $passthrough = [
-                    'mauticContent' => 'category',
-                ];
+            $passthrough = [
+                'mauticContent' => 'product',
+            ];
+
+            if ($isInPopup = isset($form['updateSelect'])) {
+                $template    = false;
+                $passthrough = array_merge(
+                    $passthrough,
+                    $this->getUpdateSelectParams($form['updateSelect']->getData(), $product)
+                );
+            }
+
+            if ($cancelled || ($valid && !$this->isFormApplied($form))) {
+                if ($isInPopup) {
+                    $passthrough['closeModal'] = true;
+                }
             }
             if (($valid && !$this->isFormApplied($form))) {
                 return $this->postActionRedirect(
@@ -359,23 +387,23 @@ class CategoryController extends AbstractStandardFormController
 
         $delegateArgs = [
             'viewParameters' => [
-                'permissionBase'  => $model->getPermissionBase(),
-                'mauticContent'   => 'campaign',
+                'mauticContent'   => 'product',
                 'actionRoute'     => 'category_create',
                 'indexRoute'      => 'category_create',
                 'tablePrefix'     => 'c',
-                'modelName'       => 'campaign',
+                'modelName'       => 'category',
                 'translationBase' => $this->getTranslationBase(),
                 'tmpl'            => $this->request->isXmlHttpRequest() ? $this->request->get('tmpl', 'index') : 'index',
                 'entity'          => $product,
                 'form'            => $this->getFormView($form, 'new'),
                 'product'         => $product,
+                're'              => $this->request->attributes->get('objectId'),
             ],
             'contentTemplate' => 'MauticChannelBundle:Category:category_create.html.php',
             'passthroughVars' => [
                 'mauticContent' => 'category',
                 'route'         => $this->generateUrl(
-                    'category_create',
+                    'products_create',
                     [
                         'objectAction' => (!empty($valid) ? 'edit' : 'new'), //valid means a new form was applied
                         'objectId'     => ($product) ? $product->getId() : 0,
@@ -383,7 +411,7 @@ class CategoryController extends AbstractStandardFormController
                 ),
                 'validationError' => $this->getFormErrorForBuilder($form),
             ],
-            'entity' => $campaign,
+            'entity' => $product,
             'form'   => $form,
         ];
 

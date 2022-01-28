@@ -95,9 +95,8 @@ $view['slots']->set('headerTitle', 'Products');
             </tr>
             </thead>
             <tbody>
-                <?php $i =0; ?>
             <?php foreach ($items as $item): ?>
-            <?php $mauticTemplateVars['item'] = $item; $pro = $product[$i]; ?>
+            <?php $mauticTemplateVars['item'] = $item; ?>
             
                 <tr>
                     <td>
@@ -120,7 +119,7 @@ $view['slots']->set('headerTitle', 'Products');
                         <div>
                             <a href="<?php echo $view['router']->path(
                                 'products_create',
-                                ['objectAction' => 'edit', 'objectId' => $item->getId()]
+                                ['objectAction' => 'edit', 'objectId' => 1]
                             ); ?>" data-toggle="ajax">
                                 <?php echo $item->getProductName(); ?>
                             <?php echo $view['content']->getCustomContent('campaign.name', $mauticTemplateVars); ?>

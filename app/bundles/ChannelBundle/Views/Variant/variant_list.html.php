@@ -99,7 +99,7 @@ if ('index' == $tmpl) {
             <tbody>
                 <?php $i =0; ?>
             <?php foreach ($items as $item): ?>
-            <?php $mauticTemplateVars['item'] = $item; $pro = $product[$i]; ?>
+            <?php $mauticTemplateVars['item'] = $item; ?>
             
                 <tr>
                     <td>
@@ -121,8 +121,8 @@ if ('index' == $tmpl) {
                     <td>
                         <div>
                             <a href="<?php echo $view['router']->path(
-                                'mautic_campaign_action',
-                                ['objectAction' => 'view', 'objectId' => $pro['idvariant']]
+                                'variant_create',
+                                ['objectAction' => 'edit', 'objectId' => $item->getId()]
                             ); ?>" data-toggle="ajax">
                                 <?php echo $item->getName(); ?>
                             <?php echo $view['content']->getCustomContent('campaign.name', $mauticTemplateVars); ?>

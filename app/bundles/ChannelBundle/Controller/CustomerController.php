@@ -79,6 +79,11 @@ class CustomerController extends AbstractStandardFormController
     protected $sessionId;
 
     /**
+     * @return int|null
+     */
+    private $objectId = null;
+
+    /**
      * @return array
      */
     protected function getPermissions()
@@ -286,7 +291,6 @@ class CustomerController extends AbstractStandardFormController
             'limit'               => $limit,
             'permissions'         => $permissions,
             'tmpl'                => $this->request->get('tmpl', 'index'),
-            'product'             => $product,
         ];
 
         return $this->delegateView(
@@ -309,19 +313,22 @@ class CustomerController extends AbstractStandardFormController
      *
      * @return RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function newAction()
+    public function newAction($objectAction = null, $objectId = null)
     {
-        /** @var CampaignModel $model */
-        $model        = $this->getModel('campaign');
-        $campaign     = $model->getEntity();
+        if (null == $this->objectId) {
+            if (null != $objectId) {
+                $this->objectId = intval($objectId);
+            }
+        }
+
         $productModel = $this->getModel('channel.customer');
-        $product      =  $productModel->getEntity();
+        $product      = $productModel->getEntity($this->objectId);
 
         //set the page we came from
         $page = $this->get('session')->get('mautic.campaign.page', 1);
 
         $options = $this->getEntityFormOptions();
-        $action  = $this->generateUrl('customer_create', ['objectAction' => 'new']);
+        $action  = $this->generateUrl('customer_create', ['objectAction' => 'edit', 'objectId' => $this->objectId]);
         $form    = $productModel->createForm($product, $this->get('form.factory'), $action, $options);
 
         ///Check for a submitted form and process it
@@ -329,17 +336,46 @@ class CustomerController extends AbstractStandardFormController
 
         if ($isPost) {
             $valid = false;
-            if ($valid = $this->isFormValid($form)) {
-                $product->setCreatedAt(new \DateTime());
-                $product->setUpdatedAt(new \DateTime());
-                $productModel->saveEntity($product);
-                $viewParameters = ['page' => $page];
-                $returnUrl      = $this->generateUrl('products_list', $viewParameters);
-                $template       = 'MauticChannelBundle:Product:index';
+            if (!$cancelled = $this->isFormCancelled($form)) {
+                if ($valid = $this->isFormValid($form)) {
+                    if ($this->objectId) {
+                        $product->setUpdatedAt(new \DateTime());
+                    } else {
+                        $product->setCreatedAt(new \DateTime());
+                        $product->setUpdatedAt(new \DateTime());
+                    }
 
-                $passthrough = [
-                    'mauticContent' => 'cammpaign',
-                ];
+                    $productModel->saveEntity($product);
+                    $viewParameters = ['page' => $page];
+                    $returnUrl      = $this->generateUrl('customer_list', $viewParameters);
+                    $template       = 'MauticChannelBundle:Customer:index';
+
+                    $passthrough = [
+                        'mauticContent' => 'customer',
+                    ];
+                }
+            } else {
+                $viewParameters = ['page' => $page];
+                $returnUrl      = $this->generateUrl('customer_list', $viewParameters);
+                $template       = 'MauticChannelBundle:Customer:index';
+            }
+
+            $passthrough = [
+                'mauticContent' => 'customer',
+            ];
+
+            if ($isInPopup = isset($form['updateSelect'])) {
+                $template    = false;
+                $passthrough = array_merge(
+                    $passthrough,
+                    $this->getUpdateSelectParams($form['updateSelect']->getData(), $product)
+                );
+            }
+
+            if ($cancelled || ($valid && !$this->isFormApplied($form))) {
+                if ($isInPopup) {
+                    $passthrough['closeModal'] = true;
+                }
             }
             if (($valid && !$this->isFormApplied($form))) {
                 return $this->postActionRedirect(
@@ -361,17 +397,17 @@ class CustomerController extends AbstractStandardFormController
 
         $delegateArgs = [
             'viewParameters' => [
-                'permissionBase'  => $model->getPermissionBase(),
-                'mauticContent'   => 'campaign',
+                'mauticContent'   => 'product',
                 'actionRoute'     => 'customer_create',
                 'indexRoute'      => 'customer_create',
                 'tablePrefix'     => 'c',
-                'modelName'       => 'campaign',
+                'modelName'       => 'customer',
                 'translationBase' => $this->getTranslationBase(),
                 'tmpl'            => $this->request->isXmlHttpRequest() ? $this->request->get('tmpl', 'index') : 'index',
                 'entity'          => $product,
                 'form'            => $this->getFormView($form, 'new'),
                 'product'         => $product,
+                're'              => $this->request->attributes->get('objectId'),
             ],
             'contentTemplate' => 'MauticChannelBundle:Customer:customer_create.html.php',
             'passthroughVars' => [
@@ -385,7 +421,7 @@ class CustomerController extends AbstractStandardFormController
                 ),
                 'validationError' => $this->getFormErrorForBuilder($form),
             ],
-            'entity' => $campaign,
+            'entity' => $product,
             'form'   => $form,
         ];
 

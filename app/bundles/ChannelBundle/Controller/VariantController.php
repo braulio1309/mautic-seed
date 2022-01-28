@@ -79,8 +79,10 @@ class VariantController extends AbstractStandardFormController
     protected $sessionId;
 
     /**
-     * @return array
+     * @return int|null
      */
+    private $objectId = null;
+
     protected function getPermissions()
     {
         //set some permissions
@@ -248,7 +250,7 @@ class VariantController extends AbstractStandardFormController
 
         if (count($items) && count($items) < ($start + 1)) {
             //the number of entities are now less then the current page so redirect to the last page
-            $lastPage = (1 === $count) ? 1 : (((ceil($count / $limit)) ?: 1) ?: 1);
+            $lastPage = (1 === count($items)) ? 1 : (((ceil(count($items) / $limit)) ?: 1) ?: 1);
 
             $session->set('mautic.products.page', $lastPage);
             $returnUrl = $this->generateUrl('variant_list', ['page' => $lastPage]);
@@ -309,19 +311,22 @@ class VariantController extends AbstractStandardFormController
      *
      * @return RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function newAction()
+    public function newAction($objectAction = null, $objectId = null)
     {
-        /** @var CampaignModel $model */
-        $model        = $this->getModel('campaign');
-        $campaign     = $model->getEntity();
+        if (null == $this->objectId) {
+            if (null != $objectId) {
+                $this->objectId = intval($objectId);
+            }
+        }
+
         $productModel = $this->getModel('channel.variant');
-        $product      =  $productModel->getEntity();
+        $product      = $productModel->getEntity($this->objectId);
 
         //set the page we came from
         $page = $this->get('session')->get('mautic.campaign.page', 1);
 
         $options = $this->getEntityFormOptions();
-        $action  = $this->generateUrl('variant_create', ['objectAction' => 'new']);
+        $action  = $this->generateUrl('variant_create', ['objectAction' => 'edit', 'objectId' => $this->objectId]);
         $form    = $productModel->createForm($product, $this->get('form.factory'), $action, $options);
 
         ///Check for a submitted form and process it
@@ -329,15 +334,39 @@ class VariantController extends AbstractStandardFormController
 
         if ($isPost) {
             $valid = false;
-            if ($valid = $this->isFormValid($form)) {
-                $productModel->saveEntity($product);
+            if (!$cancelled = $this->isFormCancelled($form)) {
+                if ($valid = $this->isFormValid($form)) {
+                    $productModel->saveEntity($product);
+                    $viewParameters = ['page' => $page];
+                    $returnUrl      = $this->generateUrl('products_list', $viewParameters);
+                    $template       = 'MauticChannelBundle:Variant:index';
+
+                    $passthrough = [
+                        'mauticContent' => 'product',
+                    ];
+                }
+            } else {
                 $viewParameters = ['page' => $page];
                 $returnUrl      = $this->generateUrl('variant_list', $viewParameters);
                 $template       = 'MauticChannelBundle:Variant:index';
+            }
 
-                $passthrough = [
-                    'mauticContent' => 'cammpaign',
-                ];
+            $passthrough = [
+                'mauticContent' => 'product',
+            ];
+
+            if ($isInPopup = isset($form['updateSelect'])) {
+                $template    = false;
+                $passthrough = array_merge(
+                    $passthrough,
+                    $this->getUpdateSelectParams($form['updateSelect']->getData(), $product)
+                );
+            }
+
+            if ($cancelled || ($valid && !$this->isFormApplied($form))) {
+                if ($isInPopup) {
+                    $passthrough['closeModal'] = true;
+                }
             }
             if (($valid && !$this->isFormApplied($form))) {
                 return $this->postActionRedirect(
@@ -359,17 +388,17 @@ class VariantController extends AbstractStandardFormController
 
         $delegateArgs = [
             'viewParameters' => [
-                'permissionBase'  => $model->getPermissionBase(),
-                'mauticContent'   => 'campaign',
+                'mauticContent'   => 'product',
                 'actionRoute'     => 'variant_create',
                 'indexRoute'      => 'variant_create',
                 'tablePrefix'     => 'c',
-                'modelName'       => 'campaign',
+                'modelName'       => 'variant',
                 'translationBase' => $this->getTranslationBase(),
                 'tmpl'            => $this->request->isXmlHttpRequest() ? $this->request->get('tmpl', 'index') : 'index',
                 'entity'          => $product,
                 'form'            => $this->getFormView($form, 'new'),
                 'product'         => $product,
+                're'              => $this->request->attributes->get('objectId'),
             ],
             'contentTemplate' => 'MauticChannelBundle:Variant:variant_create.html.php',
             'passthroughVars' => [
@@ -383,7 +412,7 @@ class VariantController extends AbstractStandardFormController
                 ),
                 'validationError' => $this->getFormErrorForBuilder($form),
             ],
-            'entity' => $campaign,
+            'entity' => $product,
             'form'   => $form,
         ];
 
