@@ -99,6 +99,7 @@
 !/plugins/MauticSocialBundle
 !/plugins/MauticZapierBundle
 !/plugins/MauticTagManagerBundle
+!/plugins/MauticSmsapiBundle
 !/plugins/index.html
 !/plugins/.gitkeep
 
