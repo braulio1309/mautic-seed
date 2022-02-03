@@ -10,9 +10,7 @@
  */
 $view->extend('MauticCoreBundle:Default:content.html.php');
 
-$header = ($entity->getId()) ?
-    'Edit' :
-    'New Variant';
+$header = 'Variants';
 $view['slots']->set('headerTitle', $header);
 //dd($product);
 ?>

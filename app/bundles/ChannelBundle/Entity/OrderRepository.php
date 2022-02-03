@@ -19,7 +19,7 @@ class OrderRepository extends CommonRepository
     {
         $q = $this
         ->createQueryBuilder('p')
-        ->select('p.product_name');
+        ->select('p');
         $args['qb'] = $q;
 
         return parent::getEntities($args);

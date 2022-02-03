@@ -45,10 +45,10 @@ class Category extends FormEntity
         $builder->setTable('products_categories')
             ->setCustomRepositoryClass('Mautic\ChannelBundle\Entity\CategoryRepository');
         $builder->addIdColumns();
-        $builder->addField('category_name', 'string');
+        $builder->createField('category_name', 'string')->nullable()->build();
 
-        $builder->addField('category_desc', 'string');
-        $builder->addField('subcategory_ids', 'string');
+        $builder->createField('category_desc', 'string')->nullable()->build();
+        $builder->createField('subcategory_ids', 'string')->nullable()->build();
     }
 
     public function getId(): ?int

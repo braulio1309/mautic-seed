@@ -9,10 +9,8 @@
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
-$view['slots']->set('headerTitle', 'Orders');
-if ('index' == $tmpl) {
-    $view->extend('MauticChannelBundle:Order:index.html.php');
-}
+$view['slots']->set('headerTitle', 'Products');
+    $view->extend('MauticChannelBundle:Product:index.html.php');
 ?>
 <?php if (count($items)): ?>
     <div class="table-responsive">
@@ -38,7 +36,7 @@ if ('index' == $tmpl) {
                     [
                         'sessionVar' => 'campaign',
                         'orderBy'    => 'c.name',
-                        'text'       => 'Notes',
+                        'text'       => 'Name',
                         'class'      => 'col-campaign-name',
                     ]
                 );
@@ -48,7 +46,7 @@ if ('index' == $tmpl) {
                     [
                         'sessionVar' => 'campaign',
                         'orderBy'    => 'cat.title',
-                        'text'       => 'Subtotal',
+                        'text'       => 'Description',
                         'class'      => 'visible-md visible-lg col-campaign-category',
                     ]
                 );
@@ -58,7 +56,7 @@ if ('index' == $tmpl) {
                     [
                         'sessionVar' => 'campaign',
                         'orderBy'    => 'c.dateAdded',
-                        'text'       => 'Payment method',
+                        'text'       => 'mautic.lead.import.label.dateAdded',
                         'class'      => 'visible-md visible-lg col-campaign-dateAdded',
                     ]
                 );
@@ -68,7 +66,7 @@ if ('index' == $tmpl) {
                     [
                         'sessionVar' => 'campaign',
                         'orderBy'    => 'c.dateModified',
-                        'text'       => 'Currency',
+                        'text'       => 'mautic.lead.import.label.dateModified',
                         'class'      => 'visible-md visible-lg col-campaign-dateModified',
                         'default'    => true,
                     ]
@@ -79,7 +77,7 @@ if ('index' == $tmpl) {
                     [
                         'sessionVar' => 'campaign',
                         'orderBy'    => 'c.createdByUser',
-                        'text'       => 'Created_at',
+                        'text'       => 'Vendor',
                         'class'      => 'visible-md visible-lg col-campaign-createdByUser',
                     ]
                 );
@@ -97,7 +95,6 @@ if ('index' == $tmpl) {
             </tr>
             </thead>
             <tbody>
-                <?php $i =0; ?>
             <?php foreach ($items as $item): ?>
             <?php $mauticTemplateVars['item'] = $item; ?>
             
@@ -113,7 +110,7 @@ if ('index' == $tmpl) {
 
                                     'delete'   => '',
                                 ],
-                                'routeBase' => 'campaign',
+                                'routeBase' => 'product',
                             ]
                         );
                         ?>
@@ -121,21 +118,20 @@ if ('index' == $tmpl) {
                     <td>
                         <div>
                             <a href="<?php echo $view['router']->path(
-                                'mautic_campaign_action',
-                                ['objectAction' => 'view', 'objectId' => $pro['id']]
+                                'products_create',
+                                ['objectAction' => 'edit', 'objectId' => 1]
                             ); ?>" data-toggle="ajax">
-                                <?php echo $item->getNotes(); ?>
+                                <?php echo $item->getProductName(); ?>
                             <?php echo $view['content']->getCustomContent('campaign.name', $mauticTemplateVars); ?>
                             </a>
                         </div>
                     </td>
                     <td class="visible-md visible-lg">
-                        
-                        <span style="white-space: nowrap;"> <span><?php echo $item->getSubTotalPrice(); ?></span></span>
+                        <span style="white-space: nowrap;"> <span><?php echo $item->getProductDesc(); ?></span></span>
                     </td>
-                    <td class="visible-md visible-lg"><?php echo $item->getPaymentMethod(); ?></td>
-                    <td class="visible-md visible-lg"><?php echo $item->getCurrency(); ?></td>
                     <td class="visible-md visible-lg"><?php echo $item->getCreatedAt() ? $view['date']->toFull($item->getCreatedAt()) : ''; ?></td>
+                    <td class="visible-md visible-lg"><?php echo $item->getUpdatedAt() ? $view['date']->toFull($item->getUpdatedAt()) : ''; ?></td>
+                    <td class="visible-md visible-lg"><?php echo $item->getVendor(); ?></td>
                     <td class="visible-md visible-lg"><?php echo $item->getId(); ?></td>
                 </tr>
             <?php endforeach; ?>
@@ -149,8 +145,8 @@ if ('index' == $tmpl) {
                 'totalItems' => count($items),
                 'page'       => $page,
                 'limit'      => $limit,
-                'menuLinkId' => 'order_list',
-                'baseUrl'    => $view['router']->path('order_list'),
+                'menuLinkId' => 'products_list',
+                'baseUrl'    => $view['router']->path('products_list'),
                 'sessionVar' => 'campaign',
             ]
         ); ?>

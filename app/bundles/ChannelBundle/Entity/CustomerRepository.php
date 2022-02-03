@@ -30,15 +30,19 @@ class CustomerRepository extends CommonRepository
      * @param object $entity
      * @param bool   $flush
      */
-    public function deleteEntity($entity, $flush = true)
+    public function getCustomerList($bundle, $search = '', $limit = 10, $start = 0, $includeGlobal = true)
     {
-        // Null parents of associated events first
-        $q = $this->getEntityManager()->getConnection()->createQueryBuilder();
-        $q->update(MAUTIC_TABLE_PREFIX.'customers')
-            ->where('id = '.$entity->getId())
-            ->execute();
+        $q = $this->createQueryBuilder('c');
+        $q->select('c');
 
-        parent::deleteEntity($entity, $flush);
+        if (!empty($search)) {
+            $q->andWhere($q->expr()->like('c.name', ':search'))
+                ->setParameter('search', "{$search}%");
+        }
+
+        $q->orderBy('c.name');
+
+        return $q->getQuery()->getArrayResult();
     }
 
     /**

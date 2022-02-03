@@ -662,9 +662,7 @@ return [
             'mautic.form.type.leaddevice' => [
                 'class' => Mautic\LeadBundle\Form\Type\DeviceType::class,
             ],
-            'mautic.form.type.lead_import' => [
-                'class' => \Mautic\LeadBundle\Form\Type\LeadImportType::class,
-            ],
+
             'mautic.form.type.lead_field_import' => [
                 'class'     => \Mautic\LeadBundle\Form\Type\LeadImportFieldType::class,
                 'arguments' => ['translator', 'doctrine.orm.entity_manager'],

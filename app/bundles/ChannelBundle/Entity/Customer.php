@@ -55,9 +55,10 @@ class Customer
             ->setCustomRepositoryClass('Mautic\ChannelBundle\Entity\CustomerRepository');
 
         $builder->addIdColumns();
-        $builder->addField('lastname', 'string');
-        $builder->addField('email', 'string');
-        $builder->addField('phone', 'string');
+
+        $builder->createField('lastname', 'string')->nullable()->build();
+        $builder->createField('email', 'string')->nullable()->build();
+        $builder->createField('phone', 'string')->nullable()->build();
         $builder->addField('created_at', 'datetime');
         $builder->addField('updated_at', 'datetime');
     }

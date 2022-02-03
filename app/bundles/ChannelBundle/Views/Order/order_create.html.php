@@ -10,9 +10,10 @@
  */
 $view->extend('MauticCoreBundle:Default:content.html.php');
 
-$header = 'Customer';
-$view['slots']->set('headerTitle', $header);
-//dd($product);
+$header = ($entity->getId()) ?
+    'Edit' :
+    'New Product';
+$view['slots']->set('headerTitle', 'Orders');
 ?>
 
 <?php echo $view['form']->start($form); ?>
@@ -25,34 +26,40 @@ $view['slots']->set('headerTitle', $header);
 
             <div class="row">
                 <div class="col-md-6">
-                    <?php echo $view['form']->row($form['name']); ?>
+                    <?php echo $view['form']->row($form['subtotal_price']); ?>
                 </div>
                 <div class="col-md-6">
-                    <?php echo $view['form']->row($form['lastname']); ?>
+                    <?php echo $view['form']->row($form['total_tax']); ?>
+
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-6">
-                    <?php echo $view['form']->row($form['phone']); ?>
+                    <?php echo $view['form']->row($form['payment_method']); ?>
+
                 </div>
                 <div class="col-md-6">
-                    <?php echo $view['form']->row($form['email']); ?>
+                    <?php echo $view['form']->row($form['currency']); ?>
+
                 </div>
+                
             </div>
 
-
             
+
+            <div class="row">
+                <div class="col-md-12">
+                    <?php echo $view['form']->row($form['notes']); ?>
+                </div>
+            </div>
         </div>
     </div>
     <div class="col-md-3 bg-white height-auto">
         <div class="pr-lg pl-lg pt-md pb-md">
             <?php
-          /* echo $view['form']->row($form['category']);
-            echo $view['form']->row($form['allowRestart']);
-            echo $view['form']->row($form['isPublished']);
-            echo $view['form']->row($form['publishUp']);
-            echo $view['form']->row($form['publishDown']);*/
+                //echo $view['form']->row($form['customer']);
+
             ?>
         </div>
     </div>

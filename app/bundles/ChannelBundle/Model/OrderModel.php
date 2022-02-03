@@ -11,34 +11,34 @@
 
 namespace Mautic\ChannelBundle\Model;
 
-use Mautic\ChannelBundle\Entity\Customer;
-use Mautic\ChannelBundle\Form\Type\CustomerForm;
+use Mautic\ChannelBundle\Entity\Order;
+use Mautic\ChannelBundle\Form\Type\OrderForm;
 use Mautic\CoreBundle\Model\FormModel as CommonFormModel;
 
-class CustomerModel extends CommonFormModel
+class OrderModel extends CommonFormModel
 {
     /**
      * Get a specific entity or generate a new one if id is empty.
      *
      * @param $id
      *
-     * @return Customer|null
+     * @return Order|null
      */
     public function getEntity($id = null)
     {
         if (null === $id) {
-            return new Customer();
+            return new Order();
         }
 
         return parent::getEntity($id);
     }
 
     /**
-     * @return \Doctrine\ORM\EntityRepository|\Mautic\ChannelBundle\Entity\CustomerRepository
+     * @return \Doctrine\ORM\EntityRepository|\Mautic\ChannelBundle\Entity\OrderRepository
      */
     public function getRepository()
     {
-        $repo = $this->em->getRepository('MauticChannelBundle:Customer');
+        $repo = $this->em->getRepository('MauticChannelBundle:Order');
 
         return $repo;
     }
@@ -57,31 +57,24 @@ class CustomerModel extends CommonFormModel
      */
     public function createForm($entity, $formFactory, $action = null, $options = [])
     {
+        if (!$entity instanceof Order) {
+            throw new MethodNotAllowedHttpException(['order']);
+        }
+
         if (!empty($action)) {
             $options['action'] = $action;
         }
 
-        return $formFactory->create(CustomerForm::class, $entity, $options);
+        return $formFactory->create(OrderForm::class, $entity, $options);
     }
 
     /**
-     * Get list of entities for autopopulate fields.
+     * {@inheritdoc}
      *
-     * @param $bundle
-     * @param $filter
-     * @param $limit
-     *
-     * @return array
+     * @return string
      */
-    public function getLookupResults($bundle, $filter = '', $limit = 10)
+    public function getPermissionBase()
     {
-        static $results = [];
-
-        $key = $bundle.$filter.$limit;
-        if (!isset($results[$key])) {
-            $results[$key] = $this->getRepository()->getCustomerList($bundle, $filter, $limit, 0);
-        }
-
-        return $results[$key];
+        return 'channel:order';
     }
 }

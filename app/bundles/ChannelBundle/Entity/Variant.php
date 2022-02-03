@@ -40,9 +40,9 @@ class Variant extends FormEntity
         $builder->setTable('variants')
             ->setCustomRepositoryClass('Mautic\ChannelBundle\Entity\VariantRepository');
         $builder->addIdColumns();
-        $builder->addField('value_variant', 'string');
+        $builder->createField('value_variant', 'string')->nullable()->build();
 
-        $builder->addField('quantity', 'integer');
+        $builder->createField('quantity', 'integer')->nullable()->build();
     }
 
     public function getId(): ?int

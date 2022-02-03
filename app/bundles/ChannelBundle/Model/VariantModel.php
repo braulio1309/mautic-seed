@@ -57,10 +57,6 @@ class VariantModel extends CommonFormModel
      */
     public function createForm($entity, $formFactory, $action = null, $options = [])
     {
-        if (!$entity instanceof Variant) {
-            throw new MethodNotAllowedHttpException(['Variant']);
-        }
-
         if (!empty($action)) {
             $options['action'] = $action;
         }

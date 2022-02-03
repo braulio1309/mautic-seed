@@ -343,8 +343,8 @@ class ProductController extends AbstractStandardFormController
 
                     $productModel->saveEntity($product);
                     $viewParameters = ['page' => $page];
-                    $returnUrl      = $this->generateUrl('products_list', $viewParameters);
-                    $template       = 'MauticChannelBundle:Product:index';
+                    $returnUrl      = $this->generateUrl('products_list', ['page' => 1]);
+                    $template       = 'MauticChannelBundle:Product:product_list.html.php';
 
                     $passthrough = [
                         'mauticContent' => 'product',
@@ -353,7 +353,7 @@ class ProductController extends AbstractStandardFormController
             } else {
                 $viewParameters = ['page' => $page];
                 $returnUrl      = $this->generateUrl('products_list', $viewParameters);
-                $template       = 'MauticChannelBundle:Product:index';
+                $template       = 'MauticChannelBundle:Product:product_list.html.php';
             }
 
             $passthrough = [
@@ -377,13 +377,13 @@ class ProductController extends AbstractStandardFormController
                 return $this->postActionRedirect(
                     $this->getPostActionRedirectArguments(
                         [
-                            'returnUrl'       => $returnUrl,
+                            'returnUrl'       => $this->generateUrl('products_list', $viewParameters),
                             'viewParameters'  => $viewParameters,
-                            'contentTemplate' => $template,
+                            'contentTemplate' => 'MauticChannelBundle:Product:product_list.html.php',
                             'passthroughVars' => $passthrough,
                             'entity'          => $product,
                         ],
-                        'new'
+                        'index'
                     )
                 );
             } elseif ($valid && $this->isFormApplied($form)) {
@@ -397,7 +397,7 @@ class ProductController extends AbstractStandardFormController
                 'actionRoute'     => 'products_create',
                 'indexRoute'      => 'products_create',
                 'tablePrefix'     => 'c',
-                'modelName'       => 'campaign',
+                'modelName'       => 'product',
                 'translationBase' => $this->getTranslationBase(),
                 'tmpl'            => $this->request->isXmlHttpRequest() ? $this->request->get('tmpl', 'index') : 'index',
                 'entity'          => $product,

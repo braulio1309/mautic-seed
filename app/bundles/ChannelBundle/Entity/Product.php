@@ -104,15 +104,15 @@ class Product
             ->setCustomRepositoryClass('Mautic\ChannelBundle\Entity\ProductRepository');
 
         $builder->addIdColumns();
-        $builder->addField('product_name', 'string');
-        $builder->addField('product_desc', 'string');
-        $builder->addField('category_id', 'integer');
-        $builder->addField('vendor', 'string');
-        $builder->addField('currency', 'string');
-        $builder->addField('tags', 'string');
-        $builder->addField('initial_price', 'decimal');
-        $builder->addField('initial_quantity', 'integer');
-        $builder->addField('variant_ids', 'json');
+        $builder->createField('product_name', 'string')->nullable()->build();
+        $builder->createField('product_desc', 'string')->nullable()->build();
+        $builder->createField('category_id', 'integer')->nullable()->build();
+        $builder->createField('vendor', 'string')->nullable()->build();
+        $builder->createField('currency', 'string')->nullable()->build();
+        $builder->createField('tags', 'string')->nullable()->build();
+        $builder->createField('initial_price', 'decimal')->nullable()->build();
+        $builder->createField('initial_quantity', 'integer')->nullable()->build();
+        $builder->createField('variant_ids', 'json')->nullable()->build();
         $builder->addField('created_at', 'datetime');
         $builder->addField('updated_at', 'datetime');
     }
