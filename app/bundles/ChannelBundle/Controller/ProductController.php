@@ -374,18 +374,7 @@ class ProductController extends AbstractStandardFormController
                 }
             }
             if (($valid && !$this->isFormApplied($form))) {
-                return $this->postActionRedirect(
-                    $this->getPostActionRedirectArguments(
-                        [
-                            'returnUrl'       => $this->generateUrl('products_list', $viewParameters),
-                            'viewParameters'  => $viewParameters,
-                            'contentTemplate' => 'MauticChannelBundle:Product:product_list.html.php',
-                            'passthroughVars' => $passthrough,
-                            'entity'          => $product,
-                        ],
-                        'index'
-                    )
-                );
+                return $this->indexAction(1);
             } elseif ($valid && $this->isFormApplied($form)) {
                 return $this->editAction($product->getId(), true);
             }

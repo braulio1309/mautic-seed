@@ -86,8 +86,11 @@ class Order
         $builder->createField('subtotal_price', 'decimal')
         ->nullable()
         ->build();
+        $builder->createField('customer_id', 'integer')
+        ->nullable()
+        ->build();
         $builder->addField('payment_method', 'string');
-        $builder->addField('currency', 'string');
+        $builder->addField('currency_id', 'string');
         $builder->createField('notes', 'string')
         ->nullable()
         ->build();
@@ -162,14 +165,14 @@ class Order
         return $this;
     }
 
-    public function getCustomer(): ?string
+    public function getCustomerId(): ?int
     {
-        return $this->customer;
+        return $this->customer_id;
     }
 
-    public function setCustomer(string $customer): self
+    public function setCustomerId($customer_id): self
     {
-        $this->customer = $customer;
+        $this->customer_id = $customer_id;
 
         return $this;
     }

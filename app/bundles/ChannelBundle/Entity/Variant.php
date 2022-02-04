@@ -4,9 +4,8 @@ namespace Mautic\ChannelBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Mautic\CoreBundle\Doctrine\Mapping\ClassMetadataBuilder;
-use Mautic\CoreBundle\Entity\FormEntity;
 
-class Variant extends FormEntity
+class Variant
 {
     /**
      * @var int
@@ -40,9 +39,8 @@ class Variant extends FormEntity
         $builder->setTable('variants')
             ->setCustomRepositoryClass('Mautic\ChannelBundle\Entity\VariantRepository');
         $builder->addIdColumns();
-        $builder->createField('value_variant', 'string')->nullable()->build();
 
-        $builder->createField('quantity', 'integer')->nullable()->build();
+        $builder->createField('value_variant', 'string')->nullable()->build();
     }
 
     public function getId(): ?int

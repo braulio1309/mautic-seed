@@ -28,7 +28,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
-class ImportController extends FormController
+class ImportOrderController extends FormController
 {
     // Steps of the import
     const STEP_UPLOAD_CSV      = 1;
@@ -76,55 +76,21 @@ class ImportController extends FormController
             true
         );
 
-        if (!$permissions['campaign:campaigns:view']) {
-            return $this->accessDenied();
-        }
+        $items = $this->getModel('channel.order')->getEntities();
 
-        $this->setListFilters();
-
-        $session = $this->get('session');
-        if (empty($page)) {
-            $page = $session->get('mautic.products.page', 1);
-        }
-
-        //set limits
-        $limit = $session->get('mautic.products.limit', $this->coreParametersHelper->get('default_pagelimit'));
-        $start = (1 === $page) ? 0 : (($page - 1) * $limit);
-        if ($start < 0) {
-            $start = 0;
-        }
-
-        $search = $this->request->get('search', $session->get('mautic.products.filter', ''));
-        $session->set('mautic.products.filter', $search);
-
-        $filter = ['string' => $search, 'force' => []];
-
-        if (!$permissions[$this->getPermissionBase().':viewother']) {
-            $filter['force'][] = ['column' => 'c.createdBy', 'expr' => 'eq', 'value' => $this->user->getId()];
-        }
-
-        $orderBy    = $session->get('mautic.products.orderby', 'c.dateModified');
-        $orderByDir = $session->get('mautic.products.orderbydir', 'DESC');
-
-        $items = $this->getModel('channel.product')->getEntities(
-            [
-                'start'      => $start,
-                'limit'      => $limit,
-            ]
-        );
-        if ($count && $count < ($start + 1)) {
+        if (count($items) && count($items) < ($start + 1)) {
             //the number of entities are now less then the current page so redirect to the last page
-            $lastPage = (1 === $count) ? 1 : (((ceil($count / $limit)) ?: 1) ?: 1);
+            $lastPage = (1 === count($items)) ? 1 : (((ceil(count($items) / $limit)) ?: 1) ?: 1);
 
             $session->set('mautic.products.page', $lastPage);
-            $returnUrl = $this->generateUrl('products_list', ['page' => $lastPage]);
+            $returnUrl = $this->generateUrl('order_list', ['page' => $lastPage]);
 
             return $this->postActionRedirect(
                 $this->getPostActionRedirectArguments(
                     [
                         'returnUrl'       => $returnUrl,
                         'viewParameters'  => ['page' => $lastPage],
-                        'contentTemplate' => 'MauticChannelBundle:Product:product_list.html.php',
+                        'contentTemplate' => 'MauticChannelBundle:Order:order_list.html.php',
                         'passthroughVars' => [
                             'mauticContent' => 'mautic',
                         ],
@@ -133,9 +99,6 @@ class ImportController extends FormController
                 )
             );
         }
-
-        //set what page currently on so that we can return here after form submission/cancellation
-        $session->set('mautic.campaign.page', $page);
 
         $viewParameters = [
             'permissionBase'      => $this->getPermissionBase(),
@@ -159,10 +122,10 @@ class ImportController extends FormController
             $this->getViewArguments(
                 [
                     'viewParameters'  => $viewParameters,
-                    'contentTemplate' => 'MauticChannelBundle:Product:product_list.html.php',
+                    'contentTemplate' => 'MauticChannelBundle:Order:order_list.html.php',
                     'passthroughVars' => [
                         'mauticContent' => $this->getJsLoadMethodPrefix(),
-                        'route'         => $this->generateUrl('products_list', ['page' => $page]),
+                        'route'         => $this->generateUrl('order_list', ['page' => $page]),
                     ],
                 ],
                 'index'
@@ -322,7 +285,7 @@ class ImportController extends FormController
 
         $progress = (new Progress())->bindArray($session->get('mautic.'.$object.'.import.progress', [0, 0]));
         $import   = $importModel->getEntity();
-        $action   = $this->generateUrl('product_import_action', ['object' => $this->request->get('object'), 'objectAction' => 'new']);
+        $action   = $this->generateUrl('order_import_action', ['object' => $this->request->get('object'), 'objectAction' => 'new']);
 
         switch ($step) {
             case self::STEP_UPLOAD_CSV:
@@ -410,70 +373,69 @@ class ImportController extends FormController
                             if (!empty($fileData)) {
                                 $errorMessage    = null;
                                 $errorParameters = [];
-                                try {
-                                    // Create the import dir recursively
-                                    $fs->mkdir($importDir);
+                                //try {
+                                // Create the import dir recursively
+                                $fs->mkdir($importDir);
 
-                                    $fileData->move($importDir, $fileName);
+                                $fileData->move($importDir, $fileName);
 
-                                    $file = new \SplFileObject($fullPath);
+                                $file = new \SplFileObject($fullPath);
 
-                                    $config = $form->getData();
+                                $config = $form->getData();
 
-                                    unset($config['file']);
-                                    unset($config['start']);
+                                unset($config['file']);
+                                unset($config['start']);
 
-                                    foreach ($config as $key => &$c) {
-                                        $c = htmlspecialchars_decode($c);
-                                        if ('batchlimit' == $key) {
-                                            $c = (int) $c;
+                                foreach ($config as $key => &$c) {
+                                    $c = htmlspecialchars_decode($c);
+                                    if ('batchlimit' == $key) {
+                                        $c = (int) $c;
+                                    }
+                                }
+
+                                $session->set('mautic.'.$object.'.import.config', $config);
+
+                                if (false !== $file) {
+                                    $i            =0;
+                                    $productModel = $this->getModel('channel.order');
+
+                                    $data = 1;
+                                    while (1 == $data || !$file->eof()) {
+                                        $data = $file->fgetcsv($config['delimiter'], $config['enclosure'], $config['escape']);
+                                        if ($i > 0 && $data[0]) {
+                                            $product = $productModel->getEntity();
+                                            $product->setNotes($data[0]);
+                                            $product->setSubtotalPrice($data[1]);
+                                            $product->setTotalTax($data[2]);
+                                            $product->setPaymentMethod($data[3]);
+                                            $product->setCreatedAt(new \DateTime());
+                                            $product->setUpdatedAt(new \DateTime());
+                                            $productModel->saveEntity($product);
                                         }
+                                        ++$i;
                                     }
 
-                                    $session->set('mautic.'.$object.'.import.config', $config);
+                                    return $this->indexAction(1);
 
-                                    if (false !== $file) {
-                                        $i            =0;
-                                        $productModel = $this->getModel('channel.product');
+                                    // Get the headers for matching
+                                    $headers = $file->fgetcsv($config['delimiter'], $config['enclosure'], $config['escape']);
 
-                                        $data = 1;
-                                        while (1 == $data || !$file->eof()) {
-                                            $data = $file->fgetcsv($config['delimiter'], $config['enclosure'], $config['escape']);
-                                            if ($i > 0 && $data[0]) {
-                                                $product = $productModel->getEntity();
-                                                $product->setProductName($data[0]);
-                                                $product->setProductDesc($data[1]);
-                                                $product->setVendor($data[3]);
-                                                $product->setInitialQuantity($data[5]);
-                                                $product->setInitialPrice($data[6]);
-                                                $product->setCreatedAt(new \DateTime());
-                                                $product->setUpdatedAt(new \DateTime());
-                                                $productModel->saveEntity($product);
-                                            }
-                                            ++$i;
-                                        }
+                                    // Get the number of lines so we can track progress
+                                    $file->seek(PHP_INT_MAX);
+                                    $linecount = $file->key();
+                                    if (!empty($headers) && is_array($headers)) {
+                                        $headers = CsvHelper::sanitizeHeaders($headers);
 
-                                        return $this->indexAction(1);
+                                        $session->set('mautic.'.$object.'.import.headers', $headers);
+                                        $session->set('mautic.'.$object.'.import.step', self::STEP_MATCH_FIELDS);
+                                        $session->set('mautic.'.$object.'.import.importfields', CsvHelper::convertHeadersIntoFields($headers));
+                                        $session->set('mautic.'.$object.'.import.progress', [0, $linecount]);
+                                        $session->set('mautic.'.$object.'.import.original.file', $fileData->getClientOriginalName());
 
-                                        // Get the headers for matching
-                                        $headers = $file->fgetcsv($config['delimiter'], $config['enclosure'], $config['escape']);
-
-                                        // Get the number of lines so we can track progress
-                                        $file->seek(PHP_INT_MAX);
-                                        $linecount = $file->key();
-                                        if (!empty($headers) && is_array($headers)) {
-                                            $headers = CsvHelper::sanitizeHeaders($headers);
-
-                                            $session->set('mautic.'.$object.'.import.headers', $headers);
-                                            $session->set('mautic.'.$object.'.import.step', self::STEP_MATCH_FIELDS);
-                                            $session->set('mautic.'.$object.'.import.importfields', CsvHelper::convertHeadersIntoFields($headers));
-                                            $session->set('mautic.'.$object.'.import.progress', [0, $linecount]);
-                                            $session->set('mautic.'.$object.'.import.original.file', $fileData->getClientOriginalName());
-
-                                            return $this->newAction(0, true);
-                                        }
+                                        return $this->newAction(0, true);
                                     }
-                                } catch (FileException $e) {
+                                }
+                                /*} catch (FileException $e) {
                                     if (false !== strpos($e->getMessage(), 'upload_max_filesize')) {
                                         $errorMessage    = 'mautic.lead.import.filetoolarge';
                                         $errorParameters = [
@@ -492,7 +454,7 @@ class ImportController extends FormController
                                             )
                                         );
                                     }
-                                }
+                                }*/
                             }
                         }
                         break;

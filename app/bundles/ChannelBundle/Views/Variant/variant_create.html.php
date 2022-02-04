@@ -12,7 +12,6 @@ $view->extend('MauticCoreBundle:Default:content.html.php');
 
 $header = 'Variants';
 $view['slots']->set('headerTitle', $header);
-//dd($product);
 ?>
 
 <?php echo $view['form']->start($form); ?>

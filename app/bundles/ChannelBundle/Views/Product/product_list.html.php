@@ -119,7 +119,7 @@ $view['slots']->set('headerTitle', 'Products');
                         <div>
                             <a href="<?php echo $view['router']->path(
                                 'products_create',
-                                ['objectAction' => 'edit', 'objectId' => 1]
+                                ['objectAction' => 'edit', 'objectId' => $item->getId()]
                             ); ?>" data-toggle="ajax">
                                 <?php echo $item->getProductName(); ?>
                             <?php echo $view['content']->getCustomContent('campaign.name', $mauticTemplateVars); ?>

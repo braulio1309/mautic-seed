@@ -10,10 +10,9 @@
  */
 
 $view['slots']->set('headerTitle', 'Customers');
-if ('index' == $tmpl) {
+
     $view->extend('MauticChannelBundle:Customer:index.html.php');
-}
-//dd($product[0]['id']);
+
 ?>
 <?php if (count($items)): ?>
     <div class="table-responsive">

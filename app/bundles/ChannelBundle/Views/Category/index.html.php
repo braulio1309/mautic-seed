@@ -15,7 +15,7 @@ $view['slots']->set('headerTitle', 'Categories');
 $pageButtons   = [];
 $pageButtons[] = [
     'attr' => [
-        'href' => $view['router']->path('mautic_import_action', ['object' => 'companies', 'objectAction' => 'new']),
+        'href' => $view['router']->path('category_import_action', ['object' => 'companies', 'objectAction' => 'new']),
     ],
     'iconClass' => 'fa fa-upload',
     'btnText'   => 'Import',
@@ -23,7 +23,7 @@ $pageButtons[] = [
 
 $pageButtons[] = [
     'attr' => [
-        'href' => $view['router']->path('category_create', ['objectId' => 'product', 'objectAction' => 'new']),
+        'href' => $view['router']->path('category_create', ['objectId' => null, 'objectAction' => 'new']),
     ],
     'iconClass' => 'fa fa-history',
     'btnText'   => 'New',

@@ -58,7 +58,7 @@ $view['slots']->set('headerTitle', 'Orders');
     <div class="col-md-3 bg-white height-auto">
         <div class="pr-lg pl-lg pt-md pb-md">
             <?php
-                //echo $view['form']->row($form['customer']);
+                echo $view['form']->row($form['customer_id']);
 
             ?>
         </div>

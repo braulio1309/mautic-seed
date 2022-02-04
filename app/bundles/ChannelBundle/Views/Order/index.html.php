@@ -15,7 +15,7 @@ $view['slots']->set('headerTitle', 'Orders');
 $pageButtons   = [];
 $pageButtons[] = [
     'attr' => [
-        'href' => $view['router']->path('mautic_import_action', ['object' => 'companies', 'objectAction' => 'new']),
+        'href' => $view['router']->path('order_import_action', ['object' => 'companies', 'objectAction' => 'new']),
     ],
     'iconClass' => 'fa fa-upload',
     'btnText'   => 'Import',

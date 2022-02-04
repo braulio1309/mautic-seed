@@ -4,9 +4,8 @@ namespace Mautic\ChannelBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Mautic\CoreBundle\Doctrine\Mapping\ClassMetadataBuilder;
-use Mautic\CoreBundle\Entity\FormEntity;
 
-class Category extends FormEntity
+class Category
 {
     /**
      * @var int
@@ -48,7 +47,6 @@ class Category extends FormEntity
         $builder->createField('category_name', 'string')->nullable()->build();
 
         $builder->createField('category_desc', 'string')->nullable()->build();
-        $builder->createField('subcategory_ids', 'string')->nullable()->build();
     }
 
     public function getId(): ?int

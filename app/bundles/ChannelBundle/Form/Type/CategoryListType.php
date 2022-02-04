@@ -11,7 +11,7 @@
 
 namespace Mautic\ChannelBundle\Form\Type;
 
-use Mautic\ChannelBundle\Model\CustomerModel;
+use Mautic\ChannelBundle\Model\CategoryModel;
 use Mautic\CoreBundle\Security\Permissions\CorePermissions;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -22,7 +22,7 @@ use Symfony\Component\Translation\TranslatorInterface;
 /**
  * Class CampaignListType.
  */
-class CustomerListType extends AbstractType
+class CategoryListType extends AbstractType
 {
     /**
      * @var CampaignModel
@@ -39,7 +39,7 @@ class CustomerListType extends AbstractType
      */
     private $canViewOther = false;
 
-    public function __construct(CustomerModel $categoryModel, TranslatorInterface $translator, CorePermissions $security)
+    public function __construct(CategoryModel $categoryModel, TranslatorInterface $translator, CorePermissions $security)
     {
         $this->model        = $categoryModel;
         $this->translator   = $translator;
@@ -55,9 +55,9 @@ class CustomerListType extends AbstractType
             [
                 'choices'      => function (Options $options) {
                     $choices   = [];
-                    $categories = $this->model->getRepository()->getCustomer();
+                    $categories = $this->model->getRepository()->getCategories();
                     foreach ($categories as $category) {
-                        $choices[$category['name'].' '.$category['lastname']] = $category['id'];
+                        $choices[$category['category_name']] = $category['id'];
                     }
 
                     //sort by language

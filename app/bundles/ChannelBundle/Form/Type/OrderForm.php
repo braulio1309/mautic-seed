@@ -16,6 +16,7 @@ use Mautic\CoreBundle\Form\Type\FormButtonsType;
 use Mautic\CoreBundle\Security\Permissions\CorePermissions;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -35,13 +36,13 @@ class OrderForm extends AbstractType
     {
         $builder->addEventSubscriber(new CleanFormSubscriber(['description' => 'html']));
 
-        $builder->add('subtotal_price', TextType::class, [
+        $builder->add('subtotal_price', NumberType::class, [
             'label'      => 'Subtotal',
             'label_attr' => ['class' => 'control-label'],
             'attr'       => ['class' => 'form-control'],
         ]);
 
-        $builder->add('total_tax', TextType::class, [
+        $builder->add('total_tax', NumberType::class, [
             'label'      => 'Tax',
             'label_attr' => ['class' => 'control-label'],
             'attr'       => ['class' => 'form-control editor'],
@@ -68,10 +69,21 @@ class OrderForm extends AbstractType
             'attr'       => ['class' => 'form-control'],
         ]);
 
-        //add customer
-        /* $builder->add('customer', CustomerListType::class, [
-             'bundle' => 'campaign',
-         ]);*/
+        $builder->add(
+            $builder->create(
+                'customer_id',
+                CustomerListType::class,
+                [
+                    'label'      => 'Customer',
+                    'label_attr' => ['class' => 'control-label'],
+                    'attr'       => [
+                        'class' => 'form-control',
+                    ],
+                    'required' => false,
+                    'multiple' => false,
+                ]
+            )
+        );
 
         $builder->add('sessionId', HiddenType::class, [
             'mapped' => false,

@@ -11,13 +11,13 @@
 
 namespace Mautic\ChannelBundle\Form\Type;
 
-use Mautic\CategoryBundle\Form\Type\CategoryListType;
 use Mautic\CoreBundle\Form\EventListener\CleanFormSubscriber;
 use Mautic\CoreBundle\Form\EventListener\FormExitSubscriber;
 use Mautic\CoreBundle\Form\Type\FormButtonsType;
 use Mautic\CoreBundle\Security\Permissions\CorePermissions;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -56,13 +56,29 @@ class ProductForm extends AbstractType
             'required'   => false,
         ]);
 
-        $builder->add('initial_quantity', TextType::class, [
+        $builder->add(
+            $builder->create(
+                'category_id',
+                CategoryListType::class,
+                [
+                    'label'      => 'Category',
+                    'label_attr' => ['class' => 'control-label'],
+                    'attr'       => [
+                        'class' => 'form-control',
+                    ],
+                    'required' => false,
+                    'multiple' => false,
+                ]
+            )
+        );
+
+        $builder->add('initial_quantity', NumberType::class, [
             'label'      => 'Quantity',
             'label_attr' => ['class' => 'control-label'],
             'attr'       => ['class' => 'form-control'],
         ]);
 
-        $builder->add('initial_price', textType::class, [
+        $builder->add('initial_price', NumberType::class, [
             'label'      => 'Price',
             'label_attr' => ['class' => 'control-label'],
             'attr'       => ['class' => 'form-control'],
@@ -73,22 +89,6 @@ class ProductForm extends AbstractType
             'label_attr' => ['class' => 'control-label'],
             'attr'       => ['class' => 'form-control'],
         ]);
-
-        //add category
-        /*$builder->add('category', CategoryListType::class, [
-            'bundle' => 'campaign',
-        ]);
-
-        if (!empty($options['data']) && $options['data']->getId()) {
-            $readonly = !$this->security->isGranted('campaign:campaigns:publish');
-            $data     = $options['data']->isPublished(false);
-        } elseif (!$this->security->isGranted('campaign:campaigns:publish')) {
-            $readonly = true;
-            $data     = false;
-        } else {
-            $readonly = false;
-            $data     = false;
-        }*/
 
         $builder->add('sessionId', HiddenType::class, [
             'mapped' => false,

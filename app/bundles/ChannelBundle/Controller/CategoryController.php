@@ -319,7 +319,7 @@ class CategoryController extends AbstractStandardFormController
         }
 
         $productModel = $this->getModel('channel.category');
-        $product      = $productModel->getEntity($this->objectId);
+        $product      = $productModel->getEntity(($this->objectId) ? $this->objectId : null);
 
         //set the page we came from
         $page = $this->get('session')->get('mautic.campaign.page', 1);
@@ -403,7 +403,7 @@ class CategoryController extends AbstractStandardFormController
             'passthroughVars' => [
                 'mauticContent' => 'category',
                 'route'         => $this->generateUrl(
-                    'products_create',
+                    'category_create',
                     [
                         'objectAction' => (!empty($valid) ? 'edit' : 'new'), //valid means a new form was applied
                         'objectId'     => ($product) ? $product->getId() : 0,

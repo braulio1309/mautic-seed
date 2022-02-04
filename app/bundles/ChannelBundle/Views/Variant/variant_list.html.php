@@ -57,37 +57,6 @@ if ('index' == $tmpl) {
                     'MauticCoreBundle:Helper:tableheader.html.php',
                     [
                         'sessionVar' => 'campaign',
-                        'orderBy'    => 'c.dateAdded',
-                        'text'       => 'SKU',
-                        'class'      => 'visible-md visible-lg col-campaign-dateAdded',
-                    ]
-                );
-
-                echo $view->render(
-                    'MauticCoreBundle:Helper:tableheader.html.php',
-                    [
-                        'sessionVar' => 'campaign',
-                        'orderBy'    => 'c.dateModified',
-                        'text'       => 'Quantity',
-                        'class'      => 'visible-md visible-lg col-campaign-dateModified',
-                        'default'    => true,
-                    ]
-                );
-
-                echo $view->render(
-                    'MauticCoreBundle:Helper:tableheader.html.php',
-                    [
-                        'sessionVar' => 'campaign',
-                        'orderBy'    => 'c.createdByUser',
-                        'text'       => 'Price',
-                        'class'      => 'visible-md visible-lg col-campaign-createdByUser',
-                    ]
-                );
-
-                echo $view->render(
-                    'MauticCoreBundle:Helper:tableheader.html.php',
-                    [
-                        'sessionVar' => 'campaign',
                         'orderBy'    => 'c.id',
                         'text'       => 'mautic.core.id',
                         'class'      => 'visible-md visible-lg col-campaign-id',
@@ -133,10 +102,8 @@ if ('index' == $tmpl) {
                         
                         <span style="white-space: nowrap;"> <span><?php echo $item->getValueVariant(); ?></span></span>
                     </td>
-                    <td class="visible-md visible-lg"><?php echo $item->getQuantity(); ?></td>
-                    <td class="visible-md visible-lg"><?php echo $item->getQuantity(); ?></td>
-                    <td class="visible-md visible-lg"><?php echo $item->getQuantity(); ?></td>
-                    <td class="visible-md visible-lg"><?php echo $item->getQuantity(); ?></td>
+                 
+                    <td class="visible-md visible-lg"><?php echo $item->getId(); ?></td>
                 </tr>
             <?php endforeach; ?>
             </tbody>

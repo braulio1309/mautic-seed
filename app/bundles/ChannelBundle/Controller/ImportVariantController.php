@@ -28,7 +28,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
-class ImportController extends FormController
+class ImportVariantController extends FormController
 {
     // Steps of the import
     const STEP_UPLOAD_CSV      = 1;
@@ -106,25 +106,26 @@ class ImportController extends FormController
         $orderBy    = $session->get('mautic.products.orderby', 'c.dateModified');
         $orderByDir = $session->get('mautic.products.orderbydir', 'DESC');
 
-        $items = $this->getModel('channel.product')->getEntities(
+        $items= $this->getModel('channel.variant')->getEntities(
             [
                 'start'      => $start,
                 'limit'      => $limit,
             ]
         );
-        if ($count && $count < ($start + 1)) {
+
+        if (count($items) && count($items) < ($start + 1)) {
             //the number of entities are now less then the current page so redirect to the last page
-            $lastPage = (1 === $count) ? 1 : (((ceil($count / $limit)) ?: 1) ?: 1);
+            $lastPage = (1 === count($items)) ? 1 : (((ceil(count($items) / $limit)) ?: 1) ?: 1);
 
             $session->set('mautic.products.page', $lastPage);
-            $returnUrl = $this->generateUrl('products_list', ['page' => $lastPage]);
+            $returnUrl = $this->generateUrl('variant_list', ['page' => $lastPage]);
 
             return $this->postActionRedirect(
                 $this->getPostActionRedirectArguments(
                     [
                         'returnUrl'       => $returnUrl,
                         'viewParameters'  => ['page' => $lastPage],
-                        'contentTemplate' => 'MauticChannelBundle:Product:product_list.html.php',
+                        'contentTemplate' => 'MauticChannelBundle:Variant:variant_list.html.php',
                         'passthroughVars' => [
                             'mauticContent' => 'mautic',
                         ],
@@ -159,10 +160,10 @@ class ImportController extends FormController
             $this->getViewArguments(
                 [
                     'viewParameters'  => $viewParameters,
-                    'contentTemplate' => 'MauticChannelBundle:Product:product_list.html.php',
+                    'contentTemplate' => 'MauticChannelBundle:Variant:variant_list.html.php',
                     'passthroughVars' => [
                         'mauticContent' => $this->getJsLoadMethodPrefix(),
-                        'route'         => $this->generateUrl('products_list', ['page' => $page]),
+                        'route'         => $this->generateUrl('variant_list', ['page' => $page]),
                     ],
                 ],
                 'index'
@@ -322,7 +323,7 @@ class ImportController extends FormController
 
         $progress = (new Progress())->bindArray($session->get('mautic.'.$object.'.import.progress', [0, 0]));
         $import   = $importModel->getEntity();
-        $action   = $this->generateUrl('product_import_action', ['object' => $this->request->get('object'), 'objectAction' => 'new']);
+        $action   = $this->generateUrl('variant_import_action', ['object' => $this->request->get('object'), 'objectAction' => 'new']);
 
         switch ($step) {
             case self::STEP_UPLOAD_CSV:
@@ -434,20 +435,15 @@ class ImportController extends FormController
 
                                     if (false !== $file) {
                                         $i            =0;
-                                        $productModel = $this->getModel('channel.product');
+                                        $productModel = $this->getModel('channel.variant');
 
                                         $data = 1;
                                         while (1 == $data || !$file->eof()) {
                                             $data = $file->fgetcsv($config['delimiter'], $config['enclosure'], $config['escape']);
                                             if ($i > 0 && $data[0]) {
                                                 $product = $productModel->getEntity();
-                                                $product->setProductName($data[0]);
-                                                $product->setProductDesc($data[1]);
-                                                $product->setVendor($data[3]);
-                                                $product->setInitialQuantity($data[5]);
-                                                $product->setInitialPrice($data[6]);
-                                                $product->setCreatedAt(new \DateTime());
-                                                $product->setUpdatedAt(new \DateTime());
+                                                $product->setName($data[0]);
+                                                $product->setValueVariant($data[1]);
                                                 $productModel->saveEntity($product);
                                             }
                                             ++$i;

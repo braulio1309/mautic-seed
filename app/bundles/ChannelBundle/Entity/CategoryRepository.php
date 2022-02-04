@@ -48,4 +48,13 @@ class CategoryRepository extends CommonRepository
     {
         return 'c';
     }
+
+    public function getCategories()
+    {
+        $q = $this
+        ->createQueryBuilder('c')
+        ->select('c');
+
+        return $q->getQuery()->getArrayResult();
+    }
 }

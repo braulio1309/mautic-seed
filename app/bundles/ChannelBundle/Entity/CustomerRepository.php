@@ -30,17 +30,10 @@ class CustomerRepository extends CommonRepository
      * @param object $entity
      * @param bool   $flush
      */
-    public function getCustomerList($bundle, $search = '', $limit = 10, $start = 0, $includeGlobal = true)
+    public function getCustomer()
     {
         $q = $this->createQueryBuilder('c');
         $q->select('c');
-
-        if (!empty($search)) {
-            $q->andWhere($q->expr()->like('c.name', ':search'))
-                ->setParameter('search', "{$search}%");
-        }
-
-        $q->orderBy('c.name');
 
         return $q->getQuery()->getArrayResult();
     }

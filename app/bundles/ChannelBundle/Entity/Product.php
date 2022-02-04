@@ -213,12 +213,12 @@ class Product
         return $this;
     }
 
-    public function getCategory_id()
+    public function getCategoryId()
     {
-        return $this->vendor;
+        return $this->category_id;
     }
 
-    public function setCategory_id($category_id): self
+    public function setCategoryId($category_id): self
     {
         $this->category_id = $category_id;
 

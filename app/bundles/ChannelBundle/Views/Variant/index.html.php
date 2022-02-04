@@ -9,13 +9,13 @@
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 $view->extend('MauticCoreBundle:Default:content.html.php');
-$view['slots']->set('mauticContent', 'Products');
-$view['slots']->set('headerTitle', 'Products');
+$view['slots']->set('mauticContent', 'Variants');
+$view['slots']->set('headerTitle', 'Variants');
 
 $pageButtons   = [];
 $pageButtons[] = [
     'attr' => [
-        'href' => $view['router']->path('mautic_import_action', ['object' => 'companies', 'objectAction' => 'new']),
+        'href' => $view['router']->path('variant_import_action', ['object' => 'companies', 'objectAction' => 'new']),
     ],
     'iconClass' => 'fa fa-upload',
     'btnText'   => 'Import',

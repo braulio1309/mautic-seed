@@ -9,7 +9,7 @@
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
-namespace Mautic\LeadBundle\Form\Type;
+namespace Mautic\ChannelBundle\Form\Type;
 
 use Doctrine\ORM\EntityManager;
 use Mautic\CoreBundle\Form\DataTransformer\IdToEntityModelTransformer;
@@ -81,41 +81,6 @@ class ProductImportFieldType extends AbstractType
             )
                 ->addModelTransformer($transformer)
         );
-
-        if ('lead' === $options['object']) {
-            $builder->add(
-                $builder->create(
-                    'list',
-                    LeadListType::class,
-                    [
-                        'label'      => 'mautic.lead.lead.field.list',
-                        'label_attr' => ['class' => 'control-label'],
-                        'attr'       => [
-                            'class' => 'form-control',
-                        ],
-                        'required' => false,
-                        'multiple' => false,
-                    ]
-                )
-            );
-
-            $builder->add(
-                'tags',
-                TagType::class,
-                [
-                    'label'      => 'mautic.lead.tags',
-                    'required'   => false,
-                    'label_attr' => ['class' => 'control-label'],
-                    'attr'       => [
-                        'class'                => 'form-control',
-                        'data-placeholder'     => $this->translator->trans('mautic.lead.tags.select_or_create'),
-                        'data-no-results-text' => $this->translator->trans('mautic.lead.tags.enter_to_create'),
-                        'data-allow-add'       => 'true',
-                        'onchange'             => 'Mautic.createLeadTag(this)',
-                    ],
-                ]
-            );
-        }
 
         $builder->add(
             'skip_if_exists',
