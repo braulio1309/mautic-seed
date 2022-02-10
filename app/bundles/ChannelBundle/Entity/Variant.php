@@ -40,7 +40,9 @@ class Variant
             ->setCustomRepositoryClass('Mautic\ChannelBundle\Entity\VariantRepository');
         $builder->addIdColumns();
 
-        $builder->createField('value_variant', 'string')->nullable()->build();
+        $builder->createField('value_variant', 'string')
+        ->nullable()
+        ->build();
     }
 
     public function getId(): ?int

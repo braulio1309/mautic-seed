@@ -26,19 +26,13 @@ class ProductRepository extends CommonRepository
         return parent::getEntities($args);
     }
 
-    /**
-     * @param object $entity
-     * @param bool   $flush
-     */
-    public function deleteEntity($entity, $flush = true)
+    public function getProducts()
     {
-        // Null parents of associated events first
-        $q = $this->getEntityManager()->getConnection()->createQueryBuilder();
-        $q->update(MAUTIC_TABLE_PREFIX.'products')
-            ->where('idproduct = '.$entity->getId())
-            ->execute();
+        $q = $this
+        ->createQueryBuilder('c')
+        ->select('c');
 
-        parent::deleteEntity($entity, $flush);
+        return $q->getQuery()->getArrayResult();
     }
 
     /**

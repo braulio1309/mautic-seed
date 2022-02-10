@@ -79,17 +79,9 @@ if ('index' == $tmpl) {
                             [
                                 'item'            => $item,
                                 'templateButtons' => [
-                                    'edit'   => $view['security']->hasEntityAccess(
-                                        $permissions['campaign:campaigns:editown'],
-                                        $permissions['campaign:campaigns:editother'],
-                                        $item->getCreatedBy()
-                                    ),
+                                    'edit'   => '',
 
-                                    'delete'   => $view['security']->hasEntityAccess(
-                                        $permissions['campaign:campaigns:deleteown'],
-                                        $permissions['campaign:campaigns:deleteother'],
-                                        $item->getCreatedBy()
-                                    ),
+                                    'delete'   => '',
                                 ],
                                 'routeBase' => 'campaign',
                             ]

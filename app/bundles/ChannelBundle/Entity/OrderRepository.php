@@ -26,21 +26,6 @@ class OrderRepository extends CommonRepository
     }
 
     /**
-     * @param object $entity
-     * @param bool   $flush
-     */
-    public function deleteEntity($entity, $flush = true)
-    {
-        // Null parents of associated events first
-        $q = $this->getEntityManager()->getConnection()->createQueryBuilder();
-        $q->update(MAUTIC_TABLE_PREFIX.'products')
-            ->where('idproduct = '.$entity->getId())
-            ->execute();
-
-        parent::deleteEntity($entity, $flush);
-    }
-
-    /**
      * @return string
      */
     public function getTableAlias()

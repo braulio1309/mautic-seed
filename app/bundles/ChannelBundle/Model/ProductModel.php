@@ -87,6 +87,13 @@ class ProductModel extends CommonFormModel
         return $repo;
     }
 
+    public function getAllProducts()
+    {
+        $products = $this->getRepository();
+
+        return $products->getAllProducts();
+    }
+
     /**
      * {@inheritdoc}
      *

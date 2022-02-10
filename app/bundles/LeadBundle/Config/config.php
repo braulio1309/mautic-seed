@@ -153,6 +153,11 @@ return [
                 'path'            => '/contacts',
                 'controller'      => 'MauticLeadBundle:Api\LeadApi',
             ],
+            'mautic_api_contactsevenlog' => [
+                'path'            => '/contact/event/{objectId}',
+                'controller'      => 'MauticLeadBundle:Api\LeadApi:newEvent',
+                'method'          => 'POST',
+            ],
             'mautic_api_dncaddcontact' => [
                 'path'       => '/contacts/{id}/dnc/{channel}/add',
                 'controller' => 'MauticLeadBundle:Api\LeadApi:addDnc',
@@ -1129,6 +1134,9 @@ return [
                     'mautic.lead.segment.stat.chart.query.factory',
                     'request_stack',
                 ],
+            ],
+            'mautic.lead.model.lead_event_log' => [
+                'class'     => \Mautic\LeadBundle\Model\LeadEventModel::class,
             ],
             'mautic.lead.repository.lead_segment_filter_descriptor' => [
                 'class'     => \Mautic\LeadBundle\Services\ContactSegmentFilterDictionary::class,

@@ -545,6 +545,39 @@ class LeadApiController extends CommonApiController
     }
 
     /**
+     * Creates new event in the contact's history.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function newEventAction($objectId = null)
+    {
+        $items = $this->get('request_stack')->getCurrentRequest()->request->all();
+        $lead  = $this->model->getEntity((int) $items['lead_id']);
+        $event =  $this->getModel('lead.lead_event_log')->getEntity();
+        $event->setLead($lead);
+        $event->setAction($items['action']);
+        $event->setObject('import');
+        $event->setBundle('lead');
+
+        $properties = [
+            'file' => $items['from'],
+        ];
+        $event->setProperties($properties);
+
+        $this->getModel('lead.lead_event_log')->saveEntity($event);
+
+        $view = $this->view(
+            [
+                'success' => 1,
+                'item'    => $event,
+            ],
+            Response::HTTP_OK
+        );
+
+        return $this->handleView($view);
+    }
+
+    /**
      * {@inheritdoc}
      */
     protected function prepareParametersForBinding($parameters, $entity, $action)

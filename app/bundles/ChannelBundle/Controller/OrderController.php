@@ -79,6 +79,11 @@ class OrderController extends AbstractStandardFormController
     protected $sessionId;
 
     /**
+     * @return int|null
+     */
+    private $objectId = null;
+
+    /**
      * @return array
      */
     protected function getPermissions()

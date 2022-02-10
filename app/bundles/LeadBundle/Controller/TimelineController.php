@@ -31,7 +31,6 @@ class TimelineController extends CommonController
         if ($lead instanceof Response) {
             return $lead;
         }
-
         $this->setListFilters();
 
         $session = $this->get('session');

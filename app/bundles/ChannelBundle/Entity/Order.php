@@ -43,7 +43,7 @@ class Order
     private $total_tax;
 
     /**
-     * @var tax
+     * @var decimal
      */
     private $total;
 
@@ -89,8 +89,14 @@ class Order
         $builder->createField('customer_id', 'integer')
         ->nullable()
         ->build();
-        $builder->addField('payment_method', 'string');
-        $builder->addField('currency_id', 'string');
+
+        $builder->createField('currency', 'string')
+        ->nullable()
+        ->build();
+
+        $builder->createField('payment_method', 'string')
+        ->nullable()
+        ->build();
         $builder->createField('notes', 'string')
         ->nullable()
         ->build();
@@ -149,6 +155,18 @@ class Order
     public function setTotalTax($total_tax): self
     {
         $this->total_tax = $total_tax;
+
+        return $this;
+    }
+
+    public function getTotal(): ?string
+    {
+        return $this->total;
+    }
+
+    public function setTotal($total)
+    {
+        $this->total = $total;
 
         return $this;
     }

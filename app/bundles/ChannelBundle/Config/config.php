@@ -129,6 +129,56 @@ return [
                 'path'            => '/messages',
                 'controller'      => 'MauticChannelBundle:Api\MessageApi',
             ],
+            'mautic_api_products'      => [
+                'path'       => '/products/{objectId}',
+                'controller' => 'MauticChannelBundle:Api\ProductApi:getAll',
+                'method'     => 'GET',
+            ],
+            'mautic_api_products_new'      => [
+                'path'       => '/products/new/{objectId}',
+                'controller' => 'MauticChannelBundle:Api\ProductApi:new',
+                'method'     => 'POST',
+            ],
+            'mautic_api_product_categories'      => [
+                'path'       => '/products/categories/{objectId}',
+                'controller' => 'MauticChannelBundle:Api\CategoryApi:getAll',
+                'method'     => 'GET',
+            ],
+            'mautic_api_product_categories_new'      => [
+                'path'       => '/products/categories/new/{objectId}',
+                'controller' => 'MauticChannelBundle:Api\CategoryApi:new',
+                'method'     => 'POST',
+            ],
+            'mautic_api_variant'      => [
+                'path'       => '/products/variant/{objectId}',
+                'controller' => 'MauticChannelBundle:Api\VariantApi:getAll',
+                'method'     => 'GET',
+            ],
+            'mautic_api_variant_new'      => [
+                'path'       => '/products/variant/new/{objectId}',
+                'controller' => 'MauticChannelBundle:Api\VariantApi:new',
+                'method'     => 'POST',
+            ],
+            'mautic_api_order'      => [
+                'path'       => '/orders/{objectId}',
+                'controller' => 'MauticChannelBundle:Api\OrderApi:getAll',
+                'method'     => 'GET',
+            ],
+            'mautic_api_order_new'      => [
+                'path'       => '/order/new/{objectId}',
+                'controller' => 'MauticChannelBundle:Api\OrderApi:new',
+                'method'     => 'POST',
+            ],
+            'mautic_api_customer'      => [
+                'path'       => '/customers/{objectId}',
+                'controller' => 'MauticChannelBundle:Api\CustomerApi:getAll',
+                'method'     => 'GET',
+            ],
+            'mautic_api_categories_new'      => [
+                'path'       => '/customer/new/{objectId}',
+                'controller' => 'MauticChannelBundle:Api\CustomerApi:new',
+                'method'     => 'POST',
+            ],
         ],
         'public' => [
         ],
