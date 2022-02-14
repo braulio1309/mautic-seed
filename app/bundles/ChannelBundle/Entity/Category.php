@@ -13,17 +13,17 @@ class Category
     private $id;
 
     /**
-     * @var string
-     */
-    private $category_name;
-
-    /**
-     * @var string
+     * @var string|null
      */
     private $name;
 
     /**
-     * @var string
+     * @var string|null
+     */
+    private $category_name;
+
+    /**
+     * @var string|null
      */
     private $description;
 
@@ -44,9 +44,25 @@ class Category
         $builder->setTable('products_categories')
             ->setCustomRepositoryClass('Mautic\ChannelBundle\Entity\CategoryRepository');
         $builder->addIdColumns();
-        $builder->createField('category_name', 'string')->nullable()->build();
 
         $builder->createField('category_desc', 'string')->nullable()->build();
+    }
+
+    /**
+     * Prepares the metadata for API usage.
+     *
+     * @param $metadata
+     */
+    public static function loadApiMetadata(ApiMetadataDriver $metadata)
+    {
+        $metadata->setGroupPrefix('products_categories')
+            ->addListProperties(
+                [
+                    'id',
+                    'category_desc',
+                ]
+            )
+            ->build();
     }
 
     public function getId(): ?int

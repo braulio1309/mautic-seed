@@ -27,7 +27,7 @@ $view['slots']->set('headerTitle', $header);
 
             <div class="row">
                 <div class="col-md-12">
-                    <?php echo $view['form']->row($form['category_name']); ?>
+                    <?php echo $view['form']->row($form['name']); ?>
                 </div>
                
             </div>

@@ -34,6 +34,12 @@ class OrderForm extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $builder->add('name', TextType::class, [
+            'label'      => 'Title',
+            'label_attr' => ['class' => 'control-label'],
+            'attr'       => ['class' => 'form-control'],
+        ]);
+
         $builder->addEventSubscriber(new CleanFormSubscriber(['description' => 'html']));
 
         $builder->add('subtotal_price', NumberType::class, [

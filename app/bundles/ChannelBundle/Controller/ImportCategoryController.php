@@ -438,7 +438,7 @@ class ImportCategoryController extends FormController
                                             $data = $file->fgetcsv($config['delimiter'], $config['enclosure'], $config['escape']);
                                             if ($i > 0 && $data[0]) {
                                                 $product = $productModel->getEntity();
-                                                $product->setCategoryName($data[0]);
+                                                $product->setName($data[0]);
                                                 $product->setCategoryDesc($data[1]);
                                                 $productModel->saveEntity($product);
                                             }

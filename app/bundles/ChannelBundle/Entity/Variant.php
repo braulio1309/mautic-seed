@@ -18,12 +18,12 @@ class Variant
     private $value_variant;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $name;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $description;
 

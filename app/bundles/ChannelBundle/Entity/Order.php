@@ -18,12 +18,12 @@ class Order
     private $cancel_reason;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $name;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $description;
 

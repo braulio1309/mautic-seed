@@ -33,22 +33,7 @@ final class Version20220123034354 extends AbstractMauticMigration
     {
         $this->addSql(
             'CREATE TABLE IF NOT EXISTS `orders` (
-                `idorder` int(11) NOT NULL AUTO_INCREMENT,
-                `cancel_reason` varchar(255) COLLATE utf16_spanish_ci DEFAULT NULL,
-                `cancelled_at` datetime DEFAULT NULL,
-                `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                `currency` varchar(20) COLLATE utf16_spanish_ci DEFAULT NULL,
-                `total_discount` double DEFAULT NULL,
-                `subtotal_price` double DEFAULT NULL,
-                `total_tax` double DEFAULT NULL,
-                `browser_ip` varchar(100) COLLATE utf16_spanish_ci DEFAULT NULL,
-                `payment_method` varchar(100) COLLATE utf16_spanish_ci DEFAULT NULL,
-                `notes` text COLLATE utf16_spanish_ci,
-                `billing_address_id` int(11) DEFAULT NULL,
-                `shipping_address_id` int(11) DEFAULT NULL,
-                `customer_id` int(11) DEFAULT NULL,
-                `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                PRIMARY KEY (`idorder`)
+                `id` int(11) NOT NULL AUTO_INCREMENT,
               ) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_spanish_ci;
               COMMIT;'
         );

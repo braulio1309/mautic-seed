@@ -94,7 +94,7 @@ if ('index' == $tmpl) {
                                 'category_create',
                                 ['objectAction' => 'edit', 'objectId' => $item->getId()]
                             ); ?>" data-toggle="ajax">
-                                <?php echo $item->getCategoryName(); ?>
+                                <?php echo $item->getName(); ?>
                             <?php echo $view['content']->getCustomContent('campaign.name', $mauticTemplateVars); ?>
                             </a>
                         </div>

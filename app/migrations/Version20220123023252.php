@@ -33,10 +33,7 @@ final class Version20220123023252 extends AbstractMauticMigration
     {
         $this->addSql(
             'CREATE TABLE IF NOT EXISTS `subcategories` (
-                `idcategory` int(11) NOT NULL,
-                `subcategory_name` varchar(255) COLLATE utf16_spanish_ci NOT NULL,
-                `subcategoty_desc` varchar(255) COLLATE utf16_spanish_ci DEFAULT NULL,
-                `parent_category` int(11) DEFAULT NULL
+                `id` int(11) NOT NULL AUTO_INCREMENT,
               ) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_spanish_ci;
               COMMIT;'
         );

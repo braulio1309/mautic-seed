@@ -33,14 +33,7 @@ final class Version20220123022702 extends AbstractMauticMigration
     {
         $this->addSql(
             'CREATE TABLE IF NOT EXISTS `variants` (
-              `idvariant` int(11) NOT NULL AUTO_INCREMENT,
-              `name_variant` varchar(255) COLLATE utf16_spanish_ci NOT NULL,
-              `value_variant` varchar(255) COLLATE utf16_spanish_ci NOT NULL,
-              `quantity` int(11) DEFAULT NULL,
-              `sku` varchar(255) COLLATE utf16_spanish_ci DEFAULT NULL,
-              `price` double DEFAULT NULL,
-              `taxable` tinyint(1) DEFAULT NULL,
-              `barcode` varchar(255) COLLATE utf16_spanish_ci DEFAULT NULL,
+              `id` int(11) NOT NULL AUTO_INCREMENT,
               PRIMARY KEY (`idvariant`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_spanish_ci;
             COMMIT;'

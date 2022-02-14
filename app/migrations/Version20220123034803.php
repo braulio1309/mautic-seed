@@ -33,13 +33,7 @@ final class Version20220123034803 extends AbstractMauticMigration
     {
         $this->addSql(
             'CREATE TABLE IF NOT EXISTS `customers` (
-                `idcustomer` int(11) NOT NULL,
-                `name` varchar(255) COLLATE utf16_spanish_ci NOT NULL,
-                `lastname` varchar(255) COLLATE utf16_spanish_ci NOT NULL,
-                `email` varchar(75) COLLATE utf16_spanish_ci NOT NULL,
-                `phone` varchar(15) COLLATE utf16_spanish_ci NOT NULL,
-                `created_at` datetime NOT NULL,
-                `updated_at` datetime NOT NULL
+                `id` int(11) NOT NULL,
               ) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_spanish_ci;
               COMMIT;'
         );

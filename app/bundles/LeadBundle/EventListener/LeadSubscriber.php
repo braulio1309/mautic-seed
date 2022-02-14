@@ -635,7 +635,7 @@ class LeadSubscriber implements EventSubscriberInterface
             $event->getLead(),
             'lead',
             'import',
-            ['failed', 'inserted', 'updated', 'whatsapp'],
+            ['failed', 'inserted', 'updated', 'whatsapp.text',  'whatsapp.status',  'whatsapp.order'],
             $event->getQueryOptions()
         );
 
@@ -655,11 +655,12 @@ class LeadSubscriber implements EventSubscriberInterface
                     $eventLabel = $import['object_id'];
                 }
                 $eventLabel = ($this->translator->trans('mautic.lead.import.contact.action.'.$import['action'], ['%name%' => $eventLabel])) ? $this->translator->trans('mautic.lead.import.contact.action.'.$import['action'], ['%name%' => $eventLabel]) : $import['action'];
+                $action     = explode('.', $import['action']);
                 $event->addEvent(
                         [
                             'event'      => $eventTypeKey,
                             'eventId'    => $eventTypeKey.$import['id'],
-                            'eventType'  => ('whatsapp' == $import['action']) ? 'Whatsapp' : $eventTypeName,
+                            'eventType'  => ('whatsapp' == $action[0]) ? 'Whatsapp' : $eventTypeName,
                             'eventLabel' => !empty($import['object_id']) ? [
                                 'label' => $eventLabel,
                                 'href'  => $this->router->generate(
@@ -672,9 +673,9 @@ class LeadSubscriber implements EventSubscriberInterface
                                 ),
                             ] : $eventLabel,
                             'timestamp'       => $import['date_added'],
-                            'icon'            => ('whatsapp' == $import['action']) ? 'fa-whatsapp' : 'fa-download',
+                            'icon'            => ('whatsapp' == $action[0]) ? 'fa-whatsapp' : 'fa-download',
                             'extra'           => $import,
-                            'contentTemplate' => ('whatsapp' == $import['action']) ? null : 'MauticLeadBundle:SubscribedEvents\Timeline:import.html.php',
+                            'contentTemplate' => ('whatsapp' == $action[0]) ? null : 'MauticLeadBundle:SubscribedEvents\Timeline:import.html.php',
                             'contactId'       => $import['lead_id'],
                         ]
                     );

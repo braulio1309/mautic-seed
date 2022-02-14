@@ -441,7 +441,7 @@ class ImportController extends FormController
                                             $data = $file->fgetcsv($config['delimiter'], $config['enclosure'], $config['escape']);
                                             if ($i > 0 && $data[0]) {
                                                 $product = $productModel->getEntity();
-                                                $product->setProductName($data[0]);
+                                                $product->setName($data[0]);
                                                 $product->setProductDesc($data[1]);
                                                 $product->setVendor($data[3]);
                                                 $product->setInitialQuantity($data[5]);

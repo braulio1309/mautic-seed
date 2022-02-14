@@ -121,7 +121,7 @@ $view['slots']->set('headerTitle', 'Products');
                                 'products_create',
                                 ['objectAction' => 'edit', 'objectId' => $item->getId()]
                             ); ?>" data-toggle="ajax">
-                                <?php echo $item->getProductName(); ?>
+                                <?php echo $item->getName(); ?>
                             <?php echo $view['content']->getCustomContent('campaign.name', $mauticTemplateVars); ?>
                             </a>
                         </div>

@@ -32,25 +32,11 @@ final class Version20220123023503 extends AbstractMauticMigration
     public function up(Schema $schema): void
     {
         $this->addSql(
-            "CREATE TABLE IF NOT EXISTS `products` (
-                `idproduct` int(11) NOT NULL AUTO_INCREMENT,
-                `product_name` VARCHAR(255) NOT NULL,
-                `product_desc` TEXT(255) DEFAULT NULL,
-                `category_id` int(11) DEFAULT NULL,
-                `subcategory_id` int(11) DEFAULT NULL,
-                `vendor` varchar(100) COLLATE utf16_spanish_ci DEFAULT NULL,
-                `tags` varchar(255) COLLATE utf16_spanish_ci DEFAULT NULL,
-                `is_available` tinyint(1) DEFAULT '0',
-                `product_gallery` json DEFAULT NULL,
-                `variants_ids` json DEFAULT NULL,
-                `currency` varchar(20) COLLATE utf16_spanish_ci DEFAULT NULL,
-                `initial_price` double DEFAULT NULL,
-                `initial_quantity` int(11) DEFAULT NULL,
-                `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            'CREATE TABLE IF NOT EXISTS `products` (
+                `id` int(11) NOT NULL AUTO_INCREMENT,
                 PRIMARY KEY (`idproduct`)
               ) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_spanish_ci;
-              COMMIT;"
+              COMMIT;'
         );
     }
 }

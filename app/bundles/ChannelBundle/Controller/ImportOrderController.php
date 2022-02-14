@@ -408,6 +408,7 @@ class ImportOrderController extends FormController
                                             $product->setSubtotalPrice($data[1]);
                                             $product->setTotalTax($data[2]);
                                             $product->setPaymentMethod($data[3]);
+                                            $product->setName($data[4]);
                                             $product->setCreatedAt(new \DateTime());
                                             $product->setUpdatedAt(new \DateTime());
                                             $productModel->saveEntity($product);

@@ -57,7 +57,7 @@ class CategoryListType extends AbstractType
                     $choices   = [];
                     $categories = $this->model->getRepository()->getCategories();
                     foreach ($categories as $category) {
-                        $choices[$category['category_name']] = $category['id'];
+                        $choices[$category['name']] = $category['id'];
                     }
 
                     //sort by language

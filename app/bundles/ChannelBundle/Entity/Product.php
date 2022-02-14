@@ -19,12 +19,12 @@ class Product
     private $product_name;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $name;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $description;
 
@@ -42,6 +42,11 @@ class Product
      * @var int
      */
     private $initial_quantity;
+
+    /**
+     * @var int
+     */
+    private $category;
 
     /**
      * @var int
@@ -104,7 +109,6 @@ class Product
             ->setCustomRepositoryClass('Mautic\ChannelBundle\Entity\ProductRepository');
 
         $builder->addIdColumns();
-        $builder->createField('product_name', 'string')->nullable()->build();
         $builder->createField('product_desc', 'string')->nullable()->build();
         $builder->createField('category_id', 'integer')->nullable()->build();
         $builder->createField('vendor', 'string')->nullable()->build();
@@ -129,12 +133,12 @@ class Product
         return $this;
     }
 
-    public function getName(): ?string
+    public function getName()
     {
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(string $name)
     {
         $this->name = $name;
 
@@ -218,9 +222,9 @@ class Product
         return $this->category_id;
     }
 
-    public function setCategoryId($category_id): self
+    public function setCategoryId($category): self
     {
-        $this->category_id = $category_id;
+        $this->category = $category;
 
         return $this;
     }

@@ -23,7 +23,11 @@ $view['slots']->set('headerTitle', 'Orders');
     <div class="col-md-9 bg-auto height-auto bdr-r">
         <div class="pa-md">
            
-
+            <div class="row">
+                <div class="col-md-12">
+                    <?php echo $view['form']->row($form['name']); ?>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-6">
                     <?php echo $view['form']->row($form['subtotal_price']); ?>
