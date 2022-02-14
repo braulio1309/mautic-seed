@@ -34,7 +34,7 @@ final class Version20220123023156 extends AbstractMauticMigration
         $this->addSql(
             'CREATE TABLE IF NOT EXISTS `products_categories` (
                 `id` int(11) NOT NULL AUTO_INCREMENT,
-                PRIMARY KEY (`idcategory`)
+                PRIMARY KEY (`id`)
               ) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_spanish_ci;
               COMMIT;'
         );

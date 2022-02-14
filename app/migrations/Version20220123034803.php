@@ -34,6 +34,7 @@ final class Version20220123034803 extends AbstractMauticMigration
         $this->addSql(
             'CREATE TABLE IF NOT EXISTS `customers` (
                 `id` int(11) NOT NULL,
+                PRIMARY KEY (`id`)
               ) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_spanish_ci;
               COMMIT;'
         );
