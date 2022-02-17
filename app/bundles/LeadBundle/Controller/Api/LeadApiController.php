@@ -544,6 +544,29 @@ class LeadApiController extends CommonApiController
         return $this->model->checkForDuplicateContact($params);
     }
 
+    public function newContactAction()
+    {
+        $items = $this->get('request_stack')->getCurrentRequest()->request->all();
+
+        $lead  = $this->model->getEntity();
+        (isset($items['firstname'])) ? $lead->setFirstname($items['firstname']) : '';
+        (isset($items['lastname'])) ? $lead->setLastname($items['lastname']) : '';
+        (isset($items['email'])) ? $lead->setEmail($items['email']) : '';
+        (isset($items['phone'])) ? $lead->setPhone($items['phone']) : '';
+        (isset($items['diana_address'])) ? $lead->setDianaAddress($items['diana_address']) : '';
+        $this->model->SaveEntity($lead);
+
+        $view = $this->view(
+            [
+                'success' => 1,
+                'item'    => $lead,
+            ],
+            Response::HTTP_OK
+        );
+
+        return $this->handleView($view);
+    }
+
     /**
      * Creates new event in the contact's history.
      *
@@ -556,11 +579,12 @@ class LeadApiController extends CommonApiController
         $event =  $this->getModel('lead.lead_event_log')->getEntity();
         $event->setLead($lead);
         $event->setAction($items['action']);
+        $event->setDianaAddress($items['diana_address']);
         $event->setObject('import');
         $event->setBundle('lead');
 
         $properties = [
-            'file' => $items['from'],
+            'file' => $items['product'],
         ];
         $event->setProperties($properties);
 
