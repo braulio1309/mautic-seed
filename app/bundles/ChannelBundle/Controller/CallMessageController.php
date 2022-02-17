@@ -30,9 +30,8 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
 
-class CustomerController extends AbstractStandardFormController
+class CallMessageController extends AbstractStandardFormController
 {
     use EntityContactsTrait;
 
@@ -83,9 +82,6 @@ class CustomerController extends AbstractStandardFormController
      */
     private $objectId = null;
 
-    /**
-     * @return array
-     */
     protected function getPermissions()
     {
         //set some permissions
@@ -244,26 +240,25 @@ class CustomerController extends AbstractStandardFormController
         $orderBy    = $session->get('mautic.products.orderby', 'c.dateModified');
         $orderByDir = $session->get('mautic.products.orderbydir', 'DESC');
 
-        $items= $this->getModel('channel.customer')->getEntities(
+        $items = $this->getModel('channel.call')->getEntities(
             [
                 'start'      => $start,
                 'limit'      => $limit,
             ]
         );
-
         if ($count && $count < ($start + 1)) {
             //the number of entities are now less then the current page so redirect to the last page
             $lastPage = (1 === $count) ? 1 : (((ceil($count / $limit)) ?: 1) ?: 1);
 
             $session->set('mautic.products.page', $lastPage);
-            $returnUrl = $this->generateUrl('customer_list', ['page' => $lastPage]);
+            $returnUrl = $this->generateUrl('call_list', ['page' => $lastPage]);
 
             return $this->postActionRedirect(
                 $this->getPostActionRedirectArguments(
                     [
                         'returnUrl'       => $returnUrl,
                         'viewParameters'  => ['page' => $lastPage],
-                        'contentTemplate' => 'MauticChannelBundle:Customer:customer_list.html.php',
+                        'contentTemplate' => 'MauticChannelBundle:CallMessages:call_list.html.php',
                         'passthroughVars' => [
                             'mauticContent' => 'mautic',
                         ],
@@ -291,16 +286,17 @@ class CustomerController extends AbstractStandardFormController
             'limit'               => $limit,
             'permissions'         => $permissions,
             'tmpl'                => $this->request->get('tmpl', 'index'),
+            'product'             => $product,
         ];
 
         return $this->delegateView(
             $this->getViewArguments(
                 [
                     'viewParameters'  => $viewParameters,
-                    'contentTemplate' => 'MauticChannelBundle:Customer:customer_list.html.php',
+                    'contentTemplate' => 'MauticChannelBundle:CallMessages:call_list.html.php',
                     'passthroughVars' => [
                         'mauticContent' => $this->getJsLoadMethodPrefix(),
-                        'route'         => $this->generateUrl('customer_list', ['page' => $page]),
+                        'route'         => $this->generateUrl('call_list', ['page' => $page]),
                     ],
                 ],
                 'index'
@@ -321,14 +317,14 @@ class CustomerController extends AbstractStandardFormController
             }
         }
 
-        $productModel = $this->getModel('channel.customer');
+        $productModel = $this->getModel('channel.call');
         $product      = $productModel->getEntity($this->objectId);
 
         //set the page we came from
         $page = $this->get('session')->get('mautic.campaign.page', 1);
 
         $options = $this->getEntityFormOptions();
-        $action  = $this->generateUrl('customer_create', ['objectAction' => 'edit', 'objectId' => $this->objectId]);
+        $action  = $this->generateUrl('call_create', ['objectAction' => 'edit', 'objectId' => $this->objectId]);
         $form    = $productModel->createForm($product, $this->get('form.factory'), $action, $options);
 
         ///Check for a submitted form and process it
@@ -338,7 +334,7 @@ class CustomerController extends AbstractStandardFormController
             $valid = false;
             if (!$cancelled = $this->isFormCancelled($form)) {
                 if ($valid = $this->isFormValid($form)) {
-                    if ($this->objectId) {
+                    if ($this->request->attributes->get('objectId') > 0) {
                         $product->setUpdatedAt(new \DateTime());
                     } else {
                         $product->setCreatedAt(new \DateTime());
@@ -347,21 +343,21 @@ class CustomerController extends AbstractStandardFormController
 
                     $productModel->saveEntity($product);
                     $viewParameters = ['page' => $page];
-                    $returnUrl      = $this->generateUrl('customer_list', $viewParameters);
-                    $template       = 'MauticChannelBundle:Customer:index';
+                    $returnUrl      = $this->generateUrl('call_list', ['page' => 1]);
+                    $template       = 'MauticChannelBundle:CallMessages:call_list.html.php';
 
                     $passthrough = [
-                        'mauticContent' => 'customer',
+                        'mauticContent' => 'product',
                     ];
                 }
             } else {
                 $viewParameters = ['page' => $page];
-                $returnUrl      = $this->generateUrl('customer_list', $viewParameters);
-                $template       = 'MauticChannelBundle:Customer:index';
+                $returnUrl      = $this->generateUrl('call_list', $viewParameters);
+                $template       = 'MauticChannelBundle:CallMessages:call_list.html.php';
             }
 
             $passthrough = [
-                'mauticContent' => 'customer',
+                'mauticContent' => 'call',
             ];
 
             if ($isInPopup = isset($form['updateSelect'])) {
@@ -378,18 +374,7 @@ class CustomerController extends AbstractStandardFormController
                 }
             }
             if (($valid && !$this->isFormApplied($form))) {
-                return $this->postActionRedirect(
-                    $this->getPostActionRedirectArguments(
-                        [
-                            'returnUrl'       => $returnUrl,
-                            'viewParameters'  => $viewParameters,
-                            'contentTemplate' => $template,
-                            'passthroughVars' => $passthrough,
-                            'entity'          => $product,
-                        ],
-                        'new'
-                    )
-                );
+                return $this->indexAction();
             } elseif ($valid && $this->isFormApplied($form)) {
                 return $this->indexAction();
             }
@@ -397,11 +382,11 @@ class CustomerController extends AbstractStandardFormController
 
         $delegateArgs = [
             'viewParameters' => [
-                'mauticContent'   => 'product',
-                'actionRoute'     => 'customer_create',
-                'indexRoute'      => 'customer_create',
+                'mauticContent'   => 'call',
+                'actionRoute'     => 'call_create',
+                'indexRoute'      => 'call_create',
                 'tablePrefix'     => 'c',
-                'modelName'       => 'customer',
+                'modelName'       => 'call',
                 'translationBase' => $this->getTranslationBase(),
                 'tmpl'            => $this->request->isXmlHttpRequest() ? $this->request->get('tmpl', 'index') : 'index',
                 'entity'          => $product,
@@ -409,11 +394,11 @@ class CustomerController extends AbstractStandardFormController
                 'product'         => $product,
                 're'              => $this->request->attributes->get('objectId'),
             ],
-            'contentTemplate' => 'MauticChannelBundle:Customer:customer_create.html.php',
+            'contentTemplate' => 'MauticChannelBundle:CallMessages:call_create.html.php',
             'passthroughVars' => [
-                'mauticContent' => 'product',
+                'mauticContent' => 'call',
                 'route'         => $this->generateUrl(
-                    'products_create',
+                    'call_create',
                     [
                         'objectAction' => (!empty($valid) ? 'edit' : 'new'), //valid means a new form was applied
                         'objectId'     => ($product) ? $product->getId() : 0,
@@ -597,6 +582,57 @@ class CustomerController extends AbstractStandardFormController
      *
      * @return bool
      */
+    public function deleteProductAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $db = $em->getConnection();
+
+        $query = "DELETE FROM products WHERE id = $id; ";
+        $stmt  = $db->prepare($query);
+        $stmt->execute();
+        list($count, $items) = $this->getIndexItems($start, $limit, $filter, $orderBy, $orderByDir);
+
+        $em = $this->getDoctrine()->getManager();
+        $db = $em->getConnection();
+
+        $query = 'SELECT * FROM products; ';
+        $stmt  = $db->prepare($query);
+        $stmt->execute();
+        $product = $stmt->fetchAll();
+
+        $viewParameters = [
+            'permissionBase'      => $this->getPermissionBase(),
+            'mauticContent'       => $this->getJsLoadMethodPrefix(),
+            'sessionVar'          => $this->getSessionBase(),
+            'actionRoute'         => $this->getActionRoute(),
+            'indexRoute'          => $this->getIndexRoute(),
+            'modelName'           => $this->getModelName(),
+            'translationBase'     => $this->getTranslationBase(),
+            'searchValue'         => $search,
+            'items'               => $items,
+            'totalItems'          => count($items),
+            'page'                => 1,
+            'limit'               => 30,
+            'permissions'         => $permissions,
+            'tmpl'                => $this->request->get('tmpl', 'index'),
+            'product'             => $product,
+        ];
+
+        return $this->delegateView(
+            $this->getViewArguments(
+                [
+                    'viewParameters'  => $viewParameters,
+                    'contentTemplate' => 'MauticChannelBundle:Product:product_list.html.php',
+                    'passthroughVars' => [
+                        'mauticContent' => $this->getJsLoadMethodPrefix(),
+                        'route'         => $this->generateUrl('products_list', ['page' => 1]),
+                    ],
+                ],
+                'index'
+            )
+        );
+    }
+
     protected function beforeEntitySave($entity, Form $form, $action, $objectId = null, $isClone = false)
     {
         if (empty($this->campaignEvents)) {
@@ -1132,11 +1168,11 @@ class CustomerController extends AbstractStandardFormController
         array $campaignLogCountsProcessed
     ): void {
         foreach ($events as &$event) {
-            $event['logCountForPending'] =
-            $event['logCountProcessed']  =
-            $event['percent']            =
-            $event['yesPercent']         =
-            $event['noPercent']          = 0;
+            $event['logCountForPending']     =
+                $event['logCountProcessed']  =
+                $event['percent']            =
+                $event['yesPercent']         =
+                $event['noPercent']          = 0;
 
             if (isset($campaignLogCounts[$event['id']])) {
                 $loggedCount                 = array_sum($campaignLogCounts[$event['id']]);
@@ -1171,10 +1207,12 @@ class CustomerController extends AbstractStandardFormController
 
         // rewrite stats data from parent condition if exist
         foreach ($events as &$event) {
-            if (!empty($event['decisionPath']) &&
+            if (
+                !empty($event['decisionPath']) &&
                 !empty($event['parent_id']) &&
                 isset($events[$event['parent_id']]) &&
-                'condition' !== $event['eventType']) {
+                'condition' !== $event['eventType']
+            ) {
                 $parentEvent                 = $events[$event['parent_id']];
                 $event['percent']            = $parentEvent['percent'];
                 $event['yesPercent']         = $parentEvent['yesPercent'];

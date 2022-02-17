@@ -11,7 +11,6 @@
 
 namespace Mautic\ChannelBundle\Form\Type;
 
-use Mautic\CoreBundle\Form\EventListener\CleanFormSubscriber;
 use Mautic\CoreBundle\Form\Type\FormButtonsType;
 use Mautic\CoreBundle\Security\Permissions\CorePermissions;
 use Symfony\Component\Form\AbstractType;
@@ -39,8 +38,6 @@ class OrderForm extends AbstractType
             'label_attr' => ['class' => 'control-label'],
             'attr'       => ['class' => 'form-control'],
         ]);
-
-        $builder->addEventSubscriber(new CleanFormSubscriber(['description' => 'html']));
 
         $builder->add('subtotal_price', NumberType::class, [
             'label'      => 'Subtotal',

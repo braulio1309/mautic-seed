@@ -382,7 +382,7 @@ class VariantController extends AbstractStandardFormController
                     )
                 );
             } elseif ($valid && $this->isFormApplied($form)) {
-                return $this->editAction($product->getId(), true);
+                return $this->indexAction();
             }
         }
 

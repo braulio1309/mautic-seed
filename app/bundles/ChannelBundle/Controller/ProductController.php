@@ -374,9 +374,9 @@ class ProductController extends AbstractStandardFormController
                 }
             }
             if (($valid && !$this->isFormApplied($form))) {
-                return $this->indexAction(1);
+                return $this->indexAction();
             } elseif ($valid && $this->isFormApplied($form)) {
-                return $this->editAction($product->getId(), true);
+                return $this->indexAction();
             }
         }
 

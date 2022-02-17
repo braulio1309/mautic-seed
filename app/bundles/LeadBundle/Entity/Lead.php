@@ -186,6 +186,11 @@ class Lead extends FormEntity implements CustomFieldEntityInterface
     public $imported = false;
 
     /**
+     * @var string
+     */
+    private $diana_address;
+
+    /**
      * @var ArrayCollection
      */
     private $tags;
@@ -254,6 +259,10 @@ class Lead extends FormEntity implements CustomFieldEntityInterface
             ->build();
 
         $builder->createField('points', 'integer')
+            ->build();
+
+        $builder->createField('diana_address', 'string')
+            ->nullable()
             ->build();
 
         $builder->createOneToMany('pointsChangeLog', 'PointsChangeLog')
@@ -1115,6 +1124,22 @@ class Lead extends FormEntity implements CustomFieldEntityInterface
     public function getDoNotContact()
     {
         return $this->doNotContact;
+    }
+
+    /**
+     * @param $internal
+     */
+    public function setDianaAddress($diana_address)
+    {
+        $this->diana_address = $diana_address;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDianaAddress()
+    {
+        return $this->diana_address;
     }
 
     /**

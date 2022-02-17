@@ -41,6 +41,14 @@ return [
                 'path'       => '/products/{objectAction}/{objectId}',
                 'controller' => 'MauticChannelBundle:Product:new',
             ],
+            'call_list' => [
+                'path'       => '/call/{page}',
+                'controller' => 'MauticChannelBundle:CallMessage:index',
+            ],
+            'call_create' => [
+                'path'       => '/call/{objectAction}/{objectId}',
+                'controller' => 'MauticChannelBundle:CallMessage:new',
+            ],
             'product_delete' => [
                 'path'       => '/products/delete/{objectId}',
                 'controller' => 'MauticChannelBundle:Product:delete',
@@ -140,7 +148,7 @@ return [
                 'method'     => 'POST',
             ],
             'mautic_api_product_categories'      => [
-                'path'       => '/products/categories/{objectId}',
+                'path'       => '/product/categories/{objectId}',
                 'controller' => 'MauticChannelBundle:Api\CategoryApi:getAll',
                 'method'     => 'GET',
             ],
@@ -189,6 +197,11 @@ return [
             'mautic.channel.messages' => [
                 'route'    => 'mautic_message_index',
                 'access'   => ['channel:messages:viewown', 'channel:messages:viewother'],
+                'parent'   => 'mautic.core.channels',
+                'priority' => 110,
+            ],
+            'Calls messages' => [
+                'route'    => 'call_list',
                 'parent'   => 'mautic.core.channels',
                 'priority' => 110,
             ],
@@ -288,6 +301,9 @@ return [
                 'class'     => 'Mautic\ChannelBundle\Form\Type\ProductForm',
                 'arguments' => 'mautic.security',
             ],
+            'mautic.channel.type.call'                 => [
+                'class'     => 'Mautic\ChannelBundle\Form\Type\CallMessageForm',
+            ],
             'mautic.channel.type.listcustomer' => [
                 'class'     => 'Mautic\ChannelBundle\Form\Type\CustomerListType',
                 'arguments' => [
@@ -368,6 +384,9 @@ return [
             'mautic.channel.model.category' => [
                 'class'     => \Mautic\ChannelBundle\Model\CategoryModel::class,
             ],
+            'mautic.channel.model.call' => [
+                'class'     => \Mautic\ChannelBundle\Model\CallMessageModel::class,
+            ],
             'mautic.channel.model.variant' => [
                 'class'     => \Mautic\ChannelBundle\Model\VariantModel::class,
             ],
@@ -423,6 +442,31 @@ return [
                 'class'     => Doctrine\ORM\EntityRepository::class,
                 'factory'   => ['@doctrine.orm.entity_manager', 'getRepository'],
                 'arguments' => \Mautic\ChannelBundle\Entity\Product::class,
+            ],
+            'mautic.channel.repository.call' => [
+                'class'     => Doctrine\ORM\EntityRepository::class,
+                'factory'   => ['@doctrine.orm.entity_manager', 'getRepository'],
+                'arguments' => \Mautic\ChannelBundle\Entity\CallMessage::class,
+            ],
+            'mautic.channel.repository.category' => [
+                'class'     => Doctrine\ORM\EntityRepository::class,
+                'factory'   => ['@doctrine.orm.entity_manager', 'getRepository'],
+                'arguments' => \Mautic\ChannelBundle\Entity\Category::class,
+            ],
+            'mautic.channel.repository.variant' => [
+                'class'     => Doctrine\ORM\EntityRepository::class,
+                'factory'   => ['@doctrine.orm.entity_manager', 'getRepository'],
+                'arguments' => \Mautic\ChannelBundle\Entity\Variant::class,
+            ],
+            'mautic.channel.repository.order' => [
+                'class'     => Doctrine\ORM\EntityRepository::class,
+                'factory'   => ['@doctrine.orm.entity_manager', 'getRepository'],
+                'arguments' => \Mautic\ChannelBundle\Entity\Order::class,
+            ],
+            'mautic.channel.repository.customer' => [
+                'class'     => Doctrine\ORM\EntityRepository::class,
+                'factory'   => ['@doctrine.orm.entity_manager', 'getRepository'],
+                'arguments' => \Mautic\ChannelBundle\Entity\Customer::class,
             ],
         ],
     ],

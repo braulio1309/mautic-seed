@@ -158,6 +158,11 @@ return [
                 'controller'      => 'MauticLeadBundle:Api\LeadApi:newEvent',
                 'method'          => 'POST',
             ],
+            'mautic_api_new' => [
+                'path'            => '/contact/bot/new',
+                'controller'      => 'MauticLeadBundle:Api\LeadApi:newContact',
+                'method'          => 'POST',
+            ],
             'mautic_api_dncaddcontact' => [
                 'path'       => '/contacts/{id}/dnc/{channel}/add',
                 'controller' => 'MauticLeadBundle:Api\LeadApi:addDnc',

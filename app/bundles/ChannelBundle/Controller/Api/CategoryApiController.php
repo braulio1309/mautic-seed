@@ -49,6 +49,7 @@ class CategoryApiController extends CommonApiController
     public function getAllAction($objectId = null)
     {
         $products =  ($objectId > 0) ? $this->model->getEntity($objectId) : $this->model->getEntities();
+
         $items    = [];
         if (!$objectId) {
             foreach ($products as $pro) {

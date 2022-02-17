@@ -5,7 +5,7 @@ namespace Mautic\ChannelBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Mautic\CoreBundle\Doctrine\Mapping\ClassMetadataBuilder;
 
-class Category
+class CallMessage
 {
     /**
      * @var int
@@ -20,7 +20,7 @@ class Category
     /**
      * @var string|null
      */
-    private $category_name;
+    private $message;
 
     /**
      * @var string|null
@@ -28,24 +28,32 @@ class Category
     private $description;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $category_desc;
+    private $lang;
 
     /**
-     * @var int
+     * @var \DateTime|null
      */
-    private $subcategory_ids;
+    private $created_at;
+
+    /**
+     * @var \DateTime|null
+     */
+    private $updated_at;
 
     public static function loadMetadata(ORM\ClassMetadata $metadata)
     {
         $builder = new ClassMetadataBuilder($metadata);
 
-        $builder->setTable('products_categories')
-            ->setCustomRepositoryClass('Mautic\ChannelBundle\Entity\CategoryRepository');
+        $builder->setTable('call_messages')
+            ->setCustomRepositoryClass('Mautic\ChannelBundle\Entity\CallMessageRepository');
         $builder->addIdColumns();
 
-        $builder->createField('category_desc', 'string')->nullable()->build();
+        $builder->createField('message', 'text')->nullable()->build();
+        $builder->createField('lang', 'string')->nullable()->build();
+        $builder->addField('created_at', 'datetime');
+        $builder->addField('updated_at', 'datetime');
     }
 
     public function getId(): ?int
@@ -96,62 +104,50 @@ class Category
         return $this;
     }
 
-    public function getCategoryDesc(): ?string
+    public function getLang(): ?string
     {
-        return $this->category_desc;
+        return $this->lang;
     }
 
-    public function setCategoryDesc(string $category_desc): self
+    public function setLang(string $lang): self
     {
-        $this->category_desc = $category_desc;
+        $this->lang = $lang;
 
         return $this;
     }
 
-    public function getInitialPrice()
+    public function getMessage()
     {
-        return $this->initial_price;
+        return $this->message;
     }
 
-    public function setInitialPrice($initial_price): self
+    public function setMessage($message): self
     {
-        $this->initial_price = $initial_price;
+        $this->message = $message;
 
         return $this;
     }
 
-    public function getInitialQuantity()
+    public function getCreatedAt()
     {
-        return $this->initial_quantity;
+        return $this->created_at;
     }
 
-    public function setInitialQuantity($precio): self
+    public function setCreatedAt($created_at): self
     {
-        $this->initial_quantity = $precio;
+        $this->created_at = $created_at;
 
         return $this;
     }
 
-    public function getVendor()
+    public function getUpdatedAt()
     {
-        return $this->vendor;
+        return $this->updated_at;
     }
 
-    public function setVendor($vendor): self
+    public function setUpdatedAt($updated_at): self
     {
-        $this->vendor = $vendor;
-
-        return $this;
-    }
-
-    public function getSubCategoryIds()
-    {
-        return $this->vendor;
-    }
-
-    public function setSubCategoryIds($subcategory_id): self
-    {
-        $this->subcategory_id = $subcategory_id;
+        $this->updated_at = $updated_at;
 
         return $this;
     }

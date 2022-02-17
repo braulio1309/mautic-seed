@@ -338,7 +338,7 @@ class CategoryController extends AbstractStandardFormController
                     $productModel->saveEntity($product);
                     $viewParameters = ['page' => $page];
                     $returnUrl      = $this->generateUrl('category_list', $viewParameters);
-                    $template       = 'MauticChannelBundle:Category:index';
+                    $template       = 'MauticChannelBundle:Category:category_list.php.html';
 
                     $passthrough = [
                         'mauticContent' => 'category',
@@ -347,7 +347,7 @@ class CategoryController extends AbstractStandardFormController
             } else {
                 $viewParameters = ['page' => $page];
                 $returnUrl      = $this->generateUrl('category_list', $viewParameters);
-                $template       = 'MauticChannelBundle:Category:index';
+                $template       = 'MauticChannelBundle:Category:category_list.php.html';
             }
 
             $passthrough = [
@@ -381,7 +381,7 @@ class CategoryController extends AbstractStandardFormController
                     )
                 );
             } elseif ($valid && $this->isFormApplied($form)) {
-                return $this->editAction($product->getId(), true);
+                return $this->indexAction();
             }
         }
 
