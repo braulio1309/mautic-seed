@@ -124,7 +124,8 @@ if ! [ -e app/config/local.php ]; then
         chown www-data:www-data /var/www/html/app/logs
 fi
 
-#Create datatable of sessions
+#Create datatables 
+sudo -u www-data php /var/www/html/bin/console   doctrine:schema:update --force
 sudo -u www-data php /var/www/html/bin/console --no-interaction doctrine:migrations:migrate
 
 if [[ "$MAUTIC_RUN_CRON_JOBS" == "true" ]]; then
