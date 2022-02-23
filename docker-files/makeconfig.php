@@ -80,6 +80,18 @@ if(array_key_exists('MAUTIC_SECRET_KEY', $_ENV)) {
     $parameters['secret_key'] = $_ENV['MAUTIC_SECRET_KEY'];
 }
 
+if(array_key_exists('MAUTIC_ADMIN_USERNAME', $_ENV)) {
+    $parameters['mautic_admin_username'] = $_ENV['MAUTIC_ADMIN_USERNAME'];
+}
+
+if(array_key_exists('MAUTIC_ADMIN_EMAIL', $_ENV)) {
+    $parameters['mautic_admin_email'] = $_ENV['MAUTIC_ADMIN_EMAIL'];
+}
+
+if(array_key_exists('MAUTIC_ADMIN_PASSWORD', $_ENV)) {
+    $parameters['mautic_admin_password'] = $_ENV['MAUTIC_ADMIN_PASSWORD'];
+}
+
 $path     = '/var/www/html/app/config/local.php';
 $rendered = "<?php\n\$parameters = ".var_export($parameters, true).";\n";
 

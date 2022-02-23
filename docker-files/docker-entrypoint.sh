@@ -13,7 +13,6 @@ max_execution_time = ${PHP_MAX_EXECUTION_TIME}
 EOF
 fi
 
-
 if [ -n "$MYSQL_PORT_3306_TCP" ]; then
         if [ -z "$MAUTIC_DB_HOST" ]; then
                 export MAUTIC_DB_HOST='mysql'
@@ -26,8 +25,6 @@ if [ -n "$MYSQL_PORT_3306_TCP" ]; then
                 echo >&2 "  instead of the linked mysql container"
         fi
 fi
-
-
 
 if [ -z "$MAUTIC_DB_HOST" ]; then
         echo >&2 "error: missing MAUTIC_DB_HOST and MYSQL_PORT_3306_TCP environment variables"
@@ -110,6 +107,9 @@ echo >&2 "Host Name: $MAUTIC_DB_HOST"
 echo >&2 "Database Name: $MAUTIC_DB_NAME"
 echo >&2 "Database Username: $MAUTIC_DB_USER"
 echo >&2 "Database Password: $MAUTIC_DB_PASSWORD"
+echo >&2 "Admin Email: $MAUTIC_ADMIN_EMAIL"
+echo >&2 "Admin Password: $MAUTIC_ADMIN_PASSWORD"
+echo >&2 "Admin Username: $MAUTIC_ADMIN_USERNAME"
 
 # Make sure media folder exists and has the proper permissons
 chown -R www-data:www-data /var/www/html/media
@@ -145,13 +145,11 @@ fi
 echo >&2
 echo >&2 "========================================================================"
 
-
 # Github Pull Tester
 if [ -n "$MAUTIC_TESTER" ]; then
   echo >&2 "Copying Mautic Github Pull Tester"
   wget https://raw.githubusercontent.com/mautic/mautic-tester/master/tester.php
 fi
-
 
 "$@" &
 MAINPID=$!

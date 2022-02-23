@@ -46,28 +46,15 @@ class LoadUserData extends AbstractFixture implements OrderedFixtureInterface, F
         $user = new User();
         $user->setFirstName('Admin');
         $user->setLastName('User');
-        $user->setUsername('admin');
-        $user->setEmail('admin@yoursite.com');
+        $user->setUsername($_ENV['MAUTIC_MAUTIC_ADMIN_USERNAME']);
+        $user->setEmail($_ENV['MAUTIC_MAUTIC_ADMIN_EMAIL']);
         $encoder = $this->encoder;
-        $user->setPassword($encoder->encodePassword($user, 'mautic'));
+        $user->setPassword($encoder->encodePassword($user, $_ENV['MAUTIC_MAUTIC_ADMIN_PASSWORD']));
         $user->setRole($this->getReference('admin-role'));
         $manager->persist($user);
         $manager->flush();
 
         $this->addReference('admin-user', $user);
-
-        $user = new User();
-        $user->setFirstName('Sales');
-        $user->setLastName('User');
-        $user->setUsername('sales');
-        $user->setEmail('sales@yoursite.com');
-        $encoder = $this->encoder;
-        $user->setPassword($encoder->encodePassword($user, 'mautic'));
-        $user->setRole($this->getReference('sales-role'));
-        $manager->persist($user);
-        $manager->flush();
-
-        $this->addReference('sales-user', $user);
     }
 
     /**
