@@ -127,7 +127,6 @@ fi
 #Create datatables 
 sudo -u www-data php /var/www/html/bin/console   doctrine:schema:update --force
 sudo -u www-data php /var/www/html/bin/console --no-interaction doctrine:migrations:migrate
-sudo -u www-data php /var/www/html/bin/console --no-interaction doctrine:fixtures:load
 
 if [[ "$MAUTIC_RUN_CRON_JOBS" == "true" ]]; then
     if [ ! -e /var/log/cron.pipe ]; then
