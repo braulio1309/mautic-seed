@@ -41,13 +41,18 @@ class ProductForm extends AbstractType
         $builder->add('name', TextType::class, [
             'label'      => 'mautic.core.name',
             'label_attr' => ['class' => 'control-label'],
-            'attr'       => ['class' => 'form-control'],
+            'attr'       => [
+                'class'       => 'form-control',
+                'placeholder' => 'Name',
+            ],
         ]);
 
         $builder->add('product_desc', TextareaType::class, [
             'label'      => 'mautic.core.description',
             'label_attr' => ['class' => 'control-label'],
-            'attr'       => ['class' => 'form-control editor'],
+            'attr'       => [
+                'class' => 'form-control editor',
+            ],
             'required'   => false,
         ]);
 
@@ -70,19 +75,28 @@ class ProductForm extends AbstractType
         $builder->add('initial_quantity', NumberType::class, [
             'label'      => 'Quantity',
             'label_attr' => ['class' => 'control-label'],
-            'attr'       => ['class' => 'form-control'],
+            'attr'       => [
+                'class'       => 'form-control',
+                'placeholder' => 'Quantity',
+            ],
         ]);
 
         $builder->add('initial_price', NumberType::class, [
             'label'      => 'Price',
             'label_attr' => ['class' => 'control-label'],
-            'attr'       => ['class' => 'form-control'],
+            'attr'       => [
+                'class'       => 'form-control',
+                'placeholder' => 'Price',
+            ],
         ]);
 
         $builder->add('vendor', TextType::class, [
             'label'      => 'Vendor',
             'label_attr' => ['class' => 'control-label'],
-            'attr'       => ['class' => 'form-control'],
+            'attr'       => [
+                'class'       => 'form-control',
+                'placeholder' => 'Vendor',
+            ],
         ]);
 
         $builder->add('sessionId', HiddenType::class, [

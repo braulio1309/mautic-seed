@@ -312,6 +312,18 @@ return [
                     'mautic.security',
                 ],
             ],
+            'mautic.form.type.callsend_list' => [
+                'class'     => \Mautic\ChannelBundle\Form\Type\CallMessageSendType::class,
+                'arguments' => 'router',
+            ],
+            'mautic.channel.type.listcallmessage' => [
+                'class'     => 'Mautic\ChannelBundle\Form\Type\CallMessageList',
+                'arguments' => [
+                    'mautic.channel.model.call',
+                    'translator',
+                    'mautic.security',
+                ],
+            ],
             'mautic.channel.type.categorylist'         => [
                 'class'     => 'Mautic\ChannelBundle\Form\Type\CategoryListType',
                 'arguments' => [

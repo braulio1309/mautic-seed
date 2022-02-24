@@ -34,7 +34,10 @@ class CallMessageForm extends AbstractType
             [
                 'label'      => 'mautic.sms.form.internal.name',
                 'label_attr' => ['class' => 'control-label'],
-                'attr'       => ['class' => 'form-control'],
+                'attr'       => [
+                    'class'       => 'form-control',
+                    'placeholder' => 'Title of the call',
+                ],
             ]
         );
 
@@ -53,7 +56,7 @@ class CallMessageForm extends AbstractType
             'message',
             TextareaType::class,
             [
-                'label'      => 'mautic.sms.form.message',
+                'label'      => 'Call message',
                 'label_attr' => ['class' => 'control-label'],
                 'attr'       => [
                     'class' => 'form-control',

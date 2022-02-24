@@ -40,7 +40,10 @@ class CategoryForm extends AbstractType
         $builder->add('name', TextType::class, [
             'label'      => 'mautic.core.name',
             'label_attr' => ['class' => 'control-label'],
-            'attr'       => ['class' => 'form-control'],
+            'attr'       => [
+                'class'       => 'form-control',
+                'placeholder' => 'Name',
+            ],
         ]);
 
         $builder->add('category_desc', TextareaType::class, [

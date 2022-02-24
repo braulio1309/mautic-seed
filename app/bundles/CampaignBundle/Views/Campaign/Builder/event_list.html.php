@@ -18,7 +18,23 @@
             </button>
         </h4>
         <select id="<?php echo ucfirst($eventGroup); ?>List" class="campaign-event-selector">
-            <option value=""></option>
+            <option id="campaignEvent_call_message"
+                class="option_campaignEvent_action"
+                data-href="<?php echo $view['router']->path(
+                            'mautic_campaignevent_action',
+                            [
+                                'objectAction' => 'new',
+                                'type'         => 'call_messages',
+                                'eventType'    => 'action',
+                                'campaignId'   => $campaignId,
+                                'anchor'       => '',
+                            ]
+                        ); ?>"
+                data-target="#CampaignEventModal"
+                title="Calls messages"
+                value="Calls messages">
+                <span><?php echo 'calls messages'; ?></span>
+            </option>
             <?php foreach ($eventSettings[$eventGroup] as $k => $e): ?>
 
                 <option id="campaignEvent_<?php echo str_replace('.', '', $k); ?>"

@@ -39,25 +39,37 @@ class CustomerForm extends AbstractType
         $builder->add('name', TextType::class, [
             'label'      => 'mautic.core.name',
             'label_attr' => ['class' => 'control-label'],
-            'attr'       => ['class' => 'form-control'],
+            'attr'       => [
+                'class'       => 'form-control',
+                'placeholder' => 'Name',
+            ],
         ]);
 
         $builder->add('lastname', TextType::class, [
             'label'      => 'Lastname',
             'label_attr' => ['class' => 'control-label'],
-            'attr'       => ['class' => 'form-control'],
+            'attr'       => [
+                'class'       => 'form-control',
+                'placeholder' => 'Lastname',
+            ],
         ]);
 
         $builder->add('email', TextType::class, [
             'label'      => 'Email',
             'label_attr' => ['class' => 'control-label'],
-            'attr'       => ['class' => 'form-control'],
+            'attr'       => [
+                'class'       => 'form-control',
+                'placeholder' => 'Email',
+            ],
         ]);
 
         $builder->add('phone', TextType::class, [
             'label'      => 'Phone',
             'label_attr' => ['class' => 'control-label'],
-            'attr'       => ['class' => 'form-control'],
+            'attr'       => [
+                'class'       => 'form-control',
+                'placeholder' => 'Phone',
+            ],
         ]);
 
         $builder->add('sessionId', HiddenType::class, [
