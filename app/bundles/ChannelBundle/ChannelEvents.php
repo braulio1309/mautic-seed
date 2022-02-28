@@ -109,4 +109,13 @@ final class ChannelEvents
      * @var string
      */
     const MESSAGE_POST_DELETE = 'mautic.message_post_delete';
+
+    /**
+     * The ON_CALL_VOICE event is dispatched when the campaign action to add a donotcontact is executed.
+     *
+     * The event listener receives a Mautic\CampaignBundle\Event\PendingEvent
+     *
+     * @var string
+     */
+    const ON_CALL_VOICE = 'mautic.on_call_voice';
 }

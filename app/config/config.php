@@ -78,8 +78,8 @@ $container->loadFromExtension('framework', [
         'fallback' => 'en_US',
     ],
     'session'         => [ //handler_id set to null will use default session handler from php.ini
-        //'handler_id'    => 'session.handler.pdo',
-        'handler_id'    => null,
+        'handler_id'    => 'session.handler.pdo',
+        //'handler_id'    => null,
         'name'          => '%env(MAUTIC_SESSION_NAME)%',
         'cookie_secure' => $secureCookie,
     ],
@@ -93,8 +93,8 @@ $container->loadFromExtension('framework', [
 
 $container->register('session.handler.pdo', PdoSessionHandler::class)
     ->setArguments([
-        'mysql:dbname=mtcdestinycrmproductiondb',
-        ['db_table' => 'sessions', 'db_username' => 'admin', 'db_password' => 'k_ds^L1Rgf6yvHT1tp6h^ltiTHmkEj'],
+        'mysql:dbname=%mautic.db_name%',
+        ['db_table' => 'sessions', 'db_username' => '%mautic.db_user%', 'db_password' => '%mautic.db_password%'],
     ]);
 
 $container->setParameter('mautic.famework.csrf_protection', true);

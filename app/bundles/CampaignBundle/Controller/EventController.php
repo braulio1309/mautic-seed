@@ -82,18 +82,7 @@ class EventController extends CommonFormController
 
         //fire the builder event
         $events = $eventCollector->getEventsArray();
-        if (null == $events[$eventType][$type]) {
-            $newEvent = [
-                'label'       => 'Send a call message',
-                'description' => 'Sends a calls to the contact.',
-                //"eventName" => "mautic.sms.on_campaign_trigger_action",
-                'formType'        => "Mautic\ChannelBundle\Form\Type\CallMessageSendType",
-                'formTypeOptions' => ['update_select' => 'campaignevent_properties_sms'],
-                'formTheme'       => "MauticChannelBundle:Calls\CallMessageSend",
-                'channel'         => 'calls',
-                'channelIdField'  => 'calls',
-            ];
-        }
+
         $form   = $this->get('form.factory')->create(
             EventType::class,
             $event,

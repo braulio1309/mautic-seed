@@ -267,6 +267,13 @@ return [
                     'translator',
                 ],
             ],
+            'mautic.channel.campaignbundle.subscriber.send' => [
+                'class'     => \Mautic\ChannelBundle\EventListener\CallMessageSubscriber::class,
+                'arguments' => [
+                    'mautic.channel.model.call',
+                    'mautic.sms.transport_chain',
+                ],
+            ],
             'mautic.channel.channelbundle.subscriber' => [
                 'class'     => \Mautic\ChannelBundle\EventListener\MessageSubscriber::class,
                 'arguments' => [
