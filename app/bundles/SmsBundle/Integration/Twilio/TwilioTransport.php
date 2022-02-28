@@ -66,12 +66,23 @@ class TwilioTransport implements TransportInterface
         }
 
         try {
+            /***** Add Support to WhatsApp *****/
+            $prefix = '';
+            if ($number) {
+                if (strlen($number) > 9) {
+                    if ('whatsapp:' === substr($number, 0, 9)) {
+                        $prefix = 'whatsapp:';
+                        $number = substr($number, 9);
+                    }
+                }
+            }
+
             $this->configureClient();
 
             $this->client->messages->create(
                 $this->sanitizeNumber($number),
                 [
-                    'from' => $this->sendingPhoneNumber,
+                    'from' => $prefix.$this->sendingPhoneNumber,
                     'body' => $content,
                 ]
             );

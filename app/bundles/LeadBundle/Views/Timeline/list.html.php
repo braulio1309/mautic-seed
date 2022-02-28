@@ -64,6 +64,7 @@ $baseUrl = $view['router']->path(
         <tbody>
         <?php foreach ($events['events'] as $counter => $event): ?>
             <?php
+
             ++$counter; // prevent 0
             $icon       = (isset($event['icon'])) ? $event['icon'] : 'fa-history';
             $eventLabel = (isset($event['eventLabel'])) ? $event['eventLabel'] : $event['eventType'];

@@ -153,6 +153,16 @@ return [
                 'path'            => '/contacts',
                 'controller'      => 'MauticLeadBundle:Api\LeadApi',
             ],
+            'mautic_api_contactsevenlog' => [
+                'path'            => '/contact/event/{objectId}',
+                'controller'      => 'MauticLeadBundle:Api\LeadApi:newEvent',
+                'method'          => 'POST',
+            ],
+            'mautic_api_new' => [
+                'path'            => '/contact/bot/new',
+                'controller'      => 'MauticLeadBundle:Api\LeadApi:newContact',
+                'method'          => 'POST',
+            ],
             'mautic_api_dncaddcontact' => [
                 'path'       => '/contacts/{id}/dnc/{channel}/add',
                 'controller' => 'MauticLeadBundle:Api\LeadApi:addDnc',
@@ -662,9 +672,7 @@ return [
             'mautic.form.type.leaddevice' => [
                 'class' => Mautic\LeadBundle\Form\Type\DeviceType::class,
             ],
-            'mautic.form.type.lead_import' => [
-                'class' => \Mautic\LeadBundle\Form\Type\LeadImportType::class,
-            ],
+
             'mautic.form.type.lead_field_import' => [
                 'class'     => \Mautic\LeadBundle\Form\Type\LeadImportFieldType::class,
                 'arguments' => ['translator', 'doctrine.orm.entity_manager'],
@@ -1131,6 +1139,9 @@ return [
                     'mautic.lead.segment.stat.chart.query.factory',
                     'request_stack',
                 ],
+            ],
+            'mautic.lead.model.lead_event_log' => [
+                'class'     => \Mautic\LeadBundle\Model\LeadEventModel::class,
             ],
             'mautic.lead.repository.lead_segment_filter_descriptor' => [
                 'class'     => \Mautic\LeadBundle\Services\ContactSegmentFilterDictionary::class,

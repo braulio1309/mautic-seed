@@ -54,6 +54,11 @@ class LeadEventLog
     protected $object;
 
     /**
+     * @var string
+     */
+    private $diana_address;
+
+    /**
      * @var int
      */
     protected $objectId;
@@ -101,6 +106,10 @@ class LeadEventLog
         $builder->createManyToOne('lead', Lead::class)
             ->addJoinColumn('lead_id', 'id', true, false, 'CASCADE')
             ->inversedBy('eventLog')
+            ->build();
+
+        $builder->createField('diana_address', 'string')
+            ->nullable()
             ->build();
     }
 
@@ -267,6 +276,22 @@ class LeadEventLog
         $this->properties = $properties;
 
         return $this;
+    }
+
+    /**
+     * @param $internal
+     */
+    public function setDianaAddress($diana_address)
+    {
+        $this->diana_address = $diana_address;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDianaAddress()
+    {
+        return $this->diana_address;
     }
 
     /**

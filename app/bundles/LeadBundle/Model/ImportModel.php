@@ -318,6 +318,7 @@ class ImportModel extends FormModel
 
         while ($batchSize && !$file->eof()) {
             $data = $file->fgetcsv($config['delimiter'], $config['enclosure'], $config['escape']);
+
             $import->setLastLineImported($lineNumber);
 
             // Ignore the header row
