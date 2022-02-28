@@ -44,7 +44,7 @@ export class CrmStack extends cdk.Stack {
       userName: appUser.userName,
     });
 
-    const destinyDefaultDomainZone = route53.HostedZone.fromLookup(this, 'DestinyZone', { domainName: 'destiny.systems' });
+    const destinyDefaultDomainZone = route53.HostedZone.fromLookup(this, 'DestinyZone', { domainName: 'grupo-diana.dosmass.systems' });
 
     // Allow App user to send SES emails
     appUser.addToPolicy(new iam.PolicyStatement({
