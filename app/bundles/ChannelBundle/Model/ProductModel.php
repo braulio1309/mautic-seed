@@ -15,6 +15,8 @@ use Mautic\CampaignBundle\EventCollector\EventCollector;
 use Mautic\CampaignBundle\Membership\MembershipBuilder;
 use Mautic\ChannelBundle\Entity\Product;
 use Mautic\ChannelBundle\Form\Type\ProductForm;
+use Mautic\CoreBundle\Helper\Chart\ChartQuery;
+use Mautic\CoreBundle\Helper\Chart\LineChart;
 use Mautic\CoreBundle\Model\FormModel as CommonFormModel;
 use Mautic\FormBundle\Model\FormModel;
 use Mautic\LeadBundle\Model\ListModel;
@@ -127,5 +129,94 @@ class ProductModel extends CommonFormModel
     public function getPermissionBase()
     {
         return 'channel:product';
+    }
+
+    /**
+     * Get bar chart data of contacts.
+     *
+     * @param string    $unit          {@link php.net/manual/en/function.date.php#refsect1-function.date-parameters}
+     * @param \DateTime $dateFrom
+     * @param \DateTime $dateTo
+     * @param string    $dateFormat
+     * @param array     $filter
+     * @param bool      $canViewOthers
+     *
+     * @return array
+     */
+    public function getLeadsLineChartData($unit, $dateFrom, $dateTo, $dateFormat = null, $filter = [], $canViewOthers = true)
+    {
+        $flag        = null;
+        $topLists    = null;
+        $allLeadsT   = $this->translator->trans('mautic.products.all.products');
+        $identifiedT = $this->translator->trans('mautic.product.identified');
+        $anonymousT  = $this->translator->trans('mautic.lead.lead.anonymous');
+
+        if (isset($filter['flag'])) {
+            $flag = $filter['flag'];
+            unset($filter['flag']);
+        }
+
+        if (!$canViewOthers) {
+            $filter['owner_id'] = $this->userHelper->getUser()->getId();
+        }
+
+        $chart                              = new LineChart($unit, $dateFrom, $dateTo, $dateFormat);
+        $query                              = new ChartQuery($this->em->getConnection(), $dateFrom, $dateTo);
+        $anonymousFilter                    = $filter;
+        $anonymousFilter['date_identified'] = [
+            'expression' => 'isNull',
+        ];
+        $identifiedFilter                    = $filter;
+        $identifiedFilter['date_identified'] = [
+            'expression' => 'isNotNull',
+        ];
+
+        if ('top' == $flag) {
+            $topLists = $this->leadListModel->getTopLists(6, $dateFrom, $dateTo);
+            if ($topLists) {
+                foreach ($topLists as $list) {
+                    $filter['leadlist_id'] = [
+                        'value'            => $list['id'],
+                        'list_column_name' => 't.id',
+                    ];
+                    $all = $query->fetchTimeData('leads', 'date_added', $filter);
+                    $chart->setDataset($list['name'].': '.$allLeadsT, $all);
+                }
+            }
+        } elseif ('topIdentifiedVsAnonymous' == $flag) {
+            $topLists = $this->leadListModel->getTopLists(3, $dateFrom, $dateTo);
+            if ($topLists) {
+                foreach ($topLists as $list) {
+                    $anonymousFilter['leadlist_id'] = [
+                        'value'            => $list['id'],
+                        'list_column_name' => 't.id',
+                    ];
+                    $identifiedFilter['leadlist_id'] = [
+                        'value'            => $list['id'],
+                        'list_column_name' => 't.id',
+                    ];
+                    $identified = $query->fetchTimeData('products', 'created_at', $identifiedFilter);
+                    $anonymous  = $query->fetchTimeData('products', 'created_at', $anonymousFilter);
+                    $chart->setDataset($list['name'].': '.$identifiedT, $identified);
+                    $chart->setDataset($list['name'].': '.$anonymousT, $anonymous);
+                }
+            }
+        } elseif ('identified' == $flag) {
+            $identified = $query->fetchTimeData('products', 'created_at', $identifiedFilter);
+            $chart->setDataset($identifiedT, $identified);
+        } elseif ('anonymous' == $flag) {
+            $anonymous = $query->fetchTimeData('products', 'created_at', $anonymousFilter);
+            $chart->setDataset($anonymousT, $anonymous);
+        } elseif ('identifiedVsAnonymous' == $flag) {
+            $identified = $query->fetchTimeData('products', 'created_at', $identifiedFilter);
+            $anonymous  = $query->fetchTimeData('products', 'created_at', $anonymousFilter);
+            $chart->setDataset($identifiedT, $identified);
+            $chart->setDataset($anonymousT, $anonymous);
+        } else {
+            $all = $query->fetchTimeData('products', 'created_at', $filter);
+            $chart->setDataset($allLeadsT, $all);
+        }
+
+        return $chart->render();
     }
 }

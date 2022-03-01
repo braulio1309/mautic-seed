@@ -280,6 +280,15 @@ return [
                     'mautic.core.model.auditlog',
                 ],
             ],
+            'mautic.product.dashboard.subscriber' => [
+                'class'     => \Mautic\ChannelBundle\EventListener\ProductDashboardSubscriber::class,
+                'arguments' => [
+                    'mautic.channel.model.product',
+                    'mautic.lead.model.list',
+                    'router',
+                    'translator',
+                ],
+            ],
             'mautic.channel.channelbundle.lead.subscriber' => [
                 'class'     => Mautic\ChannelBundle\EventListener\LeadSubscriber::class,
                 'arguments' => [
@@ -310,6 +319,9 @@ return [
             ],
             'mautic.channel.type.call'                 => [
                 'class'     => 'Mautic\ChannelBundle\Form\Type\CallMessageForm',
+            ],
+            'mautic.form.type.product_dashboard_product_in_time_widget' => [
+                'class' => \Mautic\ChannelBundle\Form\Type\DashboardLeadsInTimeWidgetType::class,
             ],
             'mautic.channel.type.listcustomer' => [
                 'class'     => 'Mautic\ChannelBundle\Form\Type\CustomerListType',
