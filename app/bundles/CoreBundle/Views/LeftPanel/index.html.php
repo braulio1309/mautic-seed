@@ -16,7 +16,7 @@ $extraMenu = $view['menu']->render('extra');
     <a class="mautic-brand<?php echo (!empty($extraMenu)) ? ' pull-left pl-0 pr-0' : ''; ?>" href="#">
         <!-- logo figure -->
         
-            <img src="<?php echo $view['assets']->getUrl('app/assets/images/Logo-destiny.png'); ?>" width="50px" height="60px">
+            <img src="<?php echo $view['assets']->getUrl('app/assets/images/Logo-destiny.png'); ?>" width="50px" height="50px">
     
         
         <!--/ logo figure -->
