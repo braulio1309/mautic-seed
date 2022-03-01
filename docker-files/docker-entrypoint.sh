@@ -126,7 +126,7 @@ fi
 
 #Create datatables
 if [ -e /var/www/html/media/.createdAt ]; then
-  echo "Running migrations"
+  echo "Running migrations only"
   sudo -u www-data php /var/www/html/bin/console --no-interaction doctrine:migrations:migrate
 else
   echo "First run, avoiding migrations and running"
