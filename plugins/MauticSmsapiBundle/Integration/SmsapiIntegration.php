@@ -2,9 +2,6 @@
 
 namespace MauticPlugin\MauticSmsapiBundle\Integration;
 
-use Aws\Credentials\Credentials;
-use Aws\Exception\AwsException;
-use Aws\Sns\SnsClient;
 use Doctrine\ORM\EntityManager;
 use Mautic\CoreBundle\Helper\CacheStorageHelper;
 use Mautic\CoreBundle\Helper\EncryptionHelper;
@@ -89,7 +86,7 @@ class SmsapiIntegration extends AbstractIntegration implements ConfigFormInterfa
 
     public function getDisplayName(): string
     {
-        return 'Destiny Amazon SNS';
+        return 'Destiny Go 4 Clients SNS';
     }
 
     public function getIcon(): string
@@ -135,7 +132,16 @@ class SmsapiIntegration extends AbstractIntegration implements ConfigFormInterfa
     {
         return [
             'requires_callback'      => false,
-            'requires_authorization' => true,
+            'requires_authorization' => false,
+        ];
+    }
+
+    public function getRequiredKeyFields()
+    {
+        return [
+            'campaign_id'   => 'Campaign Id',
+            'client_id'     => 'Client Key',
+            'client_secret' => 'Client Secret',
         ];
     }
 
@@ -152,34 +158,12 @@ class SmsapiIntegration extends AbstractIntegration implements ConfigFormInterfa
 
         $keys = $integration->getDecryptedApiKeys();
 
-        $token  = $keys['client_id'];
-        $secret = $keys['client_secret'];
-
-        try {
-            $client = new SnsClient(
-                [
-                    'credentials' => new Credentials(
-                        $token,
-                        $secret
-                    ),
-                    'region'  => 'us-east-1',
-                    'version' => 'latest',
-                ]
-            );
-        } catch (AwsException $e) {
-            // error_log($e->getMessage());
-        }
+        $token       = $keys['client_id'];
+        $secret      = $keys['client_secret'];
+        $campaign_id = $keys['campaign_id'];
 
         $message = 'This message is sent from a Amazon SNS code sample.';
         $phone   = '+573054417046';
-        try {
-            $result = $client->publish([
-                'Message'     => $message,
-                'PhoneNumber' => $phone,
-            ]);
-        } catch (AwsException $e) {
-            // error_log($e->getMessage());
-        }
 
         if ('keys' == $formArea) {
             $builder->add(
