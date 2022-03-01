@@ -125,8 +125,15 @@ if ! [ -e app/config/local.php ]; then
 fi
 
 #Create datatables
-sudo -u www-data php /var/www/html/bin/console doctrine:schema:update --force
-sudo -u www-data php /var/www/html/bin/console --no-interaction doctrine:migrations:migrate
+if [ -e /var/www/html/media/.createdAt ]; then
+  echo "Running migrations"
+  sudo -u www-data php /var/www/html/bin/console --no-interaction doctrine:migrations:migrate
+else
+  echo "First run, avoiding migrations and running"
+  sudo -u www-data php /var/www/html/bin/console doctrine:schema:update --force
+  sudo -u www-data bash -c "echo $(date) > /var/www/html/media/.createdAt"
+fi
+
 sudo -u www-data php /var/www/html/bin/console cache:clear
 mkdir -p /var/www/html/var/cache/prod/jms_serializer
 chown -R www-data:www-data /var/www/html/var/
