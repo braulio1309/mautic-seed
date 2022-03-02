@@ -147,6 +147,11 @@ return [
                 'controller' => 'MauticChannelBundle:Api\ProductApi:new',
                 'method'     => 'POST',
             ],
+            'mautic_api_call_new'      => [
+                'path'       => '/call/new/{objectId}',
+                'controller' => 'MauticChannelBundle:Api\CallMessageApi:new',
+                'method'     => 'VIEW',
+            ],
             'mautic_api_product_categories'      => [
                 'path'       => '/product/categories/{objectId}',
                 'controller' => 'MauticChannelBundle:Api\CategoryApi:getAll',
@@ -272,6 +277,7 @@ return [
                 'arguments' => [
                     'mautic.channel.model.call',
                     'mautic.sms.transport_chain',
+                    'mautic.helper.integration',
                 ],
             ],
             'mautic.channel.channelbundle.subscriber' => [
@@ -411,6 +417,9 @@ return [
                     'mautic.campaign.membership.builder',
                     'mautic.tracker.contact',
                 ],
+            ],
+            'mautic.channel.model.callVoice' => [
+                'class'     => \Mautic\ChannelBundle\Model\CallVoiceModel::class,
             ],
             'mautic.channel.model.category' => [
                 'class'     => \Mautic\ChannelBundle\Model\CategoryModel::class,

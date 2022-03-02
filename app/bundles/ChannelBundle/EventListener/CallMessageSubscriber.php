@@ -17,6 +17,7 @@ use Mautic\CampaignBundle\Event\PendingEvent;
 use Mautic\ChannelBundle\ChannelEvents;
 use Mautic\ChannelBundle\Form\Type\CallMessageSendType;
 use Mautic\ChannelBundle\Model\CallMessageModel;
+use Mautic\PluginBundle\Helper\IntegrationHelper;
 use Mautic\SmsBundle\Model\SmsModel;
 use Mautic\SmsBundle\Sms\TransportChain;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -33,14 +34,37 @@ class CallMessageSubscriber implements EventSubscriberInterface
      */
     private $transportChain;
 
+    /**
+     * @var IntegrationHelper
+     */
+    private $integrationHelper;
+
+    /**
+     * @var string
+     */
+    private $secret;
+
+    /**
+     * @var string
+     */
+    private $token;
+
     const CALL_URI = 'https://cloud.go4clients.com:8580/api/campaigns/voice/v1.0/';
 
     public function __construct(
         CallMessageModel $callModel,
-        TransportChain $transportChain
+        TransportChain $transportChain,
+        IntegrationHelper $integrationHelper
     ) {
-        $this->callModel       = $callModel;
-        $this->transportChain  = $transportChain;
+        $this->callModel          = $callModel;
+        $this->transportChain     = $transportChain;
+        $this->integrationHelper  = $integrationHelper;
+        $integration              = $this->integrationHelper->getIntegrationObject('Smsapi');
+
+        $keys = $integration->getDecryptedApiKeys();
+
+        $this->token       = $keys['client_id'];
+        $this->secret      = $keys['client_secret'];
     }
 
     /**
@@ -120,8 +144,8 @@ class CallMessageSubscriber implements EventSubscriberInterface
             }',
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
-                'apiKey: fb102c6706c24256980788dea3786a1d',
-                'apiSecret: 2348380542752285',
+                'apiKey:'.$this->token.'',
+                'apiSecret:'.$this->secret.'',
             ],
         ]);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
@@ -168,8 +192,8 @@ class CallMessageSubscriber implements EventSubscriberInterface
             }',
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
-                'apiKey: fb102c6706c24256980788dea3786a1d',
-                'apiSecret: 2348380542752285',
+                'apiKey:'.$this->token.'',
+                'apiSecret:'.$this->secret.'',
             ],
         ]);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
