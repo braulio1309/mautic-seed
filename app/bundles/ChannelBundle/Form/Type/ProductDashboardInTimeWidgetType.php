@@ -15,7 +15,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 
-class ProductDasbboardInTimeWidgetType extends AbstractType
+class ProductDashboardInTimeWidgetType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -25,12 +25,7 @@ class ProductDasbboardInTimeWidgetType extends AbstractType
             [
                 'label'             => 'mautic.product.list.filter',
                 'choices'           => [
-                    'mautic.lead.show.all'                               => '',
-                    'mautic.lead.show.identified'                        => 'identified',
-                    'mautic.lead.show.anonymous'                         => 'anonymous',
-                    'mautic.lead.show.identified.vs.anonymous'           => 'identifiedVsAnonymous',
-                    'mautic.lead.show.top'                               => 'top',
-                    'mautic.lead.show.top.leads.identified.vs.anonymous' => 'topIdentifiedVsAnonymous',
+                    'Show all products'                               => '',
                 ],
                 'label_attr' => ['class' => 'control-label'],
                 'attr'       => ['class' => 'form-control'],

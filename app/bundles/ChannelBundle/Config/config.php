@@ -327,7 +327,7 @@ return [
                 'class'     => 'Mautic\ChannelBundle\Form\Type\CallMessageForm',
             ],
             'mautic.form.type.product_dashboard_product_in_time_widget' => [
-                'class' => \Mautic\ChannelBundle\Form\Type\DashboardLeadsInTimeWidgetType::class,
+                'class' => \Mautic\ChannelBundle\Form\Type\ProductDashboardInTimeWidgetType::class,
             ],
             'mautic.channel.type.listcustomer' => [
                 'class'     => 'Mautic\ChannelBundle\Form\Type\CustomerListType',

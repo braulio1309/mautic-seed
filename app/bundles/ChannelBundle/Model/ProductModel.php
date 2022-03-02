@@ -162,14 +162,6 @@ class ProductModel extends CommonFormModel
 
         $chart                              = new LineChart($unit, $dateFrom, $dateTo, $dateFormat);
         $query                              = new ChartQuery($this->em->getConnection(), $dateFrom, $dateTo);
-        $anonymousFilter                    = $filter;
-        $anonymousFilter['date_identified'] = [
-            'expression' => 'isNull',
-        ];
-        $identifiedFilter                    = $filter;
-        $identifiedFilter['date_identified'] = [
-            'expression' => 'isNotNull',
-        ];
 
         if ('top' == $flag) {
             $topLists = $this->leadListModel->getTopLists(6, $dateFrom, $dateTo);
