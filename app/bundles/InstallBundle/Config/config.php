@@ -39,38 +39,6 @@ return [
     ],
 
     'services' => [
-        'fixtures' => [
-            'mautic.install.fixture.lead_field' => [
-                'class'     => \Mautic\InstallBundle\InstallFixtures\ORM\LeadFieldData::class,
-                'tag'       => \Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesCompilerPass::FIXTURE_TAG,
-                'arguments' => [],
-            ],
-            'mautic.install.fixture.role' => [
-                'class'     => \Mautic\InstallBundle\InstallFixtures\ORM\RoleData::class,
-                'tag'       => \Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesCompilerPass::FIXTURE_TAG,
-                'arguments' => [],
-            ],
-            'mautic.install.fixture.page_hit' => [
-                'class'     => \Mautic\InstallBundle\InstallFixtures\ORM\PageHitIndex::class,
-                'tag'       => \Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesCompilerPass::FIXTURE_TAG,
-                'arguments' => [],
-            ],
-            'mautic.install.fixture.report_data' => [
-                'class'     => \Mautic\InstallBundle\InstallFixtures\ORM\LoadReportData::class,
-                'tag'       => \Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesCompilerPass::FIXTURE_TAG,
-                'arguments' => [],
-            ],
-             'mautic.install.fixture.remove_duplicate_index' => [
-                 'class'     => \Mautic\InstallBundle\InstallFixtures\ORM\RemoveDuplicateIndexData::class,
-                 'tag'       => \Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesCompilerPass::FIXTURE_TAG,
-                 'arguments' => [],
-             ],
-            'mautic.install.fixture.grape_js' => [
-                'class'     => \Mautic\InstallBundle\InstallFixtures\ORM\GrapesJsData::class,
-                'tag'       => \Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesCompilerPass::FIXTURE_TAG,
-                'arguments' => [],
-            ],
-        ],
         'forms' => [
             \Mautic\InstallBundle\Configurator\Form\CheckStepType::class => [
                 'class' => \Mautic\InstallBundle\Configurator\Form\CheckStepType::class,

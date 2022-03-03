@@ -1473,49 +1473,6 @@ return [
                 'tag' => 'console.command',
             ],
         ],
-        'fixtures' => [
-            'mautic.lead.fixture.company' => [
-                'class'     => \Mautic\LeadBundle\DataFixtures\ORM\LoadCompanyData::class,
-                'tag'       => \Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesCompilerPass::FIXTURE_TAG,
-                'arguments' => ['mautic.lead.model.company'],
-            ],
-            'mautic.lead.fixture.contact' => [
-                'class'     => \Mautic\LeadBundle\DataFixtures\ORM\LoadLeadData::class,
-                'tag'       => \Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesCompilerPass::FIXTURE_TAG,
-                'arguments' => ['doctrine.orm.entity_manager', 'mautic.helper.core_parameters'],
-            ],
-            'mautic.lead.fixture.contact_field' => [
-                'class'     => \Mautic\LeadBundle\DataFixtures\ORM\LoadLeadFieldData::class,
-                'tag'       => \Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesCompilerPass::FIXTURE_TAG,
-                'arguments' => [],
-            ],
-            'mautic.lead.fixture.segment' => [
-                'class'     => \Mautic\LeadBundle\DataFixtures\ORM\LoadLeadListData::class,
-                'tag'       => \Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesCompilerPass::FIXTURE_TAG,
-                'arguments' => ['mautic.lead.model.list'],
-            ],
-            'mautic.lead.fixture.category' => [
-                'class'     => \Mautic\LeadBundle\DataFixtures\ORM\LoadCategoryData::class,
-                'tag'       => \Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesCompilerPass::FIXTURE_TAG,
-                'arguments' => ['doctrine.orm.entity_manager'],
-            ],
-            'mautic.lead.fixture.categorizedleadlists' => [
-                'class'     => \Mautic\LeadBundle\DataFixtures\ORM\LoadCategorizedLeadListData::class,
-                'tag'       => \Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesCompilerPass::FIXTURE_TAG,
-                'arguments' => ['doctrine.orm.entity_manager'],
-            ],
-            'mautic.lead.fixture.test.page_hit' => [
-                'class'     => \Mautic\LeadBundle\Tests\DataFixtures\ORM\LoadPageHitData::class,
-                'tag'       => \Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesCompilerPass::FIXTURE_TAG,
-                'optional'  => true,
-            ],
-            'mautic.lead.fixture.test.segment' => [
-                'class'     => \Mautic\LeadBundle\Tests\DataFixtures\ORM\LoadSegmentsData::class,
-                'tag'       => \Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesCompilerPass::FIXTURE_TAG,
-                'arguments' => ['mautic.lead.model.list', 'mautic.lead.model.lead'],
-                'optional'  => true,
-            ],
-        ],
     ],
     'parameters' => [
         'parallel_import_limit'               => 1,

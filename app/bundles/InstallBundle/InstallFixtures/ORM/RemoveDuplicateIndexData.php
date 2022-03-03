@@ -10,7 +10,6 @@ use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Schema\SchemaException as DoctrineSchemaException;
 use Doctrine\Persistence\ObjectManager;
-use Mautic\CoreBundle\Doctrine\Helper\IndexSchemaHelper;
 use Mautic\CoreBundle\Exception\SchemaException;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -40,8 +39,7 @@ class RemoveDuplicateIndexData extends AbstractFixture implements OrderedFixture
      */
     public function load(ObjectManager $manager): void
     {
-        $prefix = $this->container->getParameter('mautic.db_table_prefix');
-        /** @var IndexSchemaHelper $indexHelper */
+        $prefix      = $this->container->getParameter('mautic.db_table_prefix');
         $indexHelper = $this->container->get('mautic.schema.helper.index');
 
         foreach ($this->tables as $table => $columns) {

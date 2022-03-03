@@ -157,7 +157,7 @@ class CallMessageSubscriber implements EventSubscriberInterface
         return json_decode($response, true);
     }
 
-    public function addCalls(string $message, string $phones, string $triggerDate, string $campaignID)
+    public function addCalls(string $message, string $phones, $triggerDate, string $campaignID)
     {
         $curl = curl_init();
 
