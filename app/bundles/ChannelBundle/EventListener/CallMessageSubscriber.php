@@ -21,6 +21,7 @@ use Mautic\PluginBundle\Helper\IntegrationHelper;
 use Mautic\SmsBundle\Model\SmsModel;
 use Mautic\SmsBundle\Sms\TransportChain;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Throwable;
 
 class CallMessageSubscriber implements EventSubscriberInterface
 {
@@ -42,12 +43,12 @@ class CallMessageSubscriber implements EventSubscriberInterface
     /**
      * @var string
      */
-    private $secret;
+    private $secret = null;
 
     /**
      * @var string
      */
-    private $token;
+    private $token = null;
 
     const CALL_URI = 'https://cloud.go4clients.com:8580/api/campaigns/voice/v1.0/';
 
@@ -59,12 +60,14 @@ class CallMessageSubscriber implements EventSubscriberInterface
         $this->callModel          = $callModel;
         $this->transportChain     = $transportChain;
         $this->integrationHelper  = $integrationHelper;
-        $integration              = $this->integrationHelper->getIntegrationObject('Smsapi');
-
-        $keys = $integration->getDecryptedApiKeys();
-
-        $this->token       = $keys['client_id'];
-        $this->secret      = $keys['client_secret'];
+        try {
+            $integration              = $this->integrationHelper->getIntegrationObject('Smsapi');
+            $keys                     = $integration->getDecryptedApiKeys();
+            $this->token              = $keys['client_id'];
+            $this->secret             = $keys['client_secret'];
+        } catch (Throwable $apiErrorException) {
+            return false;
+        }
     }
 
     /**
@@ -80,19 +83,21 @@ class CallMessageSubscriber implements EventSubscriberInterface
 
     public function onCampaignBuild(CampaignBuilderEvent $event)
     {
-        $event->addAction(
-            'call.send_call_voice',
-            [
-                'label'            => 'Call Voice',
-                'description'      => 'Send a call voice to your contacts',
-                'batchEventName'   => ChannelEvents::ON_CALL_VOICE,
-                'formType'         => CallMessageSendType::class,
-                'formTypeOptions'  => ['update_select' => 'campaignevent_properties_sms'],
-                'formTheme'        => 'MauticChannelBundle:Calls\CallMessageSend',
-                'channel'          => 'call',
-                'channelIdField'   => 'call',
-            ]
-        );
+        if ($this->token && $this->secret) {
+            $event->addAction(
+                'call.send_call_voice',
+                [
+                    'label'            => 'Call Voice',
+                    'description'      => 'Send a call voice to your contacts',
+                    'batchEventName'   => ChannelEvents::ON_CALL_VOICE,
+                    'formType'         => CallMessageSendType::class,
+                    'formTypeOptions'  => ['update_select' => 'campaignevent_properties_sms'],
+                    'formTheme'        => 'MauticChannelBundle:Calls\CallMessageSend',
+                    'channel'          => 'call',
+                    'channelIdField'   => 'call',
+                ]
+            );
+        }
     }
 
     /**
@@ -120,7 +125,6 @@ class CallMessageSubscriber implements EventSubscriberInterface
         $this->addCalls($call->getMessage(), $phones, $triggerDate, $campaign['id']);
 
         $event->setChannel('call', $call->getId());
-        //$event->setResult(json_decode($response, true));
     }
 
     public function createCampaign(string $name)
