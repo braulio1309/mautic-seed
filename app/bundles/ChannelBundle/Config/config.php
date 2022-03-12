@@ -32,15 +32,6 @@ return [
                 'path'       => '/channels/batch/contact/view',
                 'controller' => 'MauticChannelBundle:BatchContact:index',
             ],
-            //Products
-            'products_list' => [
-                'path'       => '/products/{page}',
-                'controller' => 'MauticChannelBundle:Product:index',
-            ],
-            'products_create' => [
-                'path'       => '/products/{objectAction}/{objectId}',
-                'controller' => 'MauticChannelBundle:Product:new',
-            ],
             'call_list' => [
                 'path'       => '/call/{page}',
                 'controller' => 'MauticChannelBundle:CallMessage:index',
@@ -48,86 +39,6 @@ return [
             'call_create' => [
                 'path'       => '/call/{objectAction}/{objectId}',
                 'controller' => 'MauticChannelBundle:CallMessage:new',
-            ],
-            'product_delete' => [
-                'path'       => '/products/delete/{objectId}',
-                'controller' => 'MauticChannelBundle:Product:delete',
-            ],
-            'product_import_action' => [
-                'path'       => '/product/import/{objectAction}/{objectId}',
-                'controller' => 'MauticChannelBundle:Import:execute',
-            ],
-            'product_import_index' => [
-                'path'       => '/product/import/{page}',
-                'controller' => 'MauticChannelBundle:Import:index',
-            ],
-            'variant_import_action' => [
-                'path'       => '/variant/import/{objectAction}/{objectId}',
-                'controller' => 'MauticChannelBundle:ImportVariant:execute',
-            ],
-            'customer_import_action' => [
-                'path'       => '/customer/import/{objectAction}/{objectId}',
-                'controller' => 'MauticChannelBundle:ImportCustomer:execute',
-            ],
-            'customer_import_index' => [
-                'path'       => '/customer/import/{page}',
-                'controller' => 'MauticChannelBundle:ImportCustomer:index',
-            ],
-            'order_import_action' => [
-                'path'       => '/order/import/{objectAction}/{objectId}',
-                'controller' => 'MauticChannelBundle:ImportOrder:execute',
-            ],
-            'order_import_index' => [
-                'path'       => '/order/import/{page}',
-                'controller' => 'MauticChannelBundle:ImportOrder:index',
-            ],
-            'customer_import_index' => [
-                'path'       => '/customer/import/{page}',
-                'controller' => 'MauticChannelBundle:ImportCustomer:index',
-            ],
-            'variant_import_index' => [
-                'path'       => '/variant/import/{page}',
-                'controller' => 'MauticChannelBundle:ImportVariant:index',
-            ],
-            'category_create' => [
-                'path'       => '/category/{objectAction}/{objectId}',
-                'controller' => 'MauticChannelBundle:Category:new',
-            ],
-            'category_list' => [
-                'path'       => '/category/{page}',
-                'controller' => 'MauticChannelBundle:Category:index',
-            ],
-            'category_import_action' => [
-                'path'       => '/category/import/{objectAction}/{objectId}',
-                'controller' => 'MauticChannelBundle:ImportCategory:execute',
-            ],
-            'category_import_index' => [
-                'path'       => '/category/import/{page}',
-                'controller' => 'MauticChannelBundle:ImportCategory:index',
-            ],
-            'variant_create' => [
-                'path'       => '/variant/{objectAction}/{objectId}',
-                'controller' => 'MauticChannelBundle:Variant:new',
-            ],
-            'variant_list' => [
-                'path'       => '/variant/{page}',
-                'controller' => 'MauticChannelBundle:Variant:index',
-            ],
-            'order_list' => [
-                'path'       => '/order/{page}',
-                'controller' => 'MauticChannelBundle:Order:index',
-            ],
-            'order_create' => [
-                'path'       => '/order/{objectAction}/{objectId}',
-                'controller' => 'MauticChannelBundle:Order:new',
-            ],
-            'customer_create' => [
-                'path'       => '/customer/{objectAction}/{objectId}',
-                'controller' => 'MauticChannelBundle:Customer:new',
-            ],
-            'customer_list' => [
-                'path'       => '/customer/{page}',
-                'controller' => 'MauticChannelBundle:Customer:index',
             ],
         ],
         'api' => [
@@ -137,60 +48,10 @@ return [
                 'path'            => '/messages',
                 'controller'      => 'MauticChannelBundle:Api\MessageApi',
             ],
-            'mautic_api_products'      => [
-                'path'       => '/products/{objectId}',
-                'controller' => 'MauticChannelBundle:Api\ProductApi:getAll',
-                'method'     => 'GET',
-            ],
-            'mautic_api_products_new'      => [
-                'path'       => '/products/new/{objectId}',
-                'controller' => 'MauticChannelBundle:Api\ProductApi:new',
-                'method'     => 'POST',
-            ],
             'mautic_api_call_new'      => [
                 'path'       => '/call/new/{objectId}',
                 'controller' => 'MauticChannelBundle:Api\CallMessageApi:new',
                 'method'     => 'VIEW',
-            ],
-            'mautic_api_product_categories'      => [
-                'path'       => '/product/categories/{objectId}',
-                'controller' => 'MauticChannelBundle:Api\CategoryApi:getAll',
-                'method'     => 'GET',
-            ],
-            'mautic_api_product_categories_new'      => [
-                'path'       => '/products/categories/new/{objectId}',
-                'controller' => 'MauticChannelBundle:Api\CategoryApi:new',
-                'method'     => 'POST',
-            ],
-            'mautic_api_variant'      => [
-                'path'       => '/products/variant/{objectId}',
-                'controller' => 'MauticChannelBundle:Api\VariantApi:getAll',
-                'method'     => 'GET',
-            ],
-            'mautic_api_variant_new'      => [
-                'path'       => '/products/variant/new/{objectId}',
-                'controller' => 'MauticChannelBundle:Api\VariantApi:new',
-                'method'     => 'POST',
-            ],
-            'mautic_api_order'      => [
-                'path'       => '/orders/{objectId}',
-                'controller' => 'MauticChannelBundle:Api\OrderApi:getAll',
-                'method'     => 'GET',
-            ],
-            'mautic_api_order_new'      => [
-                'path'       => '/order/new/{objectId}',
-                'controller' => 'MauticChannelBundle:Api\OrderApi:new',
-                'method'     => 'POST',
-            ],
-            'mautic_api_customer'      => [
-                'path'       => '/customers/{objectId}',
-                'controller' => 'MauticChannelBundle:Api\CustomerApi:getAll',
-                'method'     => 'GET',
-            ],
-            'mautic_api_categories_new'      => [
-                'path'       => '/customer/new/{objectId}',
-                'controller' => 'MauticChannelBundle:Api\CustomerApi:new',
-                'method'     => 'POST',
             ],
         ],
         'public' => [
@@ -209,43 +70,6 @@ return [
                 'route'    => 'call_list',
                 'parent'   => 'mautic.core.channels',
                 'priority' => 110,
-            ],
-            //Products
-            'Products' => [
-                'priority'  => 90,
-                'iconClass' => 'fa-th-large',
-            ],
-            'Product list' => [
-                'priority' => 90,
-                'parent'   => 'Products',
-                'access'   => ['channel:product:index', 'channel:messages:viewother'],
-                'route'    => 'products_list',
-            ],
-            'Categories' => [
-                'priority' => 90,
-                'parent'   => 'Products',
-                'access'   => ['channel:product:index', 'channel:messages:viewother'],
-                'route'    => 'category_list',
-            ],
-            'Variants' => [
-                'priority' => 90,
-                'parent'   => 'Products',
-                'route'    => 'variant_list',
-            ],
-            //Orders
-            'Orders' => [
-                'priority'  => 90,
-                'iconClass' => 'fa-th-large',
-            ],
-            'Customers' => [
-                'priority' => 90,
-                'parent'   => 'Orders',
-                'route'    => 'customer_list',
-            ],
-            'Order list' => [
-                'priority' => 90,
-                'parent'   => 'Orders',
-                'route'    => 'order_list',
             ],
         ],
         'admin' => [
@@ -286,15 +110,6 @@ return [
                     'mautic.core.model.auditlog',
                 ],
             ],
-            'mautic.product.dashboard.subscriber' => [
-                'class'     => \Mautic\ChannelBundle\EventListener\ProductDashboardSubscriber::class,
-                'arguments' => [
-                    'mautic.channel.model.product',
-                    'mautic.lead.model.list',
-                    'router',
-                    'translator',
-                ],
-            ],
             'mautic.channel.channelbundle.lead.subscriber' => [
                 'class'     => Mautic\ChannelBundle\EventListener\LeadSubscriber::class,
                 'arguments' => [
@@ -319,23 +134,8 @@ return [
             ],
         ],
         'forms' => [
-            'mautic.channel.type.product'                 => [
-                'class'     => 'Mautic\ChannelBundle\Form\Type\ProductForm',
-                'arguments' => 'mautic.security',
-            ],
             'mautic.channel.type.call'                 => [
                 'class'     => 'Mautic\ChannelBundle\Form\Type\CallMessageForm',
-            ],
-            'mautic.form.type.product_dashboard_product_in_time_widget' => [
-                'class' => \Mautic\ChannelBundle\Form\Type\ProductDashboardInTimeWidgetType::class,
-            ],
-            'mautic.channel.type.listcustomer' => [
-                'class'     => 'Mautic\ChannelBundle\Form\Type\CustomerListType',
-                'arguments' => [
-                    'mautic.channel.model.customer',
-                    'translator',
-                    'mautic.security',
-                ],
             ],
             'mautic.form.type.callsend_list' => [
                 'class'     => \Mautic\ChannelBundle\Form\Type\CallMessageSendType::class,
@@ -349,30 +149,6 @@ return [
                     'mautic.security',
                 ],
             ],
-            'mautic.channel.type.categorylist'         => [
-                'class'     => 'Mautic\ChannelBundle\Form\Type\CategoryListType',
-                'arguments' => [
-                    'mautic.channel.model.category',
-                    'translator',
-                    'mautic.security',
-                ],
-            ],
-            'mautic.channel.type.category'                 => [
-                'class'     => 'Mautic\ChannelBundle\Form\Type\CategoryForm',
-                'arguments' => 'mautic.security',
-            ],
-            'mautic.channel.type.variant'                 => [
-                'class'     => 'Mautic\ChannelBundle\Form\Type\VariantForm',
-                'arguments' => 'mautic.security',
-            ],
-            'mautic.channel.type.order'                 => [
-                'class'     => 'Mautic\ChannelBundle\Form\Type\OrderForm',
-                'arguments' => 'mautic.security',
-            ],
-            'mautic.channel.type.customer'                 => [
-                'class'     => 'Mautic\ChannelBundle\Form\Type\CustomerForm',
-                'arguments' => 'mautic.security',
-            ],
             \Mautic\ChannelBundle\Form\Type\MessageType::class => [
                 'class'       => \Mautic\ChannelBundle\Form\Type\MessageType::class,
                 'methodCalls' => [
@@ -382,13 +158,13 @@ return [
                     'mautic.channel.model.message',
                 ],
             ],
-            'mautic.form.type.product_import' => [
+            /*'mautic.form.type.product_import' => [
                 'class' => \Mautic\ChannelBundle\Form\Type\ProductImportType::class,
             ],
             'mautic.form.type.product_field_import' => [
                 'class'     => \Mautic\ChannelBundle\Form\Type\ProductImportFieldType::class,
                 'arguments' => ['translator', 'doctrine.orm.entity_manager'],
-            ],
+            ],*/
             'mautic.form.type.message_list' => [
                 'class' => \Mautic\ChannelBundle\Form\Type\MessageListType::class,
             ],
@@ -408,33 +184,11 @@ return [
             ],
         ],
         'models' => [
-            'mautic.channel.model.product' => [
-                'class'     => \Mautic\ChannelBundle\Model\ProductModel::class,
-                'arguments' => [
-                    'mautic.lead.model.list',
-                    'mautic.form.model.form',
-                    'mautic.campaign.event_collector',
-                    'mautic.campaign.membership.builder',
-                    'mautic.tracker.contact',
-                ],
-            ],
             'mautic.channel.model.callVoice' => [
                 'class'     => \Mautic\ChannelBundle\Model\CallVoiceModel::class,
             ],
-            'mautic.channel.model.category' => [
-                'class'     => \Mautic\ChannelBundle\Model\CategoryModel::class,
-            ],
             'mautic.channel.model.call' => [
                 'class'     => \Mautic\ChannelBundle\Model\CallMessageModel::class,
-            ],
-            'mautic.channel.model.variant' => [
-                'class'     => \Mautic\ChannelBundle\Model\VariantModel::class,
-            ],
-            'mautic.channel.model.customer' => [
-                'class'     => \Mautic\ChannelBundle\Model\CustomerModel::class,
-            ],
-            'mautic.channel.model.order' => [
-                'class'     => \Mautic\ChannelBundle\Model\OrderModel::class,
             ],
             'mautic.channel.model.message' => [
                 'class'     => \Mautic\ChannelBundle\Model\MessageModel::class,
@@ -478,35 +232,10 @@ return [
                 'factory'   => ['@doctrine.orm.entity_manager', 'getRepository'],
                 'arguments' => \Mautic\ChannelBundle\Entity\MessageQueue::class,
             ],
-           'mautic.channel.repository.product' => [
-                'class'     => Doctrine\ORM\EntityRepository::class,
-                'factory'   => ['@doctrine.orm.entity_manager', 'getRepository'],
-                'arguments' => \Mautic\ChannelBundle\Entity\Product::class,
-            ],
             'mautic.channel.repository.call' => [
                 'class'     => Doctrine\ORM\EntityRepository::class,
                 'factory'   => ['@doctrine.orm.entity_manager', 'getRepository'],
                 'arguments' => \Mautic\ChannelBundle\Entity\CallMessage::class,
-            ],
-            'mautic.channel.repository.category' => [
-                'class'     => Doctrine\ORM\EntityRepository::class,
-                'factory'   => ['@doctrine.orm.entity_manager', 'getRepository'],
-                'arguments' => \Mautic\ChannelBundle\Entity\Category::class,
-            ],
-            'mautic.channel.repository.variant' => [
-                'class'     => Doctrine\ORM\EntityRepository::class,
-                'factory'   => ['@doctrine.orm.entity_manager', 'getRepository'],
-                'arguments' => \Mautic\ChannelBundle\Entity\Variant::class,
-            ],
-            'mautic.channel.repository.order' => [
-                'class'     => Doctrine\ORM\EntityRepository::class,
-                'factory'   => ['@doctrine.orm.entity_manager', 'getRepository'],
-                'arguments' => \Mautic\ChannelBundle\Entity\Order::class,
-            ],
-            'mautic.channel.repository.customer' => [
-                'class'     => Doctrine\ORM\EntityRepository::class,
-                'factory'   => ['@doctrine.orm.entity_manager', 'getRepository'],
-                'arguments' => \Mautic\ChannelBundle\Entity\Customer::class,
             ],
         ],
     ],
