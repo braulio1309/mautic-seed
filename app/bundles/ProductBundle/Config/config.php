@@ -65,6 +65,7 @@ return [
                 'controller' => 'ProductBundle:Variant:index',
             ],
         ],
+
         'api' => [
             'mautic_api_products'      => [
                 'path'       => '/products/{objectId}',
@@ -123,6 +124,12 @@ return [
                 'route'    => 'variant_list',
             ],
         ],
+        'admin' => [
+        ],
+        'profile' => [
+        ],
+        'extra' => [
+        ],
     ],
 
     'services' => [
@@ -145,7 +152,6 @@ return [
             'mautic.form.type.product_dashboard_product_in_time_widget' => [
                 'class' => \Mautic\ProductBundle\Form\Type\ProductDashboardInTimeWidgetType::class,
             ],
-
             'mautic.channel.type.categorylist'         => [
                 'class'     => 'Mautic\ProductBundle\Form\Type\CategoryListType',
                 'arguments' => [

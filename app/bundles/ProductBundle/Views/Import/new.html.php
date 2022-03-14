@@ -17,7 +17,7 @@ $view['slots']->set('headerTitle', 'Products');
 
 ?>
 <?php if (isset($form['file'])): ?>
-<?php echo $view->render('MauticChannelBundle:Import:upload_form.html.php', ['form' => $form]); ?>
+<?php echo $view->render('ProductBundle:Import:upload_form.html.php', ['form' => $form]); ?>
 <?php else: ?>
-<?php echo $view->render('MauticChannelBundle:Import:mapping_form.html.php', ['form' => $form]); ?>
+<?php echo $view->render('ProductBundle:Import:mapping_form.html.php', ['form' => $form]); ?>
 <?php endif; ?>
