@@ -18,7 +18,6 @@
             </button>
         </h4>
         <select id="<?php echo ucfirst($eventGroup); ?>List" class="campaign-event-selector">
-            <option value=""></option>
             <?php foreach ($eventSettings[$eventGroup] as $k => $e): ?>
 
                 <option id="campaignEvent_<?php echo str_replace('.', '', $k); ?>"

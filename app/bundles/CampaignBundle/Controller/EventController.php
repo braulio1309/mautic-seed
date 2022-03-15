@@ -38,6 +38,7 @@ class EventController extends CommonFormController
         $session = $this->get('session');
         if ('POST' == $method) {
             $event                = $this->request->request->get('campaignevent');
+
             $type                 = $event['type'];
             $eventType            = $event['eventType'];
             $campaignId           = $event['campaignId'];
@@ -81,12 +82,13 @@ class EventController extends CommonFormController
 
         //fire the builder event
         $events = $eventCollector->getEventsArray();
+
         $form   = $this->get('form.factory')->create(
             EventType::class,
             $event,
             [
                 'action'   => $this->generateUrl('mautic_campaignevent_action', ['objectAction' => 'new']),
-                'settings' => $events[$eventType][$type],
+                'settings' => (null == $events[$eventType][$type]) ? $newEvent : $events[$eventType][$type],
             ]
         );
         $event['settings'] = $events[$eventType][$type];

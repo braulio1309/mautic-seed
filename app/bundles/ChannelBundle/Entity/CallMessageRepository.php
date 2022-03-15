@@ -34,11 +34,14 @@ class CallMessageRepository extends CommonRepository
         return 'c';
     }
 
-    public function getMessages()
+    /**
+     * @param object $entity
+     * @param bool   $flush
+     */
+    public function getCallMessage()
     {
-        $q = $this
-        ->createQueryBuilder('c')
-        ->select('c');
+        $q = $this->createQueryBuilder('c');
+        $q->select('c');
 
         return $q->getQuery()->getArrayResult();
     }

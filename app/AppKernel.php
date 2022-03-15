@@ -170,6 +170,10 @@ class AppKernel extends Kernel
             new Mautic\UserBundle\MauticUserBundle(),
             new Mautic\WebhookBundle\MauticWebhookBundle(),
             new Mautic\CacheBundle\MauticCacheBundle(),
+
+            //Destiny Bundles
+            new Mautic\ProductBundle\ProductBundle(),
+            new Mautic\OrderBundle\OrderBundle(),
         ];
 
         $queueProtocol = $this->getParameterLoader()->getLocalParameterBag()->get('queue_protocol', '');

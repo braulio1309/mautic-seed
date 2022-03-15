@@ -15,8 +15,6 @@ use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use Mautic\CoreBundle\Doctrine\Helper\ColumnSchemaHelper;
-use Mautic\CoreBundle\Doctrine\Helper\IndexSchemaHelper;
 use Mautic\CoreBundle\Exception\SchemaException;
 use Mautic\LeadBundle\Entity\LeadField;
 use Mautic\LeadBundle\Model\FieldModel;
@@ -68,10 +66,8 @@ class LeadFieldData extends AbstractFixture implements OrderedFixtureInterface, 
         $indexesToAdd = [];
         foreach ($fieldGroups as $object => $fields) {
             if ('company' === $object) {
-                /** @var ColumnSchemaHelper $schema */
                 $schema = $this->container->get('mautic.schema.helper.column')->setName('companies', true);
             } else {
-                /** @var ColumnSchemaHelper $schema */
                 $schema = $this->container->get('mautic.schema.helper.column')->setName('leads', true);
             }
 
@@ -123,10 +119,8 @@ class LeadFieldData extends AbstractFixture implements OrderedFixtureInterface, 
 
         foreach ($indexesToAdd as $object => $indexes) {
             if ('company' === $object) {
-                /** @var IndexSchemaHelper $indexHelper */
                 $indexHelper = $this->container->get('mautic.schema.helper.index')->setName('companies');
             } else {
-                /** @var IndexSchemaHelper $indexHelper */
                 $indexHelper = $this->container->get('mautic.schema.helper.index')->setName('leads');
             }
 

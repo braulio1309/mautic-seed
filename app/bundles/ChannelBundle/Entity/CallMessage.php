@@ -68,18 +68,6 @@ class CallMessage
         return $this;
     }
 
-    public function getCategoryName(): ?string
-    {
-        return $this->category_name;
-    }
-
-    public function setCategoryName(string $category_name): self
-    {
-        $this->category_name = $category_name;
-
-        return $this;
-    }
-
     public function getName(): ?string
     {
         return $this->name;

@@ -124,6 +124,15 @@ if ! [ -e app/config/local.php ]; then
         chown www-data:www-data /var/www/html/app/logs
 fi
 
+
+#Create datatables 
+sudo -u www-data php /var/www/html/bin/console   doctrine:schema:update --force
+sudo -u www-data php /var/www/html/bin/console --no-interaction doctrine:migrations:migrate
+cd /var
+rm -r cache
+cd ../
+sudo -u www-data php /var/www/html/bin/console cache:clear
+
 #Create datatables
 if [ -e /var/www/html/media/.createdAt ]; then
   echo "Running migrations only"
