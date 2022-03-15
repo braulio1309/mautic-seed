@@ -44,7 +44,7 @@ export class CrmStack extends cdk.Stack {
       userName: appUser.userName,
     });
 
-    const destinyDefaultDomainZone = route53.HostedZone.fromLookup(this, 'DestinyZone', { domainName: 'destiny.systems' });
+    const destinyDefaultDomainZone = route53.HostedZone.fromLookup(this, 'DestinyZone', { domainName: 'grupo-diana.dosmass.systems' });
 
     // Allow App user to send SES emails
     appUser.addToPolicy(new iam.PolicyStatement({
@@ -222,6 +222,9 @@ export class CrmStack extends cdk.Stack {
           AWS_SENDER_EMAIL: params.senderEmail,
           SITE_URL: params.mauticSiteURL,
           MAUTIC_SECRET_KEY: params.mauticSecret,
+          MAUTIC_ADMIN_USERNAME: 'arquitectosolucionesdiana@dosmass.com',
+          MAUTIC_ADMIN_EMAIL: 'arquitectosolucionesdiana@dosmass.com',
+          MAUTIC_ADMIN_PASSWORD: 'Destiny123456789',
         },
       },
       propagateTags: ecs.PropagatedTagSource.SERVICE,

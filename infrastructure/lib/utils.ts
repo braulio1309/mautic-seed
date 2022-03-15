@@ -57,17 +57,17 @@ export function getParams(): IDestinyInputParams {
     const brandName = slugifyIt(config.brandName);
     const clientName = slugifyIt(config.clientName);
     const domain = config.subDomain;
-    const mauticSiteURL = `http://${domain}.${config.domain ? config.domain : 'destiny.systems'}`;
+    const mauticSiteURL = `http://${domain}.${config.domain ? config.domain : 'grupo-diana.dosmass.systems'}`;
 
     const baseServiceName = `mautic-${clientName}-${brandName}-${projectName}-${environment}`;
     const reducedBaseName = `mtc-${projectName}-${environment}`;
     const useExistingVPC = config.vpcId || undefined;
     const certificateArn = !!config.certificateArn ?
         config.certificateArn :
-        'arn:aws:acm:us-east-1:657279016981:certificate/0a064616-4c08-4ca9-be6d-81a1fe240d60';
+        'arn:aws:acm:us-east-1:083252634197:certificate/728d1669-49d4-472e-9562-77137039730f';
     const loadBalancerCertificateArn = !!config.loadBalancerCertificateArn ?
         config.loadBalancerCertificateArn :
-        'arn:aws:acm:us-east-1:657279016981:certificate/0a064616-4c08-4ca9-be6d-81a1fe240d60';
+        'arn:aws:acm:us-east-1:083252634197:certificate/728d1669-49d4-472e-9562-77137039730f';
     const createBackend = !!config.createBackend;
     const wafRules = config.wafRules || null;
 

@@ -11,7 +11,7 @@ import * as utils from '../lib/utils';
 const app = new cdk.App();
 const params = utils.getParams();
 
-new CrmStack(params, app, 'MauticCRMStack', {
+new CrmStack(params, app, `CoreSystem/${params.stackName}`, {
   env: {
     // DK_DEFAULT_ACCOUNT and CDK_DEFAULT_REGION
     // These variables are set based on the AWS profile specified using the --profile option,

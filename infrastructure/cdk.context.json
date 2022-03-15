@@ -1,14 +1,61 @@
 {
-  "hosted-zone:account=657279016981:domainName=destiny.systems:region=us-east-1": {
-    "Id": "/hostedzone/Z0424257200NXMGFTUA6I",
-    "Name": "destiny.systems."
+  "hosted-zone:account=083252634197:domainName=grupo-diana.dosmass.systems:region=us-east-1": {
+    "Id": "/hostedzone/Z07048163MVFWOAFN0KZM",
+    "Name": "grupo-diana.dosmass.systems."
   },
-  "availability-zones:account=657279016981:region=us-east-1": [
-    "us-east-1a",
-    "us-east-1b",
-    "us-east-1c",
-    "us-east-1d",
-    "us-east-1e",
-    "us-east-1f"
-  ]
+  "vpc-provider:account=083252634197:filter.vpc-id=vpc-01ccdf9ebaccea1e2:region=us-east-1:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-01ccdf9ebaccea1e2",
+    "vpcCidrBlock": "10.0.0.0/16",
+    "availabilityZones": [],
+    "subnetGroups": [
+      {
+        "name": "Public",
+        "type": "Public",
+        "subnets": [
+          {
+            "subnetId": "subnet-0197eebc3ab61d397",
+            "cidr": "10.0.0.0/19",
+            "availabilityZone": "us-east-1a",
+            "routeTableId": "rtb-0bfaa9e5f64b92767"
+          },
+          {
+            "subnetId": "subnet-0f43760428a1489d9",
+            "cidr": "10.0.32.0/19",
+            "availabilityZone": "us-east-1b",
+            "routeTableId": "rtb-03d7d43bfcfce04c9"
+          },
+          {
+            "subnetId": "subnet-00bcf7fa86db425e6",
+            "cidr": "10.0.64.0/19",
+            "availabilityZone": "us-east-1c",
+            "routeTableId": "rtb-0c591b36e7f652446"
+          }
+        ]
+      },
+      {
+        "name": "Private",
+        "type": "Private",
+        "subnets": [
+          {
+            "subnetId": "subnet-07b5c3faa10a31b4b",
+            "cidr": "10.0.96.0/19",
+            "availabilityZone": "us-east-1a",
+            "routeTableId": "rtb-0d50a26655111dc09"
+          },
+          {
+            "subnetId": "subnet-0531666f1f66d673e",
+            "cidr": "10.0.128.0/19",
+            "availabilityZone": "us-east-1b",
+            "routeTableId": "rtb-024784fa03092820d"
+          },
+          {
+            "subnetId": "subnet-095efcdb52f7dcdc8",
+            "cidr": "10.0.160.0/19",
+            "availabilityZone": "us-east-1c",
+            "routeTableId": "rtb-04d97750bc4ccabfe"
+          }
+        ]
+      }
+    ]
+  }
 }

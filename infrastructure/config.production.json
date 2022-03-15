@@ -1,9 +1,12 @@
 {
-  "projectName": "Destiny CRM",
-  "brandName": "Destiny",
-  "clientName": "Destiny",
+  "projectName": "Ceres",
+  "brandName": "Grupo Diana",
+  "clientName": "Dosmass",
   "createBackend": true,
-  "mauticSecret": "1ca6ed1e7b7f0edf3b90898bfc05cc5f6c95e30527a8cc35d3983633588fb8a0",
-  "subDomain": "marketing",
-  "domain": "destiny.systems"
+  "subDomain": "core",
+  "domain": "grupo-diana.dosmass.systems",
+  "vpcId": "vpc-01ccdf9ebaccea1e2",
+  "senderEmail": "info@grupo-diana.dosmass.systems",
+  "senderName": "Grupo Diana Info",
+  "mauticSecret": "64beb292c298cee485870c6787e71a097f62a3fe18336437b4be1a563639fcf9"
 }
