@@ -3,26 +3,6 @@
 return [
     'routes' => [
         'main' => [
-            'customer_import_action' => [
-                'path'       => '/customer/import/{objectAction}/{objectId}',
-                'controller' => 'OrderBundle:ImportCustomer:execute',
-            ],
-            'customer_import_index' => [
-                'path'       => '/customer/import/{page}',
-                'controller' => 'OrderBundle:ImportCustomer:index',
-            ],
-            'order_import_action' => [
-                'path'       => '/order/import/{objectAction}/{objectId}',
-                'controller' => 'OrderBundle:ImportOrder:execute',
-            ],
-            'order_import_index' => [
-                'path'       => '/order/import/{page}',
-                'controller' => 'OrderBundle:ImportOrder:index',
-            ],
-            'customer_import_index' => [
-                'path'       => '/customer/import/{page}',
-                'controller' => 'OrderBundle:ImportCustomer:index',
-            ],
             'order_list' => [
                 'path'       => '/order/{page}',
                 'controller' => 'OrderBundle:Order:index',
@@ -63,7 +43,7 @@ return [
         'main' => [
             'Orders' => [
                 'priority'  => 90,
-                'iconClass' => 'fa-th-large',
+                'iconClass' => 'fa fa-credit-card-alt',
             ],
             'Customers' => [
                 'priority' => 90,

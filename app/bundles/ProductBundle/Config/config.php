@@ -24,22 +24,6 @@ return [
                 'path'       => '/products/delete/{objectId}',
                 'controller' => 'ProductBundle:Product:delete',
             ],
-            'product_import_action' => [
-                'path'       => '/product/import/{objectAction}/{objectId}',
-                'controller' => 'ProductBundle:Import:execute',
-            ],
-            'product_import_index' => [
-                'path'       => '/product/import/{page}',
-                'controller' => 'ProductBundle:Import:index',
-            ],
-            'variant_import_action' => [
-                'path'       => '/variant/import/{objectAction}/{objectId}',
-                'controller' => 'ProductBundle:ImportVariant:execute',
-            ],
-            'variant_import_index' => [
-                'path'       => '/variant/import/{page}',
-                'controller' => 'ProductBundle:ImportVariant:index',
-            ],
             'category_create' => [
                 'path'       => '/category/{objectAction}/{objectId}',
                 'controller' => 'ProductBundle:Category:new',
@@ -47,14 +31,6 @@ return [
             'category_list' => [
                 'path'       => '/category/{page}',
                 'controller' => 'ProductBundle:Category:index',
-            ],
-            'category_import_action' => [
-                'path'       => '/category/import/{objectAction}/{objectId}',
-                'controller' => 'ProductBundle:ImportCategory:execute',
-            ],
-            'category_import_index' => [
-                'path'       => '/category/import/{page}',
-                'controller' => 'ProductBundle:ImportCategory:index',
             ],
             'variant_create' => [
                 'path'       => '/variant/{objectAction}/{objectId}',
@@ -104,7 +80,7 @@ return [
         'main' => [
             'Products' => [
                 'priority'  => 90,
-                'iconClass' => 'fa-th-large',
+                'iconClass' => 'fa fa-shopping-cart',
             ],
             'Product list' => [
                 'priority' => 90,

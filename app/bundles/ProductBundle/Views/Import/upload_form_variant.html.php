@@ -34,7 +34,7 @@ $view['slots']->set(
         <div class="ml-lg mr-lg mt-md pa-lg">
             <div class="panel panel-info">
                 <div class="panel-heading">
-                    <div class="panel-title"><?php echo $view['translator']->trans('mautic.lead.import.start.instructions.products'); ?></div>
+                    <div class="panel-title"><?php echo $view['translator']->trans('mautic.lead.import.start.instructions.variant'); ?></div>
                 </div>
                 <div class="panel-body">
                     <?php echo $view['form']->start($form); ?>

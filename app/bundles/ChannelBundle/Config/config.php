@@ -20,6 +20,50 @@ return [
                 'path'       => '/messages/contacts/{objectId}/{channel}/{page}',
                 'controller' => 'MauticChannelBundle:Message:contacts',
             ],
+            'product_import_action' => [
+                'path'       => '/products/import/{objectAction}/{objectId}',
+                'controller' => 'ProductBundle:Import:execute',
+            ],
+            'product_import_index' => [
+                'path'       => '/products/import/{page}',
+                'controller' => 'ProductBundle:Import:index',
+            ],
+            'category_import_action' => [
+                'path'       => '/category/import/{objectAction}/{objectId}',
+                'controller' => 'ProductBundle:ImportCategory:execute',
+            ],
+            'category_import_index' => [
+                'path'       => '/category/import/{page}',
+                'controller' => 'ProductBundle:ImportCategory:index',
+            ],
+            'customer_import_action' => [
+                'path'       => '/customer/import/{objectAction}/{objectId}',
+                'controller' => 'OrderBundle:ImportCustomer:execute',
+            ],
+            'customer_import_index' => [
+                'path'       => '/customer/import/{page}',
+                'controller' => 'OrderBundle:ImportCustomer:index',
+            ],
+            'order_import_action' => [
+                'path'       => '/order/import/{objectAction}/{objectId}',
+                'controller' => 'OrderBundle:ImportOrder:execute',
+            ],
+            'order_import_index' => [
+                'path'       => '/order/import/{page}',
+                'controller' => 'OrderBundle:ImportOrder:index',
+            ],
+            'customer_import_index' => [
+                'path'       => '/customer/import/{page}',
+                'controller' => 'OrderBundle:ImportCustomer:index',
+            ],
+            'variant_import_action' => [
+                'path'       => '/variant/import/{objectAction}/{objectId}',
+                'controller' => 'ProductBundle:ImportVariant:execute',
+            ],
+            'variant_import_index' => [
+                'path'       => '/variant/import/{page}',
+                'controller' => 'ProductBundle:ImportVariant:index',
+            ],
             'mautic_message_action' => [
                 'path'       => '/messages/{objectAction}/{objectId}',
                 'controller' => 'MauticChannelBundle:Message:execute',
@@ -158,13 +202,6 @@ return [
                     'mautic.channel.model.message',
                 ],
             ],
-            /*'mautic.form.type.product_import' => [
-                'class' => \Mautic\ChannelBundle\Form\Type\ProductImportType::class,
-            ],
-            'mautic.form.type.product_field_import' => [
-                'class'     => \Mautic\ChannelBundle\Form\Type\ProductImportFieldType::class,
-                'arguments' => ['translator', 'doctrine.orm.entity_manager'],
-            ],*/
             'mautic.form.type.message_list' => [
                 'class' => \Mautic\ChannelBundle\Form\Type\MessageListType::class,
             ],

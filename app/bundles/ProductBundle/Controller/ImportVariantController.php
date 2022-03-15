@@ -27,7 +27,7 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class ImportCategoryController extends FormController
+class ImportVariantController extends FormController
 {
     // Steps of the import
     const STEP_UPLOAD_CSV      = 1;
@@ -102,7 +102,10 @@ class ImportCategoryController extends FormController
             $filter['force'][] = ['column' => 'c.createdBy', 'expr' => 'eq', 'value' => $this->user->getId()];
         }
 
-        $items= $this->getModel('channel.category')->getEntities(
+        $orderBy    = $session->get('mautic.products.orderby', 'c.dateModified');
+        $orderByDir = $session->get('mautic.products.orderbydir', 'DESC');
+
+        $items= $this->getModel('channel.variant')->getEntities(
             [
                 'start'      => $start,
                 'limit'      => $limit,
@@ -114,14 +117,14 @@ class ImportCategoryController extends FormController
             $lastPage = (1 === count($items)) ? 1 : (((ceil(count($items) / $limit)) ?: 1) ?: 1);
 
             $session->set('mautic.products.page', $lastPage);
-            $returnUrl = $this->generateUrl('category_list', ['page' => $lastPage]);
+            $returnUrl = $this->generateUrl('variant_list', ['page' => $lastPage]);
 
             return $this->postActionRedirect(
                 $this->getPostActionRedirectArguments(
                     [
                         'returnUrl'       => $returnUrl,
                         'viewParameters'  => ['page' => $lastPage],
-                        'contentTemplate' => 'ProductBundle:Category:category_list.html.php',
+                        'contentTemplate' => 'ProductBundle:Variant:variant_list.html.php',
                         'passthroughVars' => [
                             'mauticContent' => 'mautic',
                         ],
@@ -149,16 +152,17 @@ class ImportCategoryController extends FormController
             'limit'               => $limit,
             'permissions'         => $permissions,
             'tmpl'                => $this->request->get('tmpl', 'index'),
+            'product'             => $product,
         ];
 
         return $this->delegateView(
             $this->getViewArguments(
                 [
                     'viewParameters'  => $viewParameters,
-                    'contentTemplate' => 'ProductBundle:Category:category_list.html.php',
+                    'contentTemplate' => 'ProductBundle:Variant:variant_list.html.php',
                     'passthroughVars' => [
                         'mauticContent' => $this->getJsLoadMethodPrefix(),
-                        'route'         => $this->generateUrl('category_list', ['page' => $page]),
+                        'route'         => $this->generateUrl('variant_list', ['page' => $page]),
                     ],
                 ],
                 'index'
@@ -284,8 +288,6 @@ class ImportCategoryController extends FormController
         /** @var \Mautic\LeadBundle\Model\ImportModel $importModel */
         $importModel = $this->getModel($this->getModelName());
 
-        $dispatcher = $this->container->get('event_dispatcher');
-
         $session = $this->get('session');
         $object  = $initEvent->objectSingular;
 
@@ -308,7 +310,7 @@ class ImportCategoryController extends FormController
 
         $progress = (new Progress())->bindArray($session->get('mautic.'.$object.'.import.progress', [0, 0]));
         $import   = $importModel->getEntity();
-        $action   = $this->generateUrl('category_import_action', ['object' => $this->request->get('object'), 'objectAction' => 'new']);
+        $action   = $this->generateUrl('variant_import_action', ['object' => $this->request->get('object'), 'objectAction' => 'new']);
 
         switch ($step) {
             case self::STEP_UPLOAD_CSV:
@@ -420,7 +422,7 @@ class ImportCategoryController extends FormController
 
                                     if (false !== $file) {
                                         $i            =0;
-                                        $productModel = $this->getModel('channel.category');
+                                        $productModel = $this->getModel('channel.variant');
 
                                         $data = 1;
                                         while (1 == $data || !$file->eof()) {
@@ -428,7 +430,7 @@ class ImportCategoryController extends FormController
                                             if ($i > 0 && $data[0]) {
                                                 $product = $productModel->getEntity();
                                                 $product->setName($data[0]);
-                                                $product->setCategoryDesc($data[1]);
+                                                $product->setValueVariant($data[1]);
                                                 $productModel->saveEntity($product);
                                             }
                                             ++$i;
@@ -579,7 +581,7 @@ class ImportCategoryController extends FormController
         }
 
         if (self::STEP_UPLOAD_CSV === $step || self::STEP_MATCH_FIELDS === $step) {
-            $contentTemplate = 'ProductBundle:Import:new_category.html.php';
+            $contentTemplate = 'ProductBundle:Import:new_variant.html.php';
             $viewParameters  = [
                 'form'       => $form->createView(),
                 'objectName' => $initEvent->objectName,

@@ -11,14 +11,14 @@
 
 namespace Mautic\OrderBundle\Controller;
 
-use Mautic\OrderBundle\Form\Type\ProductImportFieldType;
-use Mautic\OrderBundle\Form\Type\ProductImportType;
 use Mautic\CoreBundle\Controller\FormController;
 use Mautic\CoreBundle\Helper\CsvHelper;
 use Mautic\LeadBundle\Entity\Import;
 use Mautic\LeadBundle\Event\ImportInitEvent;
 use Mautic\LeadBundle\Helper\Progress;
 use Mautic\LeadBundle\LeadEvents;
+use Mautic\OrderBundle\Form\Type\ProductImportFieldType;
+use Mautic\OrderBundle\Form\Type\ProductImportType;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Form\Exception\LogicException;
 use Symfony\Component\Form\Form;
@@ -26,7 +26,6 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class ImportOrderController extends FormController
 {
@@ -252,16 +251,6 @@ class ImportOrderController extends FormController
         $importModel = $this->getModel($this->getModelName());
 
         $dispatcher = $this->container->get('event_dispatcher');
-
-        try {
-            $initEvent = $this->dispatchImportOnInit();
-        } catch (AccessDeniedException $e) {
-            return $this->accessDenied();
-        }
-
-        if (!$initEvent->objectSupported) {
-            return $this->notFound();
-        }
 
         $session = $this->get('session');
         $object  = $initEvent->objectSingular;

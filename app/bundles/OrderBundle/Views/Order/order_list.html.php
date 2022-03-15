@@ -121,8 +121,8 @@ if ('index' == $tmpl) {
                     <td>
                         <div>
                             <a href="<?php echo $view['router']->path(
-                                'mautic_campaign_action',
-                                ['objectAction' => 'view', 'objectId' => $pro['id']]
+                                'order_create',
+                                ['objectAction' => 'edit', 'objectId' => $item->getId()]
                             ); ?>" data-toggle="ajax">
                                 <?php echo $item->getNotes(); ?>
                             <?php echo $view['content']->getCustomContent('campaign.name', $mauticTemplateVars); ?>

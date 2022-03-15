@@ -11,14 +11,14 @@
 
 namespace Mautic\ProductBundle\Controller;
 
-use Mautic\ProductBundle\Form\Type\ProductImportFieldType;
-use Mautic\ProductBundle\Form\Type\ProductImportType;
 use Mautic\CoreBundle\Controller\FormController;
 use Mautic\CoreBundle\Helper\CsvHelper;
 use Mautic\LeadBundle\Entity\Import;
 use Mautic\LeadBundle\Event\ImportInitEvent;
 use Mautic\LeadBundle\Helper\Progress;
 use Mautic\LeadBundle\LeadEvents;
+use Mautic\ProductBundle\Form\Type\ProductImportFieldType;
+use Mautic\ProductBundle\Form\Type\ProductImportType;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Form\Exception\LogicException;
 use Symfony\Component\Form\Form;
@@ -26,7 +26,6 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class ImportController extends FormController
 {
@@ -54,7 +53,6 @@ class ImportController extends FormController
      */
     public function indexAction($page = null)
     {
-
         //set some permissions
         $permissions = $this->get('mautic.security')->isGranted(
             [
@@ -290,16 +288,6 @@ class ImportController extends FormController
 
         $dispatcher = $this->container->get('event_dispatcher');
 
-        try {
-            $initEvent = $this->dispatchImportOnInit();
-        } catch (AccessDeniedException $e) {
-            return $this->accessDenied();
-        }
-
-        if (!$initEvent->objectSupported) {
-            return $this->notFound();
-        }
-
         $session = $this->get('session');
         $object  = $initEvent->objectSingular;
 
@@ -443,9 +431,9 @@ class ImportController extends FormController
                                                 $product = $productModel->getEntity();
                                                 $product->setName($data[0]);
                                                 $product->setProductDesc($data[1]);
-                                                $product->setVendor($data[3]);
-                                                $product->setInitialQuantity($data[5]);
-                                                $product->setInitialPrice($data[6]);
+                                                $product->setVendor($data[2]);
+                                                $product->setInitialQuantity($data[3]);
+                                                $product->setInitialPrice($data[4]);
                                                 $product->setCreatedAt(new \DateTime());
                                                 $product->setUpdatedAt(new \DateTime());
                                                 $productModel->saveEntity($product);
