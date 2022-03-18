@@ -1509,6 +1509,7 @@ return [
             'drupact',
             'ec2linkfinder',
             'edisterbot',
+            'ELB-HealthChecker/2.0',
             'electricmonk',
             'elisabot',
             'epicbot',
